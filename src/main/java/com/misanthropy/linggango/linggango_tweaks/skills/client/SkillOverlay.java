@@ -37,40 +37,72 @@ public class SkillOverlay {
         String name = "";
         ItemStack icon = ItemStack.EMPTY;
 
-        if (c.equals("north_mage")) {
-            name = "Mana Surge";
-            icon = new ItemStack(Items.LAPIS_LAZULI);
-        } else if (c.equals("machinist")) {
-            name = "Quick Repair";
-            icon = new ItemStack(Items.ANVIL);
-        } else if (c.equals("south_mage")) {
-            name = "Limit Break";
-            icon = new ItemStack(Items.END_CRYSTAL);
-        } else if (c.equals("miner")) {
-            name = "Crawl";
-            icon = new ItemStack(Items.LADDER);
-        } else if (c.equals("vampire")) {
-            name = "Night's Embrace";
-            icon = new ItemStack(Items.REDSTONE);
-        } else if (c.equals("gambler")) {
-            if (ClientSkillEvents.isSkillActive) {
-                int fakeRoll = (mc.player.tickCount / 4) % 6;
-                switch (fakeRoll) {
-                    case 0: name = "Rolling... (Repair)"; icon = new ItemStack(Items.ANVIL); break;
-                    case 1: name = "Rolling... (Rage)"; icon = new ItemStack(Items.IRON_AXE); break;
-                    case 2: name = "Rolling... (Defense)"; icon = new ItemStack(Items.IRON_CHESTPLATE); break;
-                    case 3: name = "Rolling... (Invis)"; icon = new ItemStack(Items.POTION); break;
-                    case 4: name = "Rolling... (Agility)"; icon = new ItemStack(Items.FEATHER); break;
-                    case 5: name = "Rolling... (Sustain)"; icon = new ItemStack(Items.GHAST_TEAR); break;
-                }
-            } else {
-                name = "Roll the Dice";
-                icon = new ItemStack(Items.GOLD_NUGGET);
+        switch (c) {
+            case "north_mage" -> {
+                name = "Mana Surge";
+                icon = new ItemStack(Items.LAPIS_LAZULI);
             }
-        } else {
-            currentAlpha = 0;
-            currentActiveAlpha = 0;
-            return;
+            case "machinist" -> {
+                name = "Quick Repair";
+                icon = new ItemStack(Items.ANVIL);
+            }
+            case "south_mage" -> {
+                name = "Limit Break";
+                icon = new ItemStack(Items.END_CRYSTAL);
+            }
+            case "miner" -> {
+                name = "Crawl";
+                icon = new ItemStack(Items.LADDER);
+            }
+            case "vampire" -> {
+                name = "Night's Embrace";
+                icon = new ItemStack(Items.REDSTONE);
+            }
+            case "gunner" -> {
+                name = "Explosive Shot";
+                net.minecraft.world.item.Item ammoItem = net.minecraftforge.registries.ForgeRegistries.ITEMS.getValue(new net.minecraft.resources.ResourceLocation("terramity", "gold_round"));
+                icon = new ItemStack(ammoItem != null ? ammoItem : Items.GOLD_NUGGET);
+            }
+            case "gambler" -> {
+                if (ClientSkillEvents.isSkillActive) {
+                    int fakeRoll = (mc.player.tickCount / 4) % 6;
+                    icon = switch (fakeRoll) {
+                        case 0 -> {
+                            name = "Rolling... (Repair)";
+                            yield new ItemStack(Items.ANVIL);
+                        }
+                        case 1 -> {
+                            name = "Rolling... (Rage)";
+                            yield new ItemStack(Items.IRON_AXE);
+                        }
+                        case 2 -> {
+                            name = "Rolling... (Defense)";
+                            yield new ItemStack(Items.IRON_CHESTPLATE);
+                        }
+                        case 3 -> {
+                            name = "Rolling... (Invis)";
+                            yield new ItemStack(Items.POTION);
+                        }
+                        case 4 -> {
+                            name = "Rolling... (Agility)";
+                            yield new ItemStack(Items.FEATHER);
+                        }
+                        case 5 -> {
+                            name = "Rolling... (Sustain)";
+                            yield new ItemStack(Items.GHAST_TEAR);
+                        }
+                        default -> icon;
+                    };
+                } else {
+                    name = "Roll the Dice";
+                    icon = new ItemStack(Items.GOLD_NUGGET);
+                }
+            }
+            default -> {
+                currentAlpha = 0;
+                currentActiveAlpha = 0;
+                return;
+            }
         }
 
         float targetAlpha = (ClientSkillEvents.combatTimer > 0) ? 1.0f : 0.0f;
@@ -100,7 +132,7 @@ public class SkillOverlay {
             guiGraphics.fill(x - 1, y - 1, x + boxWidth + 1, y + 23, borderAlpha | 0xDDAA00);
         }
 
-        guiGraphics.fill(x, y, x + boxWidth, y + 22, bgAlpha | 0x000000);
+        guiGraphics.fill(x, y, x + boxWidth, y + 22, bgAlpha);
 
         guiGraphics.renderItem(icon, x + 3, y + 3);
         guiGraphics.drawString(mc.font, name, x + 25, y + 7, textAlpha | 0xFFFFFF);

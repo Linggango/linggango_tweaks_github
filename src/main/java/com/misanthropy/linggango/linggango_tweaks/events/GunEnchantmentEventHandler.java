@@ -3,6 +3,7 @@ package com.misanthropy.linggango.linggango_tweaks.events;
 import com.misanthropy.linggango.linggango_tweaks.LinggangoTweaks;
 import com.misanthropy.linggango.linggango_tweaks.enchant.LinggangoEnchantments;
 import com.misanthropy.linggango.linggango_tweaks.registry.LinggangoAttributes;
+import com.misanthropy.linggango.linggango_tweaks.skills.SkillManager;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
@@ -19,10 +20,26 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.core.particles.ParticleTypes;
 
 @Mod.EventBusSubscriber(modid = LinggangoTweaks.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class GunEnchantmentEventHandler {
+
+    @SubscribeEvent
+    public static void onGunFire(net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickItem event) {
+        Player player = event.getEntity();
+        if (!player.level().isClientSide && player.getPersistentData().getBoolean("lt_gunner_active")) {
+            ResourceLocation weaponId = ForgeRegistries.ITEMS.getKey(event.getItemStack().getItem());
+            if (weaponId != null && weaponId.getNamespace().equals("terramity")) {
+                long currentTimeout = player.getPersistentData().getLong("lt_gunner_timeout");
+                long expectedHitTime = player.level().getGameTime() + 20;
+                if (expectedHitTime < currentTimeout) {
+                    player.getPersistentData().putLong("lt_gunner_timeout", expectedHitTime);
+                }
+            }
+        }
+    }
 
     @SubscribeEvent
     public static void onPlayerAttack(AttackEntityEvent event) {
@@ -52,12 +69,32 @@ public class GunEnchantmentEventHandler {
             float originalDamage = event.getAmount();
             LivingEntity target = event.getEntity();
 
-            originalDamage *= 5.0f;
+            originalDamage *= 2.5f;
 
             if (player.getAttributes().hasAttribute(LinggangoAttributes.GUN_DAMAGE.get())) {
                 double damagePoints = player.getAttributeValue(LinggangoAttributes.GUN_DAMAGE.get());
                 if (damagePoints > 0) {
                     originalDamage = originalDamage * (float) (1.0 + (damagePoints * 0.10));
+                }
+            }
+
+            if (player.getPersistentData().getBoolean("lt_gunner_active")) {
+                float aoeDamage = originalDamage * 0.60f;
+                java.util.List<LivingEntity> nearbyEntities = player.level().getEntitiesOfClass(LivingEntity.class, target.getBoundingBox().inflate(3.5D));
+                for (LivingEntity nearbyTarget : nearbyEntities) {
+                    if (nearbyTarget != player && nearbyTarget != target) {
+                        nearbyTarget.invulnerableTime = 0;
+                        nearbyTarget.hurt(player.level().damageSources().explosion(player, player), aoeDamage);
+                    }
+                }
+                if (player.level() instanceof ServerLevel serverLevel) {
+                    serverLevel.sendParticles(ParticleTypes.EXPLOSION, target.getX(), target.getY(0.5D), target.getZ(), 2, 0.0D, 0.0D, 0.0D, 0.0D);
+                }
+
+                player.getPersistentData().putBoolean("lt_gunner_active", false);
+                if (player instanceof ServerPlayer serverPlayer) {
+                    SkillManager.setCooldown(serverPlayer, "gunner", 600);
+                    SkillManager.syncToClient(serverPlayer, "gunner");
                 }
             }
 

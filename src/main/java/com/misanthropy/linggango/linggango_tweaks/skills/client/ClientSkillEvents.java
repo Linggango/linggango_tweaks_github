@@ -41,12 +41,14 @@ public class ClientSkillEvents {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null) return;
 
-        if (cdRemaining > 0) cdRemaining--;
-        if (combatTimer > 0) combatTimer--;
-
-        if (mc.player.swingTime == 1 || mc.options.keyAttack.isDown()) {
-            combatTimer = 200;
+        if (cdRemaining > 0) {
+            cdRemaining--;
+            if (cdRemaining == 0) {
+                combatTimer = 200;
+            }
         }
+
+        if (combatTimer > 0) combatTimer--;
 
         while (SKILL_KEY.consumeClick()) {
             TweaksSkillNetwork.INSTANCE.sendToServer(new TweaksSkillNetwork.SkillUseC2SPacket());

@@ -93,8 +93,6 @@ public class SkillManager {
                 addAttribute(player, "ars_nouveau:ars_nouveau.perk.max_mana", NMAGE_MANA_ID, 0.20, AttributeModifier.Operation.MULTIPLY_BASE);
                 data.putLong("lt_nmage_end", player.level().getGameTime() + 200);
 
-                setCooldown(player, classId, 800);
-
                 playCustomSound(player, "minecraft:block.enchantment_table.use", 1.0F, 1.0F);
                 synced = true;
                 break;
@@ -131,6 +129,16 @@ public class SkillManager {
                 data.putInt("lt_gambler_roll_timer", 40);
                 synced = true;
                 break;
+
+            case "gunner":
+                boolean gunnerActive = data.getBoolean("lt_gunner_active");
+                if (!gunnerActive) {
+                    data.putBoolean("lt_gunner_active", true);
+                    data.putLong("lt_gunner_timeout", player.level().getGameTime() + 100);
+                    playCustomSound(player, "minecraft:entity.tnt.primed", 1.0F, 1.0F);
+                    synced = true;
+                }
+                break;
         }
 
         if (synced) syncToClient(player, classId);
@@ -153,6 +161,7 @@ public class SkillManager {
         else if (classId.equals("vampire")) isActive = data.getBoolean("lt_vamp_active");
         else if (classId.equals("miner")) isActive = data.getBoolean("lt_crawling");
         else if (classId.equals("gambler")) isActive = data.getInt("lt_gambler_roll_timer") > 0;
+        else if (classId.equals("gunner")) isActive = data.getBoolean("lt_gunner_active");
 
         TweaksSkillNetwork.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player),
                 new TweaksSkillNetwork.SkillSyncS2CPacket(classId, remaining, max, isActive));
@@ -315,6 +324,16 @@ public class SkillManager {
                 data.putBoolean("lt_nmage_active", false);
                 removeAttribute(p, "irons_spellbooks:max_mana", NMAGE_MANA_ID);
                 removeAttribute(p, "ars_nouveau:ars_nouveau.perk.max_mana", NMAGE_MANA_ID);
+                setCooldown((ServerPlayer) p, c, 800);
+                syncToClient((ServerPlayer) p, c);
+            }
+        }
+
+        if (c.equals("gunner") && data.getBoolean("lt_gunner_active")) {
+            long timeout = data.getLong("lt_gunner_timeout");
+            if (p.level().getGameTime() >= timeout) {
+                data.putBoolean("lt_gunner_active", false);
+                setCooldown((ServerPlayer) p, c, 600);
                 syncToClient((ServerPlayer) p, c);
             }
         }
