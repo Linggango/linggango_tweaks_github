@@ -1,0 +1,478 @@
+{
+  "mappings": {
+    "com/misanthropy/linggango/linggango_tweaks/mixin/performance/SpawnerRenderMixin": {
+      "render(Lnet/minecraft/world/level/block/entity/SpawnerBlockEntity;FLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;II)V": "Lnet/minecraft/client/renderer/blockentity/SpawnerRenderer;m_6922_(Lnet/minecraft/world/level/block/entity/SpawnerBlockEntity;FLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;II)V",
+      "Lnet/minecraft/world/level/BaseSpawner;getOrCreateDisplayEntity(Lnet/minecraft/world/level/Level;Lnet/minecraft/util/RandomSource;Lnet/minecraft/core/BlockPos;)Lnet/minecraft/world/entity/Entity;": "Lnet/minecraft/world/level/BaseSpawner;m_253067_(Lnet/minecraft/world/level/Level;Lnet/minecraft/util/RandomSource;Lnet/minecraft/core/BlockPos;)Lnet/minecraft/world/entity/Entity;"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/foliage/LeavesPathfindingMixin": {
+      "getBlockPathType": "Lnet/minecraft/world/level/pathfinder/WalkNodeEvaluator;m_7209_(Lnet/minecraft/world/level/BlockGetter;IIILnet/minecraft/world/entity/Mob;)Lnet/minecraft/world/level/pathfinder/BlockPathTypes;",
+      "getBlockPathTypeStatic": "Lnet/minecraft/world/level/pathfinder/WalkNodeEvaluator;m_77604_(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/core/BlockPos$MutableBlockPos;)Lnet/minecraft/world/level/pathfinder/BlockPathTypes;"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/GameRendererMixin": {
+      "render": "Lnet/minecraft/client/renderer/GameRenderer;m_109093_(FJZ)V",
+      "getFov": "Lnet/minecraft/client/renderer/GameRenderer;m_109141_(Lnet/minecraft/client/Camera;FZ)D"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/ChestLootThinningMixin": {
+      "unpackLootTable": "Lnet/minecraft/world/level/block/entity/RandomizableContainerBlockEntity;m_59640_(Lnet/minecraft/world/entity/player/Player;)V"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/SlotMixin": {
+      "setByPlayer": "Lnet/minecraft/world/inventory/Slot;m_269060_(Lnet/minecraft/world/item/ItemStack;)V",
+      "mayPlace": "Lnet/minecraft/world/inventory/Slot;m_5857_(Lnet/minecraft/world/item/ItemStack;)Z",
+      "set": "Lnet/minecraft/world/inventory/Slot;m_5852_(Lnet/minecraft/world/item/ItemStack;)V",
+      "getItem": "Lnet/minecraft/world/inventory/Slot;m_7993_()Lnet/minecraft/world/item/ItemStack;",
+      "onTake": "Lnet/minecraft/world/inventory/Slot;m_142406_(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/item/ItemStack;)V",
+      "onQuickCraft": "Lnet/minecraft/world/inventory/Slot;m_40234_(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/ItemStack;)V"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/SmoothGuiMixins$SmoothSlotHighlightMixin": {
+      "render": "Lnet/minecraft/client/gui/screens/inventory/AbstractContainerScreen;m_88315_(Lnet/minecraft/client/gui/GuiGraphics;IIF)V",
+      "isHovering(Lnet/minecraft/world/inventory/Slot;DD)Z": "Lnet/minecraft/client/gui/screens/inventory/AbstractContainerScreen;m_97774_(Lnet/minecraft/world/inventory/Slot;DD)Z"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/ResourcePackCompatWarningRemoverMixin": {
+      "isCompatible": "Lnet/minecraft/server/packs/repository/PackCompatibility;m_10489_()Z"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/HurtTiltMixin": {
+      "handleEntityEvent": "Lnet/minecraft/world/entity/LivingEntity;m_7822_(B)V"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/ItemStackMixin": {
+      "split": "Lnet/minecraft/world/item/ItemStack;m_41620_(I)Lnet/minecraft/world/item/ItemStack;",
+      "copy": "Lnet/minecraft/world/item/ItemStack;m_41777_()Lnet/minecraft/world/item/ItemStack;",
+      "isSameItemSameTags": "Lnet/minecraft/world/item/ItemStack;m_150942_(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/ItemStack;)Z",
+      "getCount": "Lnet/minecraft/world/item/ItemStack;m_41613_()I",
+      "isSameItem": "Lnet/minecraft/world/item/ItemStack;m_41656_(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/ItemStack;)Z",
+      "setCount": "Lnet/minecraft/world/item/ItemStack;m_41764_(I)V"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/EnchantmentHelperMixin": {
+      "getEnchantmentCost": "Lnet/minecraft/world/item/enchantment/EnchantmentHelper;m_220287_(Lnet/minecraft/util/RandomSource;IILnet/minecraft/world/item/ItemStack;)I"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/GameplayTweaksMixins$SweetBerryBushMixin": {
+      "entityInside": "Lnet/minecraft/world/level/block/SweetBerryBushBlock;m_7892_(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/entity/Entity;)V"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/FirstPersonPotionParticleMixin": {
+      "tickEffects": "Lnet/minecraft/world/entity/LivingEntity;m_21217_()V"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/TagParserMixin": {
+      "readListTag": "Lnet/minecraft/nbt/TagParser;m_129374_()Lnet/minecraft/nbt/Tag;",
+      "readStruct": "Lnet/minecraft/nbt/TagParser;m_129373_()Lnet/minecraft/nbt/CompoundTag;",
+      "Lnet/minecraft/nbt/TagParser;expect(C)V": "Lnet/minecraft/nbt/TagParser;m_129352_(C)V"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/SockOptHelperMixin": {
+      "init": "Lnet/minecraft/client/gui/screens/DisconnectedScreen;m_7856_()V"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/GameplayTweaksMixins$CreeperExplosionMixin": {
+      "Lnet/minecraft/world/level/Level;explode(Lnet/minecraft/world/entity/Entity;DDDFLnet/minecraft/world/level/Level$ExplosionInteraction;)Lnet/minecraft/world/level/Explosion;": "Lnet/minecraft/world/level/Level;m_254849_(Lnet/minecraft/world/entity/Entity;DDDFLnet/minecraft/world/level/Level$ExplosionInteraction;)Lnet/minecraft/world/level/Explosion;",
+      "explodeCreeper": "Lnet/minecraft/world/entity/monster/Creeper;m_32315_()V"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/ResistanceNerfMixin": {
+      "getDamageAfterMagicAbsorb": "Lnet/minecraft/world/entity/LivingEntity;m_6515_(Lnet/minecraft/world/damagesource/DamageSource;F)F"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/SmoothGuiMixins$SmoothScreenTransitionMixin": {
+      "init()V": "Lnet/minecraft/client/gui/screens/Screen;m_7856_()V",
+      "render": "Lnet/minecraft/client/gui/screens/Screen;m_88315_(Lnet/minecraft/client/gui/GuiGraphics;IIF)V"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/performance/WorldOpenFlowsBypassMixin": {
+      "confirmWorldCreation": "Lnet/minecraft/client/gui/screens/worldselection/WorldOpenFlows;m_269260_(Lnet/minecraft/client/Minecraft;Lnet/minecraft/client/gui/screens/worldselection/CreateWorldScreen;Lcom/mojang/serialization/Lifecycle;Ljava/lang/Runnable;Z)V",
+      "Lnet/minecraft/client/Minecraft;setScreen(Lnet/minecraft/client/gui/screens/Screen;)V": "Lnet/minecraft/client/Minecraft;m_91152_(Lnet/minecraft/client/gui/screens/Screen;)V",
+      "loadLevel": "Lnet/minecraft/client/gui/screens/worldselection/WorldOpenFlows;m_233133_(Lnet/minecraft/client/gui/screens/Screen;Ljava/lang/String;)V"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/MaxHealthPlayerListMixin": {
+      "respawn": "Lnet/minecraft/server/players/PlayerList;m_11236_(Lnet/minecraft/server/level/ServerPlayer;Z)Lnet/minecraft/server/level/ServerPlayer;",
+      "Lnet/minecraft/server/level/ServerPlayer;setHealth(F)V": "Lnet/minecraft/server/level/ServerPlayer;m_21153_(F)V"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/performance/StructureOptimizationAttempt": {
+      "get": "Lnet/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplateManager;m_230407_(Lnet/minecraft/resources/ResourceLocation;)Ljava/util/Optional;",
+      "onResourceManagerReload": "Lnet/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplateManager;m_230370_(Lnet/minecraft/server/packs/resources/ResourceManager;)V"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/SensingMixin": {
+      "tick": "Lnet/minecraft/world/entity/ai/sensing/Sensing;m_26789_()V"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/foliage/LeavesInteractionMixin": {
+      "entityInside": "Lnet/minecraft/world/level/block/state/BlockBehaviour$BlockStateBase;m_60682_(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/entity/Entity;)V"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/foliage/LeavesCollisionMixin": {
+      "isSuffocating": "Lnet/minecraft/world/level/block/state/BlockBehaviour$BlockStateBase;m_60828_(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/core/BlockPos;)Z",
+      "getCollisionShape(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/phys/shapes/CollisionContext;)Lnet/minecraft/world/phys/shapes/VoxelShape;": "Lnet/minecraft/world/level/block/state/BlockBehaviour$BlockStateBase;m_60742_(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/phys/shapes/CollisionContext;)Lnet/minecraft/world/phys/shapes/VoxelShape;"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/InstantShieldMixin": {
+      "isBlocking": "Lnet/minecraft/world/entity/LivingEntity;m_21254_()Z"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/AnvilMenuMixin": {
+      "createResult": "Lnet/minecraft/world/inventory/AnvilMenu;m_6640_()V"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/SmoothGuiMixins$AnimatedButtonMixin": {
+      "render": "Lnet/minecraft/client/gui/components/AbstractWidget;m_88315_(Lnet/minecraft/client/gui/GuiGraphics;IIF)V"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/GameplayTweaksMixins$AnvilMenuMixin": {
+      "createResult": "Lnet/minecraft/world/inventory/AnvilMenu;m_6640_()V"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/structure/StructureSpreadRegistryMixin": {
+      "loadRegistryContents": "Lnet/minecraft/resources/RegistryDataLoader;m_255048_(Lnet/minecraft/resources/RegistryOps$RegistryInfoLookup;Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/resources/ResourceKey;Lnet/minecraft/core/WritableRegistry;Lcom/mojang/serialization/Decoder;Ljava/util/Map;)V"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/PlayerModelMixin": {
+      "setupAnim(Lnet/minecraft/world/entity/LivingEntity;FFFFF)V": "Lnet/minecraft/client/model/PlayerModel;m_6973_(Lnet/minecraft/world/entity/LivingEntity;FFFFF)V"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/TerramityHarvestMixin": {
+      "destroyBlock": "Lnet/minecraft/server/level/ServerPlayerGameMode;m_9280_(Lnet/minecraft/core/BlockPos;)Z"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/GameplayTweaksMixins$SoulSpeedMixin": {
+      "tryAddSoulSpeed": "Lnet/minecraft/world/entity/LivingEntity;m_21186_()V",
+      "Lnet/minecraft/world/item/ItemStack;hurtAndBreak(ILnet/minecraft/world/entity/LivingEntity;Ljava/util/function/Consumer;)V": "Lnet/minecraft/world/item/ItemStack;m_41622_(ILnet/minecraft/world/entity/LivingEntity;Ljava/util/function/Consumer;)V"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/BoatPlacementSoundMixin": {
+      "Lnet/minecraft/world/level/Level;addFreshEntity(Lnet/minecraft/world/entity/Entity;)Z": "Lnet/minecraft/world/level/Level;m_7967_(Lnet/minecraft/world/entity/Entity;)Z",
+      "use": "Lnet/minecraft/world/item/BoatItem;m_7203_(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/InteractionHand;)Lnet/minecraft/world/InteractionResultHolder;"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/chunk/FasterChunkLoadingMixin": {
+      "pollTask": "Lnet/minecraft/server/level/ChunkTaskPriorityQueueSorter;m_140645_(Lnet/minecraft/server/level/ChunkTaskPriorityQueue;Lnet/minecraft/util/thread/ProcessorHandle;)V"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/FarmlandTrampleMixin": {
+      "fallOn": "Lnet/minecraft/world/level/block/FarmBlock;m_142072_(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/entity/Entity;F)V"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/StructureDisableMixin": {
+      "generate": "Lnet/minecraft/world/level/levelgen/structure/Structure;m_226596_(Lnet/minecraft/core/RegistryAccess;Lnet/minecraft/world/level/chunk/ChunkGenerator;Lnet/minecraft/world/level/biome/BiomeSource;Lnet/minecraft/world/level/levelgen/RandomState;Lnet/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplateManager;JLnet/minecraft/world/level/ChunkPos;ILnet/minecraft/world/level/LevelHeightAccessor;Ljava/util/function/Predicate;)Lnet/minecraft/world/level/levelgen/structure/StructureStart;"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/SmoothGuiMixins$SmoothCreativeScrollMixin": {
+      "mouseScrolled": "Lnet/minecraft/client/gui/screens/inventory/CreativeModeInventoryScreen;m_6050_(DDD)Z",
+      "renderBg": "Lnet/minecraft/client/gui/screens/inventory/CreativeModeInventoryScreen;m_7286_(Lnet/minecraft/client/gui/GuiGraphics;FII)V",
+      "render": "Lnet/minecraft/client/gui/screens/inventory/CreativeModeInventoryScreen;m_88315_(Lnet/minecraft/client/gui/GuiGraphics;IIF)V",
+      "Lnet/minecraft/client/gui/screens/inventory/CreativeModeInventoryScreen;renderTooltip(Lnet/minecraft/client/gui/GuiGraphics;II)V": "Lnet/minecraft/client/gui/screens/inventory/CreativeModeInventoryScreen;m_280072_(Lnet/minecraft/client/gui/GuiGraphics;II)V"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/GameplayTweaksMixins$ThornsMixin": {
+      "doPostHurt": "Lnet/minecraft/world/item/enchantment/ThornsEnchantment;m_7675_(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/entity/Entity;I)V",
+      "Lnet/minecraft/world/item/ItemStack;hurtAndBreak(ILnet/minecraft/world/entity/LivingEntity;Ljava/util/function/Consumer;)V": "Lnet/minecraft/world/item/ItemStack;m_41622_(ILnet/minecraft/world/entity/LivingEntity;Ljava/util/function/Consumer;)V"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/GameplayTweaksMixins$AnvilScreenMixin": {
+      "renderLabels": "Lnet/minecraft/client/gui/screens/inventory/AnvilScreen;m_280003_(Lnet/minecraft/client/gui/GuiGraphics;II)V"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/OffhandTickMixin": {
+      "tick": "Lnet/minecraft/world/entity/LivingEntity;m_8119_()V"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/SpawnChangesMixin": {
+      "isSpawnPositionOk": "Lnet/minecraft/world/level/NaturalSpawner;m_47051_(Lnet/minecraft/world/entity/SpawnPlacements$Type;Lnet/minecraft/world/level/LevelReader;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/entity/EntityType;)Z"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/LetMeEatMixin": {
+      "canEat": "Lnet/minecraft/world/entity/player/Player;m_36391_(Z)Z"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/UnknownCommandMixin": {
+      "getParseException": "Lnet/minecraft/commands/Commands;m_82097_(Lcom/mojang/brigadier/ParseResults;)Lcom/mojang/brigadier/exceptions/CommandSyntaxException;"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/foliage/LeavesCollisionMixin$CacheMixin": {
+      "net.minecraft.world.level.block.state.BlockBehaviour$BlockStateBase$Cache": "net/minecraft/world/level/block/state/BlockBehaviour$BlockStateBase$Cache"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/MobLeashMixin": {
+      "canBeLeashed": "Lnet/minecraft/world/entity/Mob;m_6573_(Lnet/minecraft/world/entity/player/Player;)Z"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/VillagerDeathSoundMixin": {
+      "serverTick": "Lnet/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity;m_155013_(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity;)V"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/armageddon/MixinFollowFlockLeaderGoal": {
+      "canUse": "Lnet/minecraft/world/entity/ai/goal/FollowFlockLeaderGoal;m_8036_()Z"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/TemptDelayMixin": {
+      "canUse": "Lnet/minecraft/world/entity/ai/goal/TemptGoal;m_8036_()Z"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/celestisynth/TurretAccuracyMixin": {
+      "Lorg/thecelestialworkshop/celestisynth/common/entity/projectile/RainfallArrow;shoot(DDDFF)V": "Lorg/thecelestialworkshop/celestisynth/common/entity/projectile/RainfallArrow;m_6686_(DDDFF)V"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/UndergroundBeaconMixin": {
+      "Lnet/minecraft/world/level/Level;getHeight(Lnet/minecraft/world/level/levelgen/Heightmap$Types;II)I": "Lnet/minecraft/world/level/Level;m_6924_(Lnet/minecraft/world/level/levelgen/Heightmap$Types;II)I",
+      "Lnet/minecraft/world/level/block/state/BlockState;getLightBlock(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/core/BlockPos;)I": "Lnet/minecraft/world/level/block/state/BlockState;m_60739_(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/core/BlockPos;)I",
+      "tick": "Lnet/minecraft/world/level/block/entity/BeaconBlockEntity;m_155107_(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/level/block/entity/BeaconBlockEntity;)V"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/SmoothGuiMixins$AnimatedCreativeTabsMixin": {
+      "selectTab": "Lnet/minecraft/client/gui/screens/inventory/CreativeModeInventoryScreen;m_98560_(Lnet/minecraft/world/item/CreativeModeTab;)V",
+      "renderTabButton": "Lnet/minecraft/client/gui/screens/inventory/CreativeModeInventoryScreen;m_280560_(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/world/item/CreativeModeTab;)V",
+      "render": "Lnet/minecraft/client/gui/screens/inventory/CreativeModeInventoryScreen;m_88315_(Lnet/minecraft/client/gui/GuiGraphics;IIF)V",
+      "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V": "Lnet/minecraft/client/gui/GuiGraphics;m_280218_(Lnet/minecraft/resources/ResourceLocation;IIIIII)V"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/SpawnerParticleMixin": {
+      "Lnet/minecraft/world/level/Level;addParticle(Lnet/minecraft/core/particles/ParticleOptions;DDDDDD)V": "Lnet/minecraft/world/level/Level;m_7106_(Lnet/minecraft/core/particles/ParticleOptions;DDDDDD)V",
+      "clientTick": "Lnet/minecraft/world/level/BaseSpawner;m_151319_(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;)V"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/SmoothGuiMixins$SafeScissorMixin": {
+      "render": "Lnet/minecraft/client/gui/screens/inventory/AbstractContainerScreen;m_88315_(Lnet/minecraft/client/gui/GuiGraphics;IIF)V",
+      "renderSlot": "Lnet/minecraft/client/gui/screens/inventory/AbstractContainerScreen;m_280092_(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/world/inventory/Slot;)V"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/performance/ClientCollisionOptimizationMixin": {
+      "isPushable": "Lnet/minecraft/world/entity/LivingEntity;m_6094_()Z",
+      "pushEntities": "Lnet/minecraft/world/entity/LivingEntity;m_6138_()V"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/BedMonsterBypassMixin": {
+      "startSleepInBed": "Lnet/minecraft/server/level/ServerPlayer;m_7720_(Lnet/minecraft/core/BlockPos;)Lcom/mojang/datafixers/util/Either;",
+      "Lnet/minecraft/world/level/Level;getEntitiesOfClass(Ljava/lang/Class;Lnet/minecraft/world/phys/AABB;Ljava/util/function/Predicate;)Ljava/util/List;": "Lnet/minecraft/world/level/Level;m_6443_(Ljava/lang/Class;Lnet/minecraft/world/phys/AABB;Ljava/util/function/Predicate;)Ljava/util/List;"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/LocateFixForSpreadStructuresMixin": {
+      "dist": "Lnet/minecraft/server/commands/LocateCommand;m_137853_(IIII)F"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/GameplayTweaksMixins$FireBlockMixin": {
+      "getBurnOdds(Lnet/minecraft/world/level/block/state/BlockState;)I": "Lnet/minecraft/world/level/block/FireBlock;m_221164_(Lnet/minecraft/world/level/block/state/BlockState;)I",
+      "getIgniteOdds(Lnet/minecraft/world/level/block/state/BlockState;)I": "Lnet/minecraft/world/level/block/FireBlock;m_221166_(Lnet/minecraft/world/level/block/state/BlockState;)I"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/MaxHealthLivingEntityMixin": {
+      "tick": "Lnet/minecraft/world/entity/LivingEntity;m_8119_()V",
+      "readAdditionalSaveData": "Lnet/minecraft/world/entity/LivingEntity;m_7378_(Lnet/minecraft/nbt/CompoundTag;)V"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/RenderDistanceCullingMixin$EntityCullMixin": {
+      "Lnet/minecraft/world/entity/Entity;shouldRenderAtSqrDistance(D)Z": "Lnet/minecraft/world/entity/Entity;m_6783_(D)Z",
+      "shouldRender": "Lnet/minecraft/world/entity/Entity;m_6000_(DDD)Z"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/SwordItemMixin": {
+      "getUseAnimation": "Lnet/minecraft/world/item/Item;m_6164_(Lnet/minecraft/world/item/ItemStack;)Lnet/minecraft/world/item/UseAnim;",
+      "use": "Lnet/minecraft/world/item/Item;m_7203_(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/InteractionHand;)Lnet/minecraft/world/InteractionResultHolder;",
+      "getUseDuration": "Lnet/minecraft/world/item/Item;m_8105_(Lnet/minecraft/world/item/ItemStack;)I"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/OptionsMixin": {
+      "load": "Lnet/minecraft/client/Options;m_92140_()V",
+      "save": "Lnet/minecraft/client/Options;m_92169_()V"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/StructureEnabler": {
+      "generate": "Lnet/minecraft/world/level/levelgen/structure/Structure;m_226596_(Lnet/minecraft/core/RegistryAccess;Lnet/minecraft/world/level/chunk/ChunkGenerator;Lnet/minecraft/world/level/biome/BiomeSource;Lnet/minecraft/world/level/levelgen/RandomState;Lnet/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplateManager;JLnet/minecraft/world/level/ChunkPos;ILnet/minecraft/world/level/LevelHeightAccessor;Ljava/util/function/Predicate;)Lnet/minecraft/world/level/levelgen/structure/StructureStart;"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/projectile/ProjectileTweaks": {
+      "Lnet/minecraft/world/entity/Entity;hurt(Lnet/minecraft/world/damagesource/DamageSource;F)Z": "Lnet/minecraft/world/entity/Entity;m_6469_(Lnet/minecraft/world/damagesource/DamageSource;F)Z",
+      "onHitEntity": "Lnet/minecraft/world/entity/projectile/AbstractArrow;m_5790_(Lnet/minecraft/world/phys/EntityHitResult;)V"
+    },
+    "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/StartupSoundMixin": {
+      "init": "Lnet/minecraft/client/gui/screens/TitleScreen;m_7856_()V",
+      "tick": "Lnet/minecraft/client/gui/screens/TitleScreen;m_86600_()V"
+    }
+  },
+  "data": {
+    "searge": {
+      "com/misanthropy/linggango/linggango_tweaks/mixin/performance/SpawnerRenderMixin": {
+        "render(Lnet/minecraft/world/level/block/entity/SpawnerBlockEntity;FLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;II)V": "Lnet/minecraft/client/renderer/blockentity/SpawnerRenderer;m_6922_(Lnet/minecraft/world/level/block/entity/SpawnerBlockEntity;FLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;II)V",
+        "Lnet/minecraft/world/level/BaseSpawner;getOrCreateDisplayEntity(Lnet/minecraft/world/level/Level;Lnet/minecraft/util/RandomSource;Lnet/minecraft/core/BlockPos;)Lnet/minecraft/world/entity/Entity;": "Lnet/minecraft/world/level/BaseSpawner;m_253067_(Lnet/minecraft/world/level/Level;Lnet/minecraft/util/RandomSource;Lnet/minecraft/core/BlockPos;)Lnet/minecraft/world/entity/Entity;"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/foliage/LeavesPathfindingMixin": {
+        "getBlockPathType": "Lnet/minecraft/world/level/pathfinder/WalkNodeEvaluator;m_7209_(Lnet/minecraft/world/level/BlockGetter;IIILnet/minecraft/world/entity/Mob;)Lnet/minecraft/world/level/pathfinder/BlockPathTypes;",
+        "getBlockPathTypeStatic": "Lnet/minecraft/world/level/pathfinder/WalkNodeEvaluator;m_77604_(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/core/BlockPos$MutableBlockPos;)Lnet/minecraft/world/level/pathfinder/BlockPathTypes;"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/GameRendererMixin": {
+        "render": "Lnet/minecraft/client/renderer/GameRenderer;m_109093_(FJZ)V",
+        "getFov": "Lnet/minecraft/client/renderer/GameRenderer;m_109141_(Lnet/minecraft/client/Camera;FZ)D"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/ChestLootThinningMixin": {
+        "unpackLootTable": "Lnet/minecraft/world/level/block/entity/RandomizableContainerBlockEntity;m_59640_(Lnet/minecraft/world/entity/player/Player;)V"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/SlotMixin": {
+        "setByPlayer": "Lnet/minecraft/world/inventory/Slot;m_269060_(Lnet/minecraft/world/item/ItemStack;)V",
+        "mayPlace": "Lnet/minecraft/world/inventory/Slot;m_5857_(Lnet/minecraft/world/item/ItemStack;)Z",
+        "set": "Lnet/minecraft/world/inventory/Slot;m_5852_(Lnet/minecraft/world/item/ItemStack;)V",
+        "getItem": "Lnet/minecraft/world/inventory/Slot;m_7993_()Lnet/minecraft/world/item/ItemStack;",
+        "onTake": "Lnet/minecraft/world/inventory/Slot;m_142406_(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/item/ItemStack;)V",
+        "onQuickCraft": "Lnet/minecraft/world/inventory/Slot;m_40234_(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/ItemStack;)V"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/SmoothGuiMixins$SmoothSlotHighlightMixin": {
+        "render": "Lnet/minecraft/client/gui/screens/inventory/AbstractContainerScreen;m_88315_(Lnet/minecraft/client/gui/GuiGraphics;IIF)V",
+        "isHovering(Lnet/minecraft/world/inventory/Slot;DD)Z": "Lnet/minecraft/client/gui/screens/inventory/AbstractContainerScreen;m_97774_(Lnet/minecraft/world/inventory/Slot;DD)Z"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/ResourcePackCompatWarningRemoverMixin": {
+        "isCompatible": "Lnet/minecraft/server/packs/repository/PackCompatibility;m_10489_()Z"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/HurtTiltMixin": {
+        "handleEntityEvent": "Lnet/minecraft/world/entity/LivingEntity;m_7822_(B)V"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/ItemStackMixin": {
+        "split": "Lnet/minecraft/world/item/ItemStack;m_41620_(I)Lnet/minecraft/world/item/ItemStack;",
+        "copy": "Lnet/minecraft/world/item/ItemStack;m_41777_()Lnet/minecraft/world/item/ItemStack;",
+        "isSameItemSameTags": "Lnet/minecraft/world/item/ItemStack;m_150942_(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/ItemStack;)Z",
+        "getCount": "Lnet/minecraft/world/item/ItemStack;m_41613_()I",
+        "isSameItem": "Lnet/minecraft/world/item/ItemStack;m_41656_(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/ItemStack;)Z",
+        "setCount": "Lnet/minecraft/world/item/ItemStack;m_41764_(I)V"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/EnchantmentHelperMixin": {
+        "getEnchantmentCost": "Lnet/minecraft/world/item/enchantment/EnchantmentHelper;m_220287_(Lnet/minecraft/util/RandomSource;IILnet/minecraft/world/item/ItemStack;)I"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/GameplayTweaksMixins$SweetBerryBushMixin": {
+        "entityInside": "Lnet/minecraft/world/level/block/SweetBerryBushBlock;m_7892_(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/entity/Entity;)V"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/FirstPersonPotionParticleMixin": {
+        "tickEffects": "Lnet/minecraft/world/entity/LivingEntity;m_21217_()V"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/TagParserMixin": {
+        "readListTag": "Lnet/minecraft/nbt/TagParser;m_129374_()Lnet/minecraft/nbt/Tag;",
+        "readStruct": "Lnet/minecraft/nbt/TagParser;m_129373_()Lnet/minecraft/nbt/CompoundTag;",
+        "Lnet/minecraft/nbt/TagParser;expect(C)V": "Lnet/minecraft/nbt/TagParser;m_129352_(C)V"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/SockOptHelperMixin": {
+        "init": "Lnet/minecraft/client/gui/screens/DisconnectedScreen;m_7856_()V"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/GameplayTweaksMixins$CreeperExplosionMixin": {
+        "Lnet/minecraft/world/level/Level;explode(Lnet/minecraft/world/entity/Entity;DDDFLnet/minecraft/world/level/Level$ExplosionInteraction;)Lnet/minecraft/world/level/Explosion;": "Lnet/minecraft/world/level/Level;m_254849_(Lnet/minecraft/world/entity/Entity;DDDFLnet/minecraft/world/level/Level$ExplosionInteraction;)Lnet/minecraft/world/level/Explosion;",
+        "explodeCreeper": "Lnet/minecraft/world/entity/monster/Creeper;m_32315_()V"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/ResistanceNerfMixin": {
+        "getDamageAfterMagicAbsorb": "Lnet/minecraft/world/entity/LivingEntity;m_6515_(Lnet/minecraft/world/damagesource/DamageSource;F)F"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/SmoothGuiMixins$SmoothScreenTransitionMixin": {
+        "init()V": "Lnet/minecraft/client/gui/screens/Screen;m_7856_()V",
+        "render": "Lnet/minecraft/client/gui/screens/Screen;m_88315_(Lnet/minecraft/client/gui/GuiGraphics;IIF)V"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/performance/WorldOpenFlowsBypassMixin": {
+        "confirmWorldCreation": "Lnet/minecraft/client/gui/screens/worldselection/WorldOpenFlows;m_269260_(Lnet/minecraft/client/Minecraft;Lnet/minecraft/client/gui/screens/worldselection/CreateWorldScreen;Lcom/mojang/serialization/Lifecycle;Ljava/lang/Runnable;Z)V",
+        "Lnet/minecraft/client/Minecraft;setScreen(Lnet/minecraft/client/gui/screens/Screen;)V": "Lnet/minecraft/client/Minecraft;m_91152_(Lnet/minecraft/client/gui/screens/Screen;)V",
+        "loadLevel": "Lnet/minecraft/client/gui/screens/worldselection/WorldOpenFlows;m_233133_(Lnet/minecraft/client/gui/screens/Screen;Ljava/lang/String;)V"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/MaxHealthPlayerListMixin": {
+        "respawn": "Lnet/minecraft/server/players/PlayerList;m_11236_(Lnet/minecraft/server/level/ServerPlayer;Z)Lnet/minecraft/server/level/ServerPlayer;",
+        "Lnet/minecraft/server/level/ServerPlayer;setHealth(F)V": "Lnet/minecraft/server/level/ServerPlayer;m_21153_(F)V"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/performance/StructureOptimizationAttempt": {
+        "get": "Lnet/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplateManager;m_230407_(Lnet/minecraft/resources/ResourceLocation;)Ljava/util/Optional;",
+        "onResourceManagerReload": "Lnet/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplateManager;m_230370_(Lnet/minecraft/server/packs/resources/ResourceManager;)V"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/SensingMixin": {
+        "tick": "Lnet/minecraft/world/entity/ai/sensing/Sensing;m_26789_()V"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/foliage/LeavesInteractionMixin": {
+        "entityInside": "Lnet/minecraft/world/level/block/state/BlockBehaviour$BlockStateBase;m_60682_(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/entity/Entity;)V"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/foliage/LeavesCollisionMixin": {
+        "isSuffocating": "Lnet/minecraft/world/level/block/state/BlockBehaviour$BlockStateBase;m_60828_(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/core/BlockPos;)Z",
+        "getCollisionShape(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/phys/shapes/CollisionContext;)Lnet/minecraft/world/phys/shapes/VoxelShape;": "Lnet/minecraft/world/level/block/state/BlockBehaviour$BlockStateBase;m_60742_(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/phys/shapes/CollisionContext;)Lnet/minecraft/world/phys/shapes/VoxelShape;"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/InstantShieldMixin": {
+        "isBlocking": "Lnet/minecraft/world/entity/LivingEntity;m_21254_()Z"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/AnvilMenuMixin": {
+        "createResult": "Lnet/minecraft/world/inventory/AnvilMenu;m_6640_()V"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/SmoothGuiMixins$AnimatedButtonMixin": {
+        "render": "Lnet/minecraft/client/gui/components/AbstractWidget;m_88315_(Lnet/minecraft/client/gui/GuiGraphics;IIF)V"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/GameplayTweaksMixins$AnvilMenuMixin": {
+        "createResult": "Lnet/minecraft/world/inventory/AnvilMenu;m_6640_()V"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/structure/StructureSpreadRegistryMixin": {
+        "loadRegistryContents": "Lnet/minecraft/resources/RegistryDataLoader;m_255048_(Lnet/minecraft/resources/RegistryOps$RegistryInfoLookup;Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/resources/ResourceKey;Lnet/minecraft/core/WritableRegistry;Lcom/mojang/serialization/Decoder;Ljava/util/Map;)V"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/PlayerModelMixin": {
+        "setupAnim(Lnet/minecraft/world/entity/LivingEntity;FFFFF)V": "Lnet/minecraft/client/model/PlayerModel;m_6973_(Lnet/minecraft/world/entity/LivingEntity;FFFFF)V"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/TerramityHarvestMixin": {
+        "destroyBlock": "Lnet/minecraft/server/level/ServerPlayerGameMode;m_9280_(Lnet/minecraft/core/BlockPos;)Z"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/GameplayTweaksMixins$SoulSpeedMixin": {
+        "tryAddSoulSpeed": "Lnet/minecraft/world/entity/LivingEntity;m_21186_()V",
+        "Lnet/minecraft/world/item/ItemStack;hurtAndBreak(ILnet/minecraft/world/entity/LivingEntity;Ljava/util/function/Consumer;)V": "Lnet/minecraft/world/item/ItemStack;m_41622_(ILnet/minecraft/world/entity/LivingEntity;Ljava/util/function/Consumer;)V"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/BoatPlacementSoundMixin": {
+        "Lnet/minecraft/world/level/Level;addFreshEntity(Lnet/minecraft/world/entity/Entity;)Z": "Lnet/minecraft/world/level/Level;m_7967_(Lnet/minecraft/world/entity/Entity;)Z",
+        "use": "Lnet/minecraft/world/item/BoatItem;m_7203_(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/InteractionHand;)Lnet/minecraft/world/InteractionResultHolder;"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/chunk/FasterChunkLoadingMixin": {
+        "pollTask": "Lnet/minecraft/server/level/ChunkTaskPriorityQueueSorter;m_140645_(Lnet/minecraft/server/level/ChunkTaskPriorityQueue;Lnet/minecraft/util/thread/ProcessorHandle;)V"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/FarmlandTrampleMixin": {
+        "fallOn": "Lnet/minecraft/world/level/block/FarmBlock;m_142072_(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/entity/Entity;F)V"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/StructureDisableMixin": {
+        "generate": "Lnet/minecraft/world/level/levelgen/structure/Structure;m_226596_(Lnet/minecraft/core/RegistryAccess;Lnet/minecraft/world/level/chunk/ChunkGenerator;Lnet/minecraft/world/level/biome/BiomeSource;Lnet/minecraft/world/level/levelgen/RandomState;Lnet/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplateManager;JLnet/minecraft/world/level/ChunkPos;ILnet/minecraft/world/level/LevelHeightAccessor;Ljava/util/function/Predicate;)Lnet/minecraft/world/level/levelgen/structure/StructureStart;"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/SmoothGuiMixins$SmoothCreativeScrollMixin": {
+        "mouseScrolled": "Lnet/minecraft/client/gui/screens/inventory/CreativeModeInventoryScreen;m_6050_(DDD)Z",
+        "renderBg": "Lnet/minecraft/client/gui/screens/inventory/CreativeModeInventoryScreen;m_7286_(Lnet/minecraft/client/gui/GuiGraphics;FII)V",
+        "render": "Lnet/minecraft/client/gui/screens/inventory/CreativeModeInventoryScreen;m_88315_(Lnet/minecraft/client/gui/GuiGraphics;IIF)V",
+        "Lnet/minecraft/client/gui/screens/inventory/CreativeModeInventoryScreen;renderTooltip(Lnet/minecraft/client/gui/GuiGraphics;II)V": "Lnet/minecraft/client/gui/screens/inventory/CreativeModeInventoryScreen;m_280072_(Lnet/minecraft/client/gui/GuiGraphics;II)V"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/GameplayTweaksMixins$ThornsMixin": {
+        "doPostHurt": "Lnet/minecraft/world/item/enchantment/ThornsEnchantment;m_7675_(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/entity/Entity;I)V",
+        "Lnet/minecraft/world/item/ItemStack;hurtAndBreak(ILnet/minecraft/world/entity/LivingEntity;Ljava/util/function/Consumer;)V": "Lnet/minecraft/world/item/ItemStack;m_41622_(ILnet/minecraft/world/entity/LivingEntity;Ljava/util/function/Consumer;)V"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/GameplayTweaksMixins$AnvilScreenMixin": {
+        "renderLabels": "Lnet/minecraft/client/gui/screens/inventory/AnvilScreen;m_280003_(Lnet/minecraft/client/gui/GuiGraphics;II)V"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/OffhandTickMixin": {
+        "tick": "Lnet/minecraft/world/entity/LivingEntity;m_8119_()V"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/SpawnChangesMixin": {
+        "isSpawnPositionOk": "Lnet/minecraft/world/level/NaturalSpawner;m_47051_(Lnet/minecraft/world/entity/SpawnPlacements$Type;Lnet/minecraft/world/level/LevelReader;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/entity/EntityType;)Z"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/LetMeEatMixin": {
+        "canEat": "Lnet/minecraft/world/entity/player/Player;m_36391_(Z)Z"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/UnknownCommandMixin": {
+        "getParseException": "Lnet/minecraft/commands/Commands;m_82097_(Lcom/mojang/brigadier/ParseResults;)Lcom/mojang/brigadier/exceptions/CommandSyntaxException;"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/foliage/LeavesCollisionMixin$CacheMixin": {
+        "net.minecraft.world.level.block.state.BlockBehaviour$BlockStateBase$Cache": "net/minecraft/world/level/block/state/BlockBehaviour$BlockStateBase$Cache"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/MobLeashMixin": {
+        "canBeLeashed": "Lnet/minecraft/world/entity/Mob;m_6573_(Lnet/minecraft/world/entity/player/Player;)Z"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/VillagerDeathSoundMixin": {
+        "serverTick": "Lnet/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity;m_155013_(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity;)V"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/armageddon/MixinFollowFlockLeaderGoal": {
+        "canUse": "Lnet/minecraft/world/entity/ai/goal/FollowFlockLeaderGoal;m_8036_()Z"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/TemptDelayMixin": {
+        "canUse": "Lnet/minecraft/world/entity/ai/goal/TemptGoal;m_8036_()Z"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/celestisynth/TurretAccuracyMixin": {
+        "Lorg/thecelestialworkshop/celestisynth/common/entity/projectile/RainfallArrow;shoot(DDDFF)V": "Lorg/thecelestialworkshop/celestisynth/common/entity/projectile/RainfallArrow;m_6686_(DDDFF)V"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/UndergroundBeaconMixin": {
+        "Lnet/minecraft/world/level/Level;getHeight(Lnet/minecraft/world/level/levelgen/Heightmap$Types;II)I": "Lnet/minecraft/world/level/Level;m_6924_(Lnet/minecraft/world/level/levelgen/Heightmap$Types;II)I",
+        "Lnet/minecraft/world/level/block/state/BlockState;getLightBlock(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/core/BlockPos;)I": "Lnet/minecraft/world/level/block/state/BlockState;m_60739_(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/core/BlockPos;)I",
+        "tick": "Lnet/minecraft/world/level/block/entity/BeaconBlockEntity;m_155107_(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/level/block/entity/BeaconBlockEntity;)V"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/SmoothGuiMixins$AnimatedCreativeTabsMixin": {
+        "selectTab": "Lnet/minecraft/client/gui/screens/inventory/CreativeModeInventoryScreen;m_98560_(Lnet/minecraft/world/item/CreativeModeTab;)V",
+        "renderTabButton": "Lnet/minecraft/client/gui/screens/inventory/CreativeModeInventoryScreen;m_280560_(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/world/item/CreativeModeTab;)V",
+        "render": "Lnet/minecraft/client/gui/screens/inventory/CreativeModeInventoryScreen;m_88315_(Lnet/minecraft/client/gui/GuiGraphics;IIF)V",
+        "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V": "Lnet/minecraft/client/gui/GuiGraphics;m_280218_(Lnet/minecraft/resources/ResourceLocation;IIIIII)V"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/SpawnerParticleMixin": {
+        "Lnet/minecraft/world/level/Level;addParticle(Lnet/minecraft/core/particles/ParticleOptions;DDDDDD)V": "Lnet/minecraft/world/level/Level;m_7106_(Lnet/minecraft/core/particles/ParticleOptions;DDDDDD)V",
+        "clientTick": "Lnet/minecraft/world/level/BaseSpawner;m_151319_(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;)V"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/SmoothGuiMixins$SafeScissorMixin": {
+        "render": "Lnet/minecraft/client/gui/screens/inventory/AbstractContainerScreen;m_88315_(Lnet/minecraft/client/gui/GuiGraphics;IIF)V",
+        "renderSlot": "Lnet/minecraft/client/gui/screens/inventory/AbstractContainerScreen;m_280092_(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/world/inventory/Slot;)V"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/performance/ClientCollisionOptimizationMixin": {
+        "isPushable": "Lnet/minecraft/world/entity/LivingEntity;m_6094_()Z",
+        "pushEntities": "Lnet/minecraft/world/entity/LivingEntity;m_6138_()V"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/BedMonsterBypassMixin": {
+        "startSleepInBed": "Lnet/minecraft/server/level/ServerPlayer;m_7720_(Lnet/minecraft/core/BlockPos;)Lcom/mojang/datafixers/util/Either;",
+        "Lnet/minecraft/world/level/Level;getEntitiesOfClass(Ljava/lang/Class;Lnet/minecraft/world/phys/AABB;Ljava/util/function/Predicate;)Ljava/util/List;": "Lnet/minecraft/world/level/Level;m_6443_(Ljava/lang/Class;Lnet/minecraft/world/phys/AABB;Ljava/util/function/Predicate;)Ljava/util/List;"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/LocateFixForSpreadStructuresMixin": {
+        "dist": "Lnet/minecraft/server/commands/LocateCommand;m_137853_(IIII)F"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/GameplayTweaksMixins$FireBlockMixin": {
+        "getBurnOdds(Lnet/minecraft/world/level/block/state/BlockState;)I": "Lnet/minecraft/world/level/block/FireBlock;m_221164_(Lnet/minecraft/world/level/block/state/BlockState;)I",
+        "getIgniteOdds(Lnet/minecraft/world/level/block/state/BlockState;)I": "Lnet/minecraft/world/level/block/FireBlock;m_221166_(Lnet/minecraft/world/level/block/state/BlockState;)I"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/MaxHealthLivingEntityMixin": {
+        "tick": "Lnet/minecraft/world/entity/LivingEntity;m_8119_()V",
+        "readAdditionalSaveData": "Lnet/minecraft/world/entity/LivingEntity;m_7378_(Lnet/minecraft/nbt/CompoundTag;)V"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/RenderDistanceCullingMixin$EntityCullMixin": {
+        "Lnet/minecraft/world/entity/Entity;shouldRenderAtSqrDistance(D)Z": "Lnet/minecraft/world/entity/Entity;m_6783_(D)Z",
+        "shouldRender": "Lnet/minecraft/world/entity/Entity;m_6000_(DDD)Z"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/SwordItemMixin": {
+        "getUseAnimation": "Lnet/minecraft/world/item/Item;m_6164_(Lnet/minecraft/world/item/ItemStack;)Lnet/minecraft/world/item/UseAnim;",
+        "use": "Lnet/minecraft/world/item/Item;m_7203_(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/InteractionHand;)Lnet/minecraft/world/InteractionResultHolder;",
+        "getUseDuration": "Lnet/minecraft/world/item/Item;m_8105_(Lnet/minecraft/world/item/ItemStack;)I"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/OptionsMixin": {
+        "load": "Lnet/minecraft/client/Options;m_92140_()V",
+        "save": "Lnet/minecraft/client/Options;m_92169_()V"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/StructureEnabler": {
+        "generate": "Lnet/minecraft/world/level/levelgen/structure/Structure;m_226596_(Lnet/minecraft/core/RegistryAccess;Lnet/minecraft/world/level/chunk/ChunkGenerator;Lnet/minecraft/world/level/biome/BiomeSource;Lnet/minecraft/world/level/levelgen/RandomState;Lnet/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplateManager;JLnet/minecraft/world/level/ChunkPos;ILnet/minecraft/world/level/LevelHeightAccessor;Ljava/util/function/Predicate;)Lnet/minecraft/world/level/levelgen/structure/StructureStart;"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/projectile/ProjectileTweaks": {
+        "Lnet/minecraft/world/entity/Entity;hurt(Lnet/minecraft/world/damagesource/DamageSource;F)Z": "Lnet/minecraft/world/entity/Entity;m_6469_(Lnet/minecraft/world/damagesource/DamageSource;F)Z",
+        "onHitEntity": "Lnet/minecraft/world/entity/projectile/AbstractArrow;m_5790_(Lnet/minecraft/world/phys/EntityHitResult;)V"
+      },
+      "com/misanthropy/linggango/linggango_tweaks/mixin/tweaks/StartupSoundMixin": {
+        "init": "Lnet/minecraft/client/gui/screens/TitleScreen;m_7856_()V",
+        "tick": "Lnet/minecraft/client/gui/screens/TitleScreen;m_86600_()V"
+      }
+    }
+  }
+}

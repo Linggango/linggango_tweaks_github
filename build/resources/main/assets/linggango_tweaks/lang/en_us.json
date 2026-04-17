@@ -1,0 +1,43 @@
+{
+  "enchantment.linggango_tweaks.extra_protection": "Extra Protection",
+  "enchantment.linggango_tweaks.extra_protection.desc": "Reduces a small amount of the damage from most sources.",
+
+  "enchantment.linggango_tweaks.extra_blast_protection": "Extra Blast Protection",
+  "enchantment.linggango_tweaks.extra_blast_protection.desc": "Reduces a small amount of explosion damage.",
+
+  "enchantment.linggango_tweaks.extra_fire_protection": "Extra Fire Protection",
+  "enchantment.linggango_tweaks.extra_fire_protection.desc": "Reduces a small amount of fire damage.",
+
+  "enchantment.linggango_tweaks.extra_projectile_protection": "Extra Projectile Protection",
+  "enchantment.linggango_tweaks.extra_projectile_protection.desc": "Reduces a small amount of projectile damage.",
+
+  "enchantment.linggango_tweaks.overclocked_rounds": "Overclocked Rounds",
+  "enchantment.linggango_tweaks.overclocked_rounds.desc": "Increases damage with every consecutive hit. Resets if you miss or stop firing.",
+
+  "enchantment.linggango_tweaks.elemental_barrage": "Elemental Barrage",
+  "enchantment.linggango_tweaks.elemental_barrage.desc": "Grants a chance to inflict Bleeding, Vulnerability, and Armor Decrease on hit.",
+
+  "enchantment.linggango_tweaks.shrapnel_piercer": "Shrapnel Piercer",
+  "enchantment.linggango_tweaks.shrapnel_piercer.desc": "Each hit reduces target armor by 2%, stacking up to a high threshold.",
+
+  "enchantment.linggango_tweaks.arcane_rounds": "Arcane Rounds",
+  "enchantment.linggango_tweaks.arcane_rounds.desc": "Infuses bullets with mystical energy, dealing 20% bonus magic damage.",
+
+  "enchantment.linggango_tweaks.vest_shredder": "Vest Shredder",
+  "enchantment.linggango_tweaks.vest_shredder.desc": "Allows bullets to ignore a portion of the target's defense per level.",
+
+  "enchantment.linggango_tweaks.bullet_echo": "Bullet Echo",
+  "enchantment.linggango_tweaks.bullet_echo.desc": "Landed shots have a chance to strike the target a second time for 50% damage.",
+
+  "enchantment.linggango_tweaks.rail_charge": "Rail Charge",
+  "enchantment.linggango_tweaks.rail_charge.desc": "Supercharges the weapon, increasing damage output by 200%.",
+
+  "enchantment.linggango_tweaks.resource_magazines": "Resource Magazines",
+  "enchantment.linggango_tweaks.resource_magazines.desc": "Successful hits have a chance to refund ammunition directly to your inventory.",
+
+  "attribute.name.linggango_tweaks.gun_damage": "Gun Damage",
+
+  "enchantment.linggango_tweaks.explosive_rounds": "Explosive Rounds",
+  "enchantment.linggango_tweaks.explosive_rounds.desc": "Bullets explode on impact, dealing 30% of the bullet's damage to all nearby enemies.",
+  "tooltip.composite_material.disenchanted_book": "Hold this item in the main-hand and hold a piece of enchanted equipment in the off-hand, right-click to transfer all the enchantments to an Enchanted Book. It also works if you put an item right next to it."
+}

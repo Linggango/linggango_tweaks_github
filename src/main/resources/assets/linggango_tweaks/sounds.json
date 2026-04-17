@@ -1,0 +1,12 @@
+{
+  "parry": {
+    "sounds": [
+      "linggango_tweaks:parry"
+    ]
+  },
+  "perfect_parry": {
+    "sounds": [
+      "linggango_tweaks:perfect_parry"
+    ]
+  }
+  }

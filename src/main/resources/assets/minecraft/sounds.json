@@ -1,0 +1,21 @@
+{
+  "music.game": {
+    "sounds": [
+      {
+        "name": "linggango_tweaks:music/song_1",
+        "stream": true,
+        "weight": 1
+      },
+      {
+        "name": "linggango_tweaks:music/song_2",
+        "stream": true,
+        "weight": 1
+      },
+      {
+        "name": "linggango_tweaks:music/song_3",
+        "stream": true,
+        "weight": 1
+      }
+    ]
+  }
+}
