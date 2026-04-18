@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 
 @Mixin(StructureTemplateManager.class) public abstract class StructureOptimizationAttempt {
 
-    @Shadow(aliases = {"f_230345_", "templates"})
+    @Shadow(aliases = {"f_230345_", "templates", "structureRepository"})
     @Final private Map<ResourceLocation, Optional<StructureTemplate>> f_230345_;
 
     @Unique private final ConcurrentLinkedDeque<ResourceLocation> linggango$accessOrder = new ConcurrentLinkedDeque<>();

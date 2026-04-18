@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(TagParser.class)
 public abstract class TagParserMixin { // Based of CrashExploitFixer by drexhd.
-    @Shadow
+    @Shadow(aliases="reader")
     @Final private StringReader f_129347_;
     @Unique private static final SimpleCommandExceptionType ERROR_COMPLEX_NBT = new SimpleCommandExceptionType(new LiteralMessage("NBT tag is too complex, depth > 512"));
 

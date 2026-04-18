@@ -14,7 +14,7 @@
   "noise": {
     "height": 512,
     "min_y": -64,
-    "size_horizontal": 8,
+    "size_horizontal": 4,
     "size_vertical": 2
   },
   "noise_router": {
@@ -730,9 +730,6 @@
                                     "Name": "minecraft:terracotta"
                                   }
                                 }
-                              },
-                              {
-                                "type": "minecraft:bandlands"
                               }
                             ]
                           }

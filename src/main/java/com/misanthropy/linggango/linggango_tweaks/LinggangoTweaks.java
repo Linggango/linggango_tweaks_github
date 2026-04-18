@@ -18,6 +18,7 @@ import com.misanthropy.linggango.linggango_tweaks.tweaks.LeashAllat;
 import com.misanthropy.linggango.linggango_tweaks.tweaks.SpawnChanges;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.levelgen.structure.placement.StructurePlacementType;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
 import net.minecraftforge.common.MinecraftForge;
@@ -42,6 +43,7 @@ public class LinggangoTweaks {
     public static final RegistryObject<StructureProcessorType<CleanWaterProcessor>> CLEAN_WATER_PROCESSOR = PROCESSORS.register("clean_water", () -> () -> CleanWaterProcessor.CODEC);
     public static final RegistryObject<StructurePlacementType<GriddyStructureSystem>> EXACT_GRID_PLACEMENT = PLACEMENTS.register("exact_grid", () -> () -> GriddyStructureSystem.CODEC);
     public static final DeferredRegister<Codec<? extends IGlobalLootModifier>> LOOT_MODIFIERS = DeferredRegister.create(ForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, "linggango_tweaks");
+    public static final ResourceLocation APOSTLE_CONTEXT = new ResourceLocation(MOD_ID, "apostle_context");
 
     public LinggangoTweaks() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
