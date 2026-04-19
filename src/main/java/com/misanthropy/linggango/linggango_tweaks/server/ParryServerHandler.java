@@ -2,7 +2,6 @@ package com.misanthropy.linggango.linggango_tweaks.server;
 
 import com.misanthropy.linggango.difficulty_enhancement.LinggangoEvents;
 import com.misanthropy.linggango.linggango_tweaks.config.TweaksConfig;
-import com.misanthropy.linggango.linggango_tweaks.entity.ParrySparkEntity;
 import com.misanthropy.linggango.linggango_tweaks.network.ParryNetwork;
 import com.misanthropy.linggango.linggango_tweaks.registry.ModParticles;
 import net.minecraft.core.particles.BlockParticleOption;
@@ -37,7 +36,7 @@ public class ParryServerHandler {
 
     @SubscribeEvent
     public static void onLivingAttack(LivingAttackEvent event) {
-        if (event.getEntity() instanceof Player player && !player.level().isClientSide()) {
+        if (event.getEntity() instanceof ServerPlayer player) {
 
             if (event.getSource().getEntity() == null) {
                 return;
@@ -69,9 +68,12 @@ public class ParryServerHandler {
                 if (diff != null) {
                     switch (diff.id) {
                         case "cozy": tickModifier = 2; perfectMod = 1; successMod = 1; break;
-                        case "easy": tickModifier = 1; perfectMod = 1; successMod = 0; break;
-                        case "normal": tickModifier = 0; perfectMod = 0; successMod = 0; break;
-                        case "veteran": tickModifier = -1; perfectMod = 0; successMod = -1; break;
+                        case "easy": tickModifier = 1; perfectMod = 1;
+                            break;
+                        case "normal":
+                            break;
+                        case "veteran": tickModifier = -1;
+                            successMod = -1; break;
                         case "extreme": tickModifier = -2; perfectMod = -1; successMod = -1; break;
                         case "torture": tickModifier = -3; perfectMod = -1; successMod = -2; break;
                         case "chaos": tickModifier = -4; perfectMod = -2; successMod = -2; break;
@@ -171,42 +173,41 @@ public class ParryServerHandler {
 
                     spawnParrySparkles(player, tier);
 
-                    ParryNetwork.CHANNEL.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> (ServerPlayer) player), new ParryNetwork.S2CParrySuccessPacket(player.getId(), tier));
+                    ParryNetwork.CHANNEL.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> player), new ParryNetwork.S2CParrySuccessPacket(player.getId(), tier));
                 }
             }
         }
     }
 
     private static void spawnParrySparkles(Player player, int tier) {
-        Vec3 playerPos = player.position().add(0, player.getEyeHeight() - 0.2, 0);
-        Vec3 lookVec = player.getLookAngle();
-        Vec3 impactPos = playerPos.add(lookVec.scale(1.8));
-
-        RandomSource random = player.level().random;
-        int numLines = 1 + random.nextInt(2);
-        double baseSpeed = 0.02 + random.nextDouble() * 0.02;
-
-        for (int l = 0; l < numLines; l++) {
-            double angle = random.nextDouble() * Math.PI * 2.0;
-
-            double dx = Math.cos(angle);
-            double dz = Math.sin(angle);
-
-            double upwardAngle = Math.toRadians(45 + random.nextDouble() * 15);
-            double horizontalSpeed = baseSpeed * Math.cos(upwardAngle);
-            double verticalSpeed = baseSpeed * Math.sin(upwardAngle);
-
-            Vec3 velocity = new Vec3(
-                    dx * horizontalSpeed,
-                    verticalSpeed,
-                    dz * horizontalSpeed
-            );
-
-            ParrySparkEntity spark = new ParrySparkEntity(player.level(), impactPos, velocity);
-            player.level().addFreshEntity(spark);
-        }
-
         if (player.level() instanceof ServerLevel serverLevel) {
+            Vec3 playerPos = player.position().add(0, player.getEyeHeight() - 0.2, 0);
+            Vec3 lookVec = player.getLookAngle();
+            Vec3 impactPos = playerPos.add(lookVec.scale(1.8));
+
+            RandomSource random = serverLevel.random;
+            int numLines = 1 + random.nextInt(2);
+            double baseSpeed = 0.02 + random.nextDouble() * 0.02;
+
+            for (int l = 0; l < numLines; l++) {
+                double angle = random.nextDouble() * Math.PI * 2.0;
+
+                double dx = Math.cos(angle);
+                double dz = Math.sin(angle);
+
+                double upwardAngle = Math.toRadians(45 + random.nextDouble() * 15);
+                double horizontalSpeed = baseSpeed * Math.cos(upwardAngle);
+                double verticalSpeed = baseSpeed * Math.sin(upwardAngle);
+
+                Vec3 velocity = new Vec3(
+                        dx * horizontalSpeed,
+                        verticalSpeed,
+                        dz * horizontalSpeed
+                );
+
+                serverLevel.sendParticles(ModParticles.PARRY_SPARKLE.get(), impactPos.x, impactPos.y, impactPos.z, 0, velocity.x, velocity.y, velocity.z, 1.0);
+            }
+
             SimpleParticleType particleType = tier == 3 ? ModParticles.PERFECT_PARRY.get() : ModParticles.ANIMATED_PARRY.get();
             serverLevel.sendParticles(particleType, impactPos.x, impactPos.y, impactPos.z, 1, 0, 0, 0, 0);
         }

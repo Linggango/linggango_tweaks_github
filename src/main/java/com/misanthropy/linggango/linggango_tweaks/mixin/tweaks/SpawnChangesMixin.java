@@ -4,6 +4,7 @@ import com.misanthropy.linggango.linggango_tweaks.tweaks.SpawnChanges;
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.NaturalSpawner;
@@ -29,8 +30,10 @@ public class SpawnChangesMixin {
                 cir.setReturnValue(false);
                 return;
             }
-            if (world.getFluidState(pos).is(FluidTags.WATER) || world.getFluidState(pos.below()).is(FluidTags.WATER)) {
-                cir.setReturnValue(false);
+            if (entityType.getCategory() != MobCategory.WATER_CREATURE && entityType.getCategory() != MobCategory.WATER_AMBIENT) {
+                if (world.getFluidState(pos).is(FluidTags.WATER) || world.getFluidState(pos.below()).is(FluidTags.WATER)) {
+                    cir.setReturnValue(false);
+                }
             }
         }
     }

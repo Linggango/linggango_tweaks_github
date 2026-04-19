@@ -1,6 +1,5 @@
 package com.misanthropy.linggango.linggango_tweaks.fixes;
 
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -32,7 +31,7 @@ public class DisenchantedBookFix {
         ResourceLocation registryName = ForgeRegistries.ITEMS.getKey(bookStack.getItem());
 
         if (registryName != null && registryName.toString().equals("composite_material:disenchanted_book")) {
-            ItemStack targetItem = ItemStack.EMPTY;
+            ItemStack targetItem;
 
             if (event.getHand() == InteractionHand.OFF_HAND) {
                 targetItem = player.getMainHandItem();

@@ -87,7 +87,7 @@ public class TweaksConfig {
 
         BUILDER.push("structure_spawn_rates");
         GLOBAL_SPREAD_FACTOR = BUILDER.defineInRange("globalSpreadFactor", 1.0, 0.0, 1000.0);
-        CUSTOM_SPREADS = BUILDER.defineListAllowEmpty(List.of("customSpreads"), () -> List.of(), o -> o instanceof String && ((String) o).contains("|"));
+        CUSTOM_SPREADS = BUILDER.defineListAllowEmpty(List.of("customSpreads"), List::of, o -> o instanceof String && ((String) o).contains("|"));
         ID_BASED_SALT = BUILDER.define("idBasedSalt", true);
         BUILDER.pop();
 

@@ -2,6 +2,7 @@ package com.misanthropy.linggango.linggango_tweaks.tweaks;
 
 import com.misanthropy.linggango.linggango_tweaks.LinggangoTweaks;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -22,6 +23,7 @@ import java.util.UUID;
 public class BafsWeaponTweaks {
 
     private static final UUID BAFS_DAMAGE_UUID = UUID.fromString("7f3e1b2a-5d4c-4b3a-9e8d-1f2a3b4c5d6e");
+    private static final ResourceLocation PULVERIZED_ID = new ResourceLocation("brutality", "pulverized");
 
     @SubscribeEvent
     public static void onAttributeModifier(ItemAttributeModifierEvent event) {
@@ -45,9 +47,16 @@ public class BafsWeaponTweaks {
         if (event.getSource().getDirectEntity() instanceof LivingEntity attacker) {
             ItemStack weapon = attacker.getMainHandItem();
             ResourceLocation name = ForgeRegistries.ITEMS.getKey(weapon.getItem());
+
             if (isBafsWeapon(name)) {
                 LivingEntity victim = event.getEntity();
+
                 victim.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 0));
+
+                MobEffect pulverized = ForgeRegistries.MOB_EFFECTS.getValue(PULVERIZED_ID);
+                if (pulverized != null) {
+                    victim.addEffect(new MobEffectInstance(pulverized, 40, 2));
+                }
             }
         }
     }

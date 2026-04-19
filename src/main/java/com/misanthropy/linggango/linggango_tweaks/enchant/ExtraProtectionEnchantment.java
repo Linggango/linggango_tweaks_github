@@ -6,6 +6,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentCategory;
 import net.minecraft.world.item.enchantment.ProtectionEnchantment;
+import org.jetbrains.annotations.NotNull;
 
 public class ExtraProtectionEnchantment extends Enchantment {
 
@@ -46,7 +47,7 @@ public class ExtraProtectionEnchantment extends Enchantment {
     }
 
     @Override
-    protected boolean checkCompatibility(Enchantment otherEnchantment) {
+    protected boolean checkCompatibility(@NotNull Enchantment otherEnchantment) {
         if (otherEnchantment instanceof ProtectionEnchantment vanillaProt) {
             if (this.type == ProtectionType.ALL && vanillaProt.type == ProtectionEnchantment.Type.ALL) return false;
             if (this.type == ProtectionType.FIRE && vanillaProt.type == ProtectionEnchantment.Type.FIRE) return false;
@@ -59,16 +60,6 @@ public class ExtraProtectionEnchantment extends Enchantment {
         }
 
         return super.checkCompatibility(otherEnchantment);
-    }
-
-    @Override
-    public boolean isDiscoverable() {
-        return true;
-    }
-
-    @Override
-    public boolean isTradeable() {
-        return true;
     }
 
     public enum ProtectionType {

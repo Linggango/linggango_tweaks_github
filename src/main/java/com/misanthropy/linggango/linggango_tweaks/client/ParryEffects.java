@@ -193,15 +193,16 @@ public class ParryEffects {
             int tickModifier = 0;
             LinggangoEvents.DifficultyDef diff = LinggangoEvents.getCurrentDifficulty(mc.level);
             if (diff != null) {
-                switch (diff.id) {
-                    case "cozy": tickModifier = 2; break;
-                    case "easy": tickModifier = 1; break;
-                    case "normal": tickModifier = 0; break;
-                    case "veteran": tickModifier = -1; break;
-                    case "extreme": tickModifier = -2; break;
-                    case "torture": tickModifier = -3; break;
-                    case "chaos": tickModifier = -4; break;
-                }
+                tickModifier = switch (diff.id) {
+                    case "cozy" -> 2;
+                    case "easy" -> 1;
+                    case "normal" -> 0;
+                    case "veteran" -> -1;
+                    case "extreme" -> -2;
+                    case "torture" -> -3;
+                    case "chaos" -> -4;
+                    default -> tickModifier;
+                };
             }
             return Math.max(3, Math.min(9, baseActive + tickModifier));
         }

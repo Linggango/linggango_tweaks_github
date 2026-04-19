@@ -47,7 +47,7 @@ public class RainfallSerenityBuffHandler {
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (Exception ignored) {
 
         }
     }

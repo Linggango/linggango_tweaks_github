@@ -11,8 +11,8 @@ public class LocateFixForSpreadStructuresMixin {
 
     @Inject(method = "dist", at = @At("HEAD"), cancellable = true)
     private static void linggango$fixDistanceFloatOverflow(int x1, int z1, int x2, int z2, CallbackInfoReturnable<Float> cir) {
-        double d0 = (double)(x2 - x1);
-        double d1 = (double)(z2 - z1);
+        double d0 = x2 - x1;
+        double d1 = z2 - z1;
         cir.setReturnValue((float)Math.hypot(d0, d1));
     }
 }

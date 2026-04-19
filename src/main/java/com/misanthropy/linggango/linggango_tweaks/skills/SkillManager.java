@@ -38,7 +38,6 @@ import java.util.List;
 import java.util.UUID;
 
 @Mod.EventBusSubscriber(modid = LinggangoTweaks.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
-@SuppressWarnings("resource")
 public class SkillManager {
 
     private static final UUID VAMP_DAY_ID = UUID.fromString("11a3b8d9-6f1c-4b3a-92e2-5c8e7e120f2a");
@@ -155,13 +154,15 @@ public class SkillManager {
         int remaining = (int) Math.max(0, end - player.level().getGameTime());
         int max = data.getInt("lt_maxcd_" + classId);
 
-        boolean isActive = false;
-        if (classId.equals("south_mage")) isActive = data.getBoolean("lt_smage_active");
-        else if (classId.equals("north_mage")) isActive = data.getBoolean("lt_nmage_active");
-        else if (classId.equals("vampire")) isActive = data.getBoolean("lt_vamp_active");
-        else if (classId.equals("miner")) isActive = data.getBoolean("lt_crawling");
-        else if (classId.equals("gambler")) isActive = data.getInt("lt_gambler_roll_timer") > 0;
-        else if (classId.equals("gunner")) isActive = data.getBoolean("lt_gunner_active");
+        boolean isActive = switch (classId) {
+            case "south_mage" -> data.getBoolean("lt_smage_active");
+            case "north_mage" -> data.getBoolean("lt_nmage_active");
+            case "vampire" -> data.getBoolean("lt_vamp_active");
+            case "miner" -> data.getBoolean("lt_crawling");
+            case "gambler" -> data.getInt("lt_gambler_roll_timer") > 0;
+            case "gunner" -> data.getBoolean("lt_gunner_active");
+            default -> false;
+        };
 
         TweaksSkillNetwork.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player),
                 new TweaksSkillNetwork.SkillSyncS2CPacket(classId, remaining, max, isActive));

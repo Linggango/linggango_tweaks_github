@@ -41,7 +41,7 @@ public abstract class AquafloraCooldownMixin {
                 if (t != 0 && t != 2 && t != 5 && t != 7 && t != 10 && t != 12 && t != 15) {
                     ci.cancel();
                 }
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
         }
     }

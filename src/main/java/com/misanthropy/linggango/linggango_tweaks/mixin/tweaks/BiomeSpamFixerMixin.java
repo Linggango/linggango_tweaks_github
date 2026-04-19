@@ -8,9 +8,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 @Mixin(Climate.ParameterList.class)
 public class BiomeSpamFixerMixin {
@@ -24,50 +24,50 @@ public class BiomeSpamFixerMixin {
             return values;
         }
 
-        String fallbackNamespace = TweaksConfig.BIOME_FALLBACK_NAMESPACE.get();
         Map<String, Float> reductions = TweaksConfig.parsedBiomeReductions;
+        if (reductions.isEmpty() || TweaksConfig.BIOME_FALLBACK_NAMESPACE.get().isEmpty()) {
+            return values;
+        }
 
-        if (reductions.isEmpty() || fallbackNamespace.isEmpty()) return values;
-
-        List<Pair<Climate.ParameterPoint, Object>> newValues = new ArrayList<>();
-        List<Object> fallbacks = new ArrayList<>();
-
+        Map<String, Integer> biomeNodeCounts = new HashMap<>();
         for (Pair<Climate.ParameterPoint, Object> pair : values) {
             String name = pair.getSecond().toString();
-            if (name.contains(fallbackNamespace)) {
-                boolean isReduced = false;
-                for (String reducedBiome : reductions.keySet()) {
-                    if (name.contains(reducedBiome)) {
-                        isReduced = true;
-                        break;
-                    }
-                }
-
-                if (!isReduced) {
-                    fallbacks.add(pair.getSecond());
+            for (String reducedBiome : reductions.keySet()) {
+                if (name.contains(reducedBiome)) {
+                    biomeNodeCounts.put(reducedBiome, biomeNodeCounts.getOrDefault(reducedBiome, 0) + 1);
+                    break;
                 }
             }
         }
 
-        Random rand = new Random(42L);
+        List<Pair<Climate.ParameterPoint, Object>> newValues = new ArrayList<>();
+        Map<String, Integer> nodesProcessed = new HashMap<>();
 
         for (Pair<Climate.ParameterPoint, Object> pair : values) {
             String name = pair.getSecond().toString();
-            Object fallback = fallbacks.isEmpty() ? values.get(0).getSecond() : fallbacks.get(rand.nextInt(fallbacks.size()));
+            boolean isReduced = false;
+            String matchedRule = null;
 
-            boolean replaced = false;
-
-            for (Map.Entry<String, Float> entry : reductions.entrySet()) {
-                if (name.contains(entry.getKey())) {
-                    if (rand.nextFloat() < entry.getValue()) {
-                        newValues.add(Pair.of(pair.getFirst(), fallback));
-                        replaced = true;
-                    }
+            for (String reducedBiome : reductions.keySet()) {
+                if (name.contains(reducedBiome)) {
+                    isReduced = true;
+                    matchedRule = reducedBiome;
                     break;
                 }
             }
 
-            if (!replaced) {
+            if (isReduced) {
+                float reductionChance = reductions.get(matchedRule);
+                int totalNodes = biomeNodeCounts.get(matchedRule);
+                int nodesToKeep = Math.max(0, Math.round(totalNodes * (1.0f - reductionChance)));
+                int processed = nodesProcessed.getOrDefault(matchedRule, 0);
+
+                if (processed < nodesToKeep) {
+                    newValues.add(pair);
+                }
+
+                nodesProcessed.put(matchedRule, processed + 1);
+            } else {
                 newValues.add(pair);
             }
         }

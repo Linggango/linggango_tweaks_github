@@ -10,6 +10,7 @@ import net.minecraftforge.network.simple.SimpleChannel;
 
 import java.util.function.Supplier;
 
+@SuppressWarnings("unused")
 public class TweaksSkillNetwork {
     private static final String PROTOCOL_VERSION = "1";
     public static final SimpleChannel INSTANCE = NetworkRegistry.newSimpleChannel(
@@ -19,7 +20,7 @@ public class TweaksSkillNetwork {
     public static void register() {
         int id = 0;
         INSTANCE.registerMessage(id++, SkillUseC2SPacket.class, SkillUseC2SPacket::encode, SkillUseC2SPacket::decode, SkillUseC2SPacket::handle);
-        INSTANCE.registerMessage(id++, SkillSyncS2CPacket.class, SkillSyncS2CPacket::encode, SkillSyncS2CPacket::decode, SkillSyncS2CPacket::handle);
+        INSTANCE.registerMessage(id, SkillSyncS2CPacket.class, SkillSyncS2CPacket::encode, SkillSyncS2CPacket::decode, SkillSyncS2CPacket::handle);
     }
 
     public static class SkillUseC2SPacket {
@@ -50,16 +51,20 @@ public class TweaksSkillNetwork {
             this.isActive = isActive;
         }
 
-        public static void encode(SkillSyncS2CPacket msg, FriendlyByteBuf buf) {buf.writeUtf(msg.classId);buf.writeInt(msg.cdRemaining);buf.writeInt(msg.maxCd);buf.writeBoolean(msg.isActive);
+        public static void encode(SkillSyncS2CPacket msg, FriendlyByteBuf buf) {
+            buf.writeUtf(msg.classId);
+            buf.writeInt(msg.cdRemaining);
+            buf.writeInt(msg.maxCd);
+            buf.writeBoolean(msg.isActive);
         }
 
-        public static SkillSyncS2CPacket decode(FriendlyByteBuf buf) {return new SkillSyncS2CPacket(buf.readUtf(), buf.readInt(), buf.readInt(), buf.readBoolean());
+        public static SkillSyncS2CPacket decode(FriendlyByteBuf buf) {
+            return new SkillSyncS2CPacket(buf.readUtf(), buf.readInt(), buf.readInt(), buf.readBoolean());
         }
 
-        public static void handle(SkillSyncS2CPacket msg, Supplier<NetworkEvent.Context> ctx) {ctx.get().enqueueWork(() -> {
-                com.misanthropy.linggango.linggango_tweaks.skills.client.ClientSkillEvents.syncSkillData(
-                        msg.classId, msg.cdRemaining, msg.maxCd, msg.isActive);
-            });
+        public static void handle(SkillSyncS2CPacket msg, Supplier<NetworkEvent.Context> ctx) {
+            ctx.get().enqueueWork(() -> com.misanthropy.linggango.linggango_tweaks.skills.client.ClientSkillEvents.syncSkillData(
+                    msg.classId, msg.cdRemaining, msg.maxCd, msg.isActive));
             ctx.get().setPacketHandled(true);
         }
     }

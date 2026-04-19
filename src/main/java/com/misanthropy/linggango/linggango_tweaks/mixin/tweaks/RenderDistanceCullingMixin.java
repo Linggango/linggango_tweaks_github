@@ -26,6 +26,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.util.List;
 
+@SuppressWarnings("unused")
 public class RenderDistanceCullingMixin {
 
     @Mixin(Entity.class)

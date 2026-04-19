@@ -9,12 +9,14 @@ import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(RenderTarget.class)
 public abstract class VramLeakFix {
-    @Shadow public int colorTextureId;
-    @Shadow public int depthBufferId;
+    @Shadow
+    protected int colorTextureId;
+    @Shadow
+    protected int depthBufferId;
     @Shadow public int frameBufferId;
 
     @Override
-    public void finalize() throws Throwable {
+    protected void finalize() throws Throwable {
         try {
             if (this.colorTextureId > -1 || this.depthBufferId > -1 || this.frameBufferId > -1) {
                 final int color = this.colorTextureId;

@@ -12,7 +12,7 @@ import net.minecraftforge.server.ServerLifecycleHooks;
 @Mod.EventBusSubscriber(modid  = LinggangoTweaks.MOD_ID)
 public class EffectBugFixer {
 
-    private static final int MAX_SAFE_DURATION = 9600;
+    private static final int MAX_SAFE_DURATION = 19200;
     private static int tickTimer = 0;
 
     @SubscribeEvent
@@ -32,7 +32,7 @@ public class EffectBugFixer {
 
                 for (MobEffectInstance instance : player.getActiveEffects()) {
                     int duration = instance.getDuration();
-                    if (duration > MAX_SAFE_DURATION || duration == -1 || duration == MobEffectInstance.INFINITE_DURATION) {
+                    if (duration > MAX_SAFE_DURATION || duration == -1) {
                         effectsToRemove.add(instance.getEffect());
                     }
                 }

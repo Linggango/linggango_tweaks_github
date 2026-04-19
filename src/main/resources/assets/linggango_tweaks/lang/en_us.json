@@ -39,5 +39,7 @@
 
   "enchantment.linggango_tweaks.explosive_rounds": "Explosive Rounds",
   "enchantment.linggango_tweaks.explosive_rounds.desc": "Bullets explode on impact, dealing 30% of the bullet's damage to all nearby enemies.",
-  "tooltip.composite_material.disenchanted_book": "Hold this item in the main-hand and hold a piece of enchanted equipment in the off-hand, right-click to transfer all the enchantments to an Enchanted Book. It also works if you put an item right next to it."
+  "tooltip.composite_material.disenchanted_book": "Hold this item in the main-hand and hold a piece of enchanted equipment in the off-hand, right-click to transfer all the enchantments to an Enchanted Book. It also works if you put an item right next to it.",
+  "category.linggango": "linggango",
+  "key.linggango.skill": "Class Skill"
 }

@@ -2,7 +2,6 @@ package com.misanthropy.linggango.linggango_tweaks.mixin.embeddium;
 
 import com.misanthropy.linggango.linggango_tweaks.config.SpawnerClientConfig;
 import me.jellysquid.mods.sodium.client.gui.SodiumGameOptionPages;
-import me.jellysquid.mods.sodium.client.gui.SodiumGameOptions;
 import me.jellysquid.mods.sodium.client.gui.options.OptionGroup;
 import me.jellysquid.mods.sodium.client.gui.options.OptionImpact;
 import me.jellysquid.mods.sodium.client.gui.options.OptionImpl;

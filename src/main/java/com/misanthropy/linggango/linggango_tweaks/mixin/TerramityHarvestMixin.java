@@ -18,6 +18,7 @@ import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -31,6 +32,7 @@ import java.util.List;
 public abstract class TerramityHarvestMixin {
 
     @Shadow protected ServerLevel level;
+    @Final
     @Shadow protected ServerPlayer player;
 
     @Inject(method = "destroyBlock", at = @At("HEAD"))
@@ -52,9 +54,11 @@ public abstract class TerramityHarvestMixin {
             int toolLevel = 0;
             if (isPaxel) {
                 toolLevel = 4;
-            } else if (item instanceof TieredItem tiered) {
+            } else {
+                TieredItem tiered = (TieredItem) item;
                 Tier tier = tiered.getTier();
-                if (tier == Tiers.WOOD || tier == Tiers.GOLD) toolLevel = 0;
+                if (tier == Tiers.WOOD || tier == Tiers.GOLD) {
+                }
                 else if (tier == Tiers.STONE) toolLevel = 1;
                 else if (tier == Tiers.IRON) toolLevel = 2;
                 else if (tier == Tiers.DIAMOND) toolLevel = 3;
@@ -62,38 +66,15 @@ public abstract class TerramityHarvestMixin {
                 else toolLevel = tier.getSpeed() >= 9.0F ? 4 : (tier.getSpeed() >= 8.0F ? 3 : 2);
             }
 
-            int requiredLevel;
-            switch (path) {
-                case "decayed_black_matter_ore":
-                case "bedrock_black_matter_ore":
-                    requiredLevel = 4;
-                    break;
-                case "daemonium_ore":
-                case "deepslate_dimlite_ore":
-                case "gaianite_cluster_ore":
-                case "deepslate_iridium_ore":
-                case "nether_iridium_ore":
-                case "end_iridium_ore":
-                case "profaned_ore":
-                case "cosmic_ore":
-                    requiredLevel = 3;
-                    break;
-                case "deepslate_iridescent_ore":
-                    requiredLevel = 2;
-                    break;
-                case "igneo_ruby_ore":
-                case "nether_ruby_ore":
-                case "sapphire_ore":
-                case "deepslate_sapphire_ore":
-                case "topaz_ore":
-                case "deepslate_topaz_ore":
-                case "end_onyx_ore":
-                    requiredLevel = 1;
-                    break;
-                default:
-                    requiredLevel = 3;
-                    break;
-            }
+            int requiredLevel = switch (path) {
+                case "decayed_black_matter_ore", "bedrock_black_matter_ore" -> 4;
+                case "daemonium_ore", "deepslate_dimlite_ore", "gaianite_cluster_ore", "deepslate_iridium_ore",
+                     "nether_iridium_ore", "end_iridium_ore", "profaned_ore", "cosmic_ore" -> 3;
+                case "deepslate_iridescent_ore" -> 2;
+                case "igneo_ruby_ore", "nether_ruby_ore", "sapphire_ore", "deepslate_sapphire_ore", "topaz_ore",
+                     "deepslate_topaz_ore", "end_onyx_ore" -> 1;
+                default -> 3;
+            };
 
             if (toolLevel >= requiredLevel) {
                 boolean mcreatorAllows = state.canHarvestBlock(this.level, pos, this.player);
@@ -110,29 +91,19 @@ public abstract class TerramityHarvestMixin {
                     List<ItemStack> drops = new ArrayList<>(state.getDrops(builder));
 
                     if (drops.isEmpty()) {
-                        Item fallbackItem = null;
-                        switch (path) {
-                            case "deepslate_iridium_ore":
-                            case "nether_iridium_ore":
-                            case "end_iridium_ore":
-                                fallbackItem = ForgeRegistries.ITEMS.getValue(new ResourceLocation("terramity:iridium_chunk"));
-                                break;
-                            case "daemonium_ore":
-                                fallbackItem = ForgeRegistries.ITEMS.getValue(new ResourceLocation("terramity:daemonium_chunk"));
-                                break;
-                            case "deepslate_dimlite_ore":
-                                fallbackItem = ForgeRegistries.ITEMS.getValue(new ResourceLocation("terramity:untapped_dimlite"));
-                                break;
-                            case "gaianite_cluster_ore":
-                                fallbackItem = ForgeRegistries.ITEMS.getValue(new ResourceLocation("terramity:gaianite_cluster"));
-                                break;
-                            case "cosmic_ore":
-                                fallbackItem = ForgeRegistries.ITEMS.getValue(new ResourceLocation("terramity:raw_cosmilite"));
-                                break;
-                            default:
-                                fallbackItem = state.getBlock().asItem();
-                                break;
-                        }
+                        Item fallbackItem = switch (path) {
+                            case "deepslate_iridium_ore", "nether_iridium_ore", "end_iridium_ore" ->
+                                    ForgeRegistries.ITEMS.getValue(new ResourceLocation("terramity:iridium_chunk"));
+                            case "daemonium_ore" ->
+                                    ForgeRegistries.ITEMS.getValue(new ResourceLocation("terramity:daemonium_chunk"));
+                            case "deepslate_dimlite_ore" ->
+                                    ForgeRegistries.ITEMS.getValue(new ResourceLocation("terramity:untapped_dimlite"));
+                            case "gaianite_cluster_ore" ->
+                                    ForgeRegistries.ITEMS.getValue(new ResourceLocation("terramity:gaianite_cluster"));
+                            case "cosmic_ore" ->
+                                    ForgeRegistries.ITEMS.getValue(new ResourceLocation("terramity:raw_cosmilite"));
+                            default -> state.getBlock().asItem();
+                        };
 
                         if (fallbackItem != null && fallbackItem != net.minecraft.world.item.Items.AIR) {
                             int dropCount;

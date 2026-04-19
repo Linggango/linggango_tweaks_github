@@ -1,4 +1,4 @@
-package com.misanthropy.linggango.linggango_tweaks.qol;
+package com.misanthropy.linggango.linggango_tweaks.qol; // not used yet for debugging purposes
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -6,14 +6,12 @@ import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.filter.AbstractFilter;
-
-import java.util.Arrays;
 import java.util.List;
 
 public class LogSpamFilter extends AbstractFilter {
 
-    private static final List<String> SPAM_MESSAGES = Arrays.asList(
-       ""
+    private static final List<String> SPAM_MESSAGES = List.of(
+            ""
     );
 
     @Override

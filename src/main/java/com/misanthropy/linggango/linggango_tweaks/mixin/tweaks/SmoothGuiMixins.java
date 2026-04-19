@@ -29,6 +29,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+@SuppressWarnings("unused")
 public class SmoothGuiMixins {
 
     @Mixin(AbstractWidget.class)
@@ -188,7 +189,7 @@ public class SmoothGuiMixins {
         @Unique private static sun.misc.Unsafe linggango_tweaks$unsafe;
         @Unique private static long linggango_tweaks$slotYOffset = -1;
 
-        @Unique private static void linggango_tweaks$setSlotY(Slot slot, int yValue) {
+        @Unique private static void linggango_tweaks$setSlotY(Slot slot, int value) {
             try {
                 if (linggango_tweaks$unsafe == null) {
                     java.lang.reflect.Field unsafeField = sun.misc.Unsafe.class.getDeclaredField("theUnsafe");
@@ -203,7 +204,7 @@ public class SmoothGuiMixins {
                     }
                 }
                 if (linggango_tweaks$slotYOffset != -1) {
-                    linggango_tweaks$unsafe.putInt(slot, linggango_tweaks$slotYOffset, yValue);
+                    linggango_tweaks$unsafe.putInt(slot, linggango_tweaks$slotYOffset, value);
                 }
             } catch (Exception ignored) {}
         }

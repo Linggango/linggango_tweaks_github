@@ -22,10 +22,10 @@ public abstract class SlotMixin {
     private void getItemInject(CallbackInfoReturnable<ItemStack> cir) {
         if (this.container != null) {
             ItemStack stack = this.container.getItem(this.slot);
-            if (stack != null && !stack.isEmpty()) {
+            if (!stack.isEmpty()) {
                 CompoundTag tag = stack.getTag();
                 if (tag != null && tag.isEmpty()) {
-                    stack.setTag((CompoundTag) null);
+                    stack.setTag(null);
                     cir.setReturnValue(stack);
                 }
             }
@@ -37,7 +37,7 @@ public abstract class SlotMixin {
         ItemSplitFix.fixBug(stack);
     }
 
-    @Inject(method = "onQuickCraft", at = @At("HEAD"))
+    @Inject(method = "onQuickCraft*", at = @At("HEAD"))
     private void onQuickCraftInject(ItemStack stack1, ItemStack stack2, CallbackInfo ci) {
         ItemSplitFix.fixBug(stack1);
         ItemSplitFix.fixBug(stack2);

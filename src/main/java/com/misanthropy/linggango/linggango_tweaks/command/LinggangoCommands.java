@@ -26,9 +26,11 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Mod.EventBusSubscriber
 public class LinggangoCommands {
@@ -100,7 +102,8 @@ public class LinggangoCommands {
 
         d.register(Commands.literal("spawn").requires(s -> s.hasPermission(2)).executes(c -> {
             ServerPlayer p = c.getSource().getPlayerOrException();
-            ServerLevel overworld = p.getServer().getLevel(Level.OVERWORLD);
+            ServerLevel overworld = Objects.requireNonNull(p.getServer()).getLevel(Level.OVERWORLD);
+            assert overworld != null;
             BlockPos spawn = overworld.getSharedSpawnPos();
             p.teleportTo(overworld, spawn.getX() + 0.5, spawn.getY() + 0.1, spawn.getZ() + 0.5, p.getYRot(), p.getXRot());
             return 1;
@@ -110,7 +113,7 @@ public class LinggangoCommands {
             ServerPlayer p = c.getSource().getPlayerOrException();
             p.openMenu(new SimpleMenuProvider((id, inv, pl) -> new CraftingMenu(id, inv, ContainerLevelAccess.create(p.level(), p.blockPosition())) {
                 @Override
-                public boolean stillValid(Player playerIn) {
+                public boolean stillValid(@NotNull Player playerIn) {
                     return true;
                 }
             }, Component.literal("Crafting")));
@@ -186,6 +189,7 @@ public class LinggangoCommands {
             HitResult ray = p.pick(100.0D, 0.0F, false);
             if (ray.getType() == HitResult.Type.BLOCK) {
                 LightningBolt bolt = EntityType.LIGHTNING_BOLT.create(p.serverLevel());
+                assert bolt != null;
                 bolt.moveTo(ray.getLocation());
                 p.serverLevel().addFreshEntity(bolt);
             }

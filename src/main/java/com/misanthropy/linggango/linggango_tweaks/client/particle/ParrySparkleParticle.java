@@ -1,6 +1,5 @@
-package com.misanthropy.linggango.linggango_tweaks.client.particle; // Currently a bloat rest with other entity attempts
+package com.misanthropy.linggango.linggango_tweaks.client.particle;
 
-import com.misanthropy.linggango.linggango_tweaks.entity.ParrySparkEntity;
 import com.misanthropy.linggango.linggango_tweaks.registry.ModParticles;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -10,6 +9,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @OnlyIn(Dist.CLIENT)
@@ -38,8 +38,8 @@ public class ParrySparkleParticle extends TextureSheetParticle {
         if (mc.level == null) return;
         RandomSource random = mc.level.random;
 
-        int numLines = 2 + random.nextInt(5);
-        double baseSpeed = 0.25 + random.nextDouble() * 0.15;
+        int numLines = (tier == 3 ? 5 : 2) + random.nextInt(tier == 3 ? 7 : 5);
+        double baseSpeed = (tier == 3 ? 0.35 : 0.25) + random.nextDouble() * 0.15;
 
         for (int l = 0; l < numLines; l++) {
             double angle = random.nextDouble() * Math.PI * 2.0;
@@ -57,8 +57,7 @@ public class ParrySparkleParticle extends TextureSheetParticle {
                     dz * horizontalSpeed
             );
 
-            ParrySparkEntity spark = new ParrySparkEntity(mc.level, pos, velocity);
-            mc.level.addFreshEntity(spark);
+            mc.level.addParticle(ModParticles.PARRY_SPARKLE.get(), pos.x, pos.y, pos.z, velocity.x, velocity.y, velocity.z);
         }
 
         mc.level.addParticle(ModParticles.PARRY_O.get(), pos.x, pos.y, pos.z, 0, 0, 0);
@@ -77,7 +76,7 @@ public class ParrySparkleParticle extends TextureSheetParticle {
     }
 
     @Override
-    public ParticleRenderType getRenderType() {
+    public @NotNull ParticleRenderType getRenderType() {
         return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
     }
 
@@ -93,7 +92,7 @@ public class ParrySparkleParticle extends TextureSheetParticle {
 
         @Nullable
         @Override
-        public Particle createParticle(SimpleParticleType type, ClientLevel level, double x, double y, double z, double dx, double dy, double dz) {
+        public Particle createParticle(@NotNull SimpleParticleType type, @NotNull ClientLevel level, double x, double y, double z, double dx, double dy, double dz) {
             return new ParrySparkleParticle(level, x, y, z, dx, dy, dz, this.spriteSet);
         }
     }

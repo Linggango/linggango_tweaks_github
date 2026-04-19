@@ -51,7 +51,7 @@ public class ParryNetwork {
 
         public void toBytes(FriendlyByteBuf buf) {}
 
-        public boolean handle(Supplier<NetworkEvent.Context> supplier) {
+        public void handle(Supplier<NetworkEvent.Context> supplier) {
             NetworkEvent.Context context = supplier.get();
             context.enqueueWork(() -> {
                 ServerPlayer player = context.getSender();
@@ -61,7 +61,6 @@ public class ParryNetwork {
                 }
             });
             context.setPacketHandled(true);
-            return true;
         }
     }
 
@@ -80,11 +79,10 @@ public class ParryNetwork {
             buf.writeInt(this.entityId);
         }
 
-        public boolean handle(Supplier<NetworkEvent.Context> supplier) {
+        public void handle(Supplier<NetworkEvent.Context> supplier) {
             NetworkEvent.Context context = supplier.get();
             context.enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> com.misanthropy.linggango.linggango_tweaks.client.ParryEffects.triggerParryStartForOther(this.entityId)));
             context.setPacketHandled(true);
-            return true;
         }
     }
 
@@ -107,11 +105,10 @@ public class ParryNetwork {
             buf.writeInt(this.tier);
         }
 
-        public boolean handle(Supplier<NetworkEvent.Context> supplier) {
+        public void handle(Supplier<NetworkEvent.Context> supplier) {
             NetworkEvent.Context context = supplier.get();
             context.enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> com.misanthropy.linggango.linggango_tweaks.client.ParryEffects.triggerSuccessfulParry(this.entityId, this.tier)));
             context.setPacketHandled(true);
-            return true;
         }
     }
 }

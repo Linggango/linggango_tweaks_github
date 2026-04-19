@@ -7,6 +7,7 @@ import com.misanthropy.linggango.linggango_tweaks.skills.SkillManager;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraft.world.entity.player.Player;
@@ -46,7 +47,17 @@ public class GunEnchantmentEventHandler {
         event.getEntity().getPersistentData().putLong("linggango_last_melee", event.getEntity().level().getGameTime());
     }
 
-    @SuppressWarnings("resource")
+    @SubscribeEvent
+    public static void onLivingAttack(LivingAttackEvent event) {
+        if (event.getSource().getEntity() instanceof Player player) {
+            ItemStack weapon = player.getMainHandItem();
+            ResourceLocation weaponId = ForgeRegistries.ITEMS.getKey(weapon.getItem());
+            if (weaponId != null && weaponId.getNamespace().equals("terramity")) {
+                event.getEntity().invulnerableTime = 0;
+            }
+        }
+    }
+
     @SubscribeEvent
     public static void onLivingHurt(LivingHurtEvent event) {
         if (event.getSource().getEntity() instanceof Player player) {
@@ -56,6 +67,9 @@ public class GunEnchantmentEventHandler {
             if (weaponId == null || !weaponId.getNamespace().equals("terramity")) {
                 return;
             }
+
+            LivingEntity target = event.getEntity();
+            target.invulnerableTime = 0;
 
             boolean isProjectile = event.getSource().getDirectEntity() instanceof net.minecraft.world.entity.projectile.Projectile;
 
@@ -67,8 +81,6 @@ public class GunEnchantmentEventHandler {
             }
 
             float originalDamage = event.getAmount();
-            LivingEntity target = event.getEntity();
-
             originalDamage *= 2.5f;
 
             if (player.getAttributes().hasAttribute(LinggangoAttributes.GUN_DAMAGE.get())) {
@@ -217,6 +229,8 @@ public class GunEnchantmentEventHandler {
                     serverLevel.sendParticles(ParticleTypes.EXPLOSION, target.getX(), target.getY(0.5D), target.getZ(), 1, 0.0D, 0.0D, 0.0D, 0.0D);
                 }
             }
+
+            target.invulnerableTime = 0;
         }
     }
 

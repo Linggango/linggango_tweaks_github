@@ -19,10 +19,8 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 @Mod.EventBusSubscriber(modid = LinggangoTweaks.MOD_ID)
@@ -111,46 +109,6 @@ public class SpawnChanges implements BiomeModifier {
             List<MobSpawnSettings.SpawnerData> spawners = builder.getMobSpawnSettings().getSpawner(category);
             if (spawners.isEmpty()) continue;
 
-            int totalWeight = 0;
-            int highestWeight = 0;
-            Map<String, Integer> namespaceWeights = new HashMap<>();
-
-            for (MobSpawnSettings.SpawnerData data : spawners) {
-                ResourceLocation id = ForgeRegistries.ENTITY_TYPES.getKey(data.type);
-                if (id == null || DISABLED_ENTITIES.contains(id.toString())) continue;
-
-                String namespace = id.getNamespace();
-                String fullId = id.toString();
-                int weight = data.getWeight().asInt();
-
-                if (fullId.equals("monsterexpansion:rhyza")) {
-                    weight = Math.max(1, weight / 5);
-                } else if (fullId.equals("alexsmobs:flying_fish")) {
-                    weight = Math.max(1, weight / 6);
-                } else if (namespace.equals("terra_entity")) {
-                    if (biome.is(BiomeTags.IS_OVERWORLD)) {
-                        weight = Math.max(1, (int)(weight * TweaksConfig.TERRA_ENTITY_OVERWORLD_MULTIPLIER.get()));
-                    } else {
-                        weight = Math.max(1, weight / 2);
-                    }
-                } else if (namespace.equals("born_in_chaos_v1")) {
-                    weight = Math.max(1, weight / 4);
-                } else if (namespace.equals("alexsmobs") && (category.name().contains("WATER"))) {
-                    weight = Math.max(1, weight / 6);
-                } else if (namespace.equals("minecraft")) {
-                    if (id.getPath().contains("squid")) {
-                        weight = (int)(weight * 2.5);
-                    } else {
-                        weight = (int)(weight * 1.5);
-                    }
-                }
-
-                if (weight > highestWeight) highestWeight = weight;
-                totalWeight += weight;
-                namespaceWeights.put(namespace, namespaceWeights.getOrDefault(namespace, 0) + weight);
-            }
-
-            int maxAllowedModWeight = Math.max(10, (int) (totalWeight * 0.15));
             List<MobSpawnSettings.SpawnerData> newSpawns = new ArrayList<>();
             double globalMultiplier = TweaksConfig.GLOBAL_MOB_MULTIPLIER.get();
 
@@ -176,28 +134,9 @@ public class SpawnChanges implements BiomeModifier {
                     targetWeight = Math.max(1, targetWeight / 4);
                 } else if (namespace.equals("alexsmobs") && (category.name().contains("WATER"))) {
                     targetWeight = Math.max(1, targetWeight / 6);
-                } else if (namespace.equals("minecraft")) {
-                    if (id.getPath().contains("squid")) {
-                        targetWeight = (int)(targetWeight * 2.5);
-                    } else {
-                        targetWeight = (int)(targetWeight * 1.5);
-                    }
-                }
-
-                if (targetWeight >= highestWeight && !namespace.equals("minecraft") && spawners.size() > 3) {
-                    targetWeight = Math.max(1, (int)(targetWeight * 0.3));
-                }
-
-                if (!namespace.equals("minecraft")) {
-                    int modTotalWeight = namespaceWeights.getOrDefault(namespace, 1);
-                    if (modTotalWeight > maxAllowedModWeight) {
-                        float scale = (float) maxAllowedModWeight / modTotalWeight;
-                        targetWeight = Math.max(1, (int) (targetWeight * scale));
-                    }
                 }
 
                 targetWeight = Math.max(1, (int)(targetWeight * globalMultiplier));
-
                 newSpawns.add(new MobSpawnSettings.SpawnerData(data.type, targetWeight, data.minCount, data.maxCount));
             }
 
@@ -214,7 +153,8 @@ public class SpawnChanges implements BiomeModifier {
 
                 if (!alreadyExists) {
                     int weight = (category == MobCategory.CREATURE) ? 10 : (category == MobCategory.MONSTER ? 12 : 6);
-                    int maxCount = (category == MobCategory.MONSTER) ? 4 : 2;
+                    int minCount = 1;
+                    int maxCount = (category == MobCategory.MONSTER) ? 4 : 3;
 
                     ResourceLocation id = ForgeRegistries.ENTITY_TYPES.getKey(type);
                     if (id != null && id.getNamespace().equals("cataclysm")) {
@@ -226,8 +166,7 @@ public class SpawnChanges implements BiomeModifier {
                     }
 
                     weight = Math.max(1, (int)(weight * TweaksConfig.GLOBAL_MOB_MULTIPLIER.get()));
-
-                    builder.getMobSpawnSettings().addSpawn(category, new MobSpawnSettings.SpawnerData(type, weight, 1, maxCount));
+                    builder.getMobSpawnSettings().addSpawn(category, new MobSpawnSettings.SpawnerData(type, weight, minCount, maxCount));
                 }
             }
         }

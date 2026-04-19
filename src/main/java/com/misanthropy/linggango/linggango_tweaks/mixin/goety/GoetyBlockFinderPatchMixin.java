@@ -15,9 +15,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(targets = "com.Polarice3.Goety.utils.BlockFinder", remap = false)
 public class GoetyBlockFinderPatchMixin {
 
-        @Inject(method = "findIllagerWard", at = @At("HEAD"), cancellable = true, remap = false)
+        @Inject(method = "findIllagerWard*", at = @At("HEAD"), cancellable = true, remap = false)
     private static void patchIllagerWard(ServerLevel level, BlockPos pos, int soulEnergy, CallbackInfoReturnable<Boolean> cir) {
-        Player player = level.getNearestPlayer((double) pos.getX(), (double) pos.getY(), (double) pos.getZ(), 32.0D, false);
+        Player player = level.getNearestPlayer(pos.getX(), pos.getY(), pos.getZ(), 32.0D, false);
 
         if (player != null) {
             MobEffect huntingDenial = ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation("goetydelight", "hunting_denial"));

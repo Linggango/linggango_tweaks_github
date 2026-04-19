@@ -54,7 +54,7 @@ public class ParryOverlay {
         float targetAlpha = (inCombat || state != ParryEffects.ParryState.IDLE || cooldown > 0) ? 1.0f : 0.0f;
 
         if (cooldown > 0 && state == ParryEffects.ParryState.COOLDOWN) {
-            targetAlpha = Math.min(targetAlpha, 0.4f);
+            targetAlpha = 0.4f;
         }
 
         float targetActiveAlpha = (state == ParryEffects.ParryState.ACTIVE || state == ParryEffects.ParryState.SUCCESS) ? 1.0f : 0.0f;
@@ -81,7 +81,7 @@ public class ParryOverlay {
             guiGraphics.fill(x - 1, y - 1, x + boxWidth + 1, y + 23, borderAlpha | borderColor);
         }
 
-        guiGraphics.fill(x, y, x + boxWidth, y + 22, bgAlpha | 0x000000);
+        guiGraphics.fill(x, y, x + boxWidth, y + 22, bgAlpha);
 
         guiGraphics.renderItem(icon, x + 3, y + 3);
         guiGraphics.drawString(mc.font, name, x + 25, y + 7, textAlpha | 0xFFFFFF);

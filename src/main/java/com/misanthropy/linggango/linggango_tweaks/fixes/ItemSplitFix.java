@@ -8,7 +8,7 @@ public class ItemSplitFix {
         if (stack != null && !stack.isEmpty()) {
             CompoundTag tag = stack.getTag();
             if (tag != null && tag.isEmpty()) {
-                stack.setTag((CompoundTag) null);
+                stack.setTag(null);
             }
         }
     }

@@ -26,6 +26,7 @@ public class ScumSynergyEvents {
         } else if (entity.level().isClientSide && entity instanceof Player p) {
 
             return DistExecutor.unsafeCallWhenOn(Dist.CLIENT, () -> () -> {
+                assert net.minecraft.client.Minecraft.getInstance().player != null;
                 if (p.getUUID().equals(net.minecraft.client.Minecraft.getInstance().player.getUUID())) {
                     try {
                         Class<?> clazz = Class.forName("com.misanthropy.linggango.class_enhancement.client.ClientAccess");

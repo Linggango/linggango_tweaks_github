@@ -76,7 +76,7 @@ public class JeiSortStuff {
                     }
                 }
 
-                if (!matchedTop && !matchedBottom) {
+                if (!matchedBottom) {
                     middlePile.add(line);
                 }
             }

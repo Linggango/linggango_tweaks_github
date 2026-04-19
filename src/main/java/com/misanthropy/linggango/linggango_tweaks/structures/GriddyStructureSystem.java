@@ -8,6 +8,8 @@ import net.minecraft.core.Vec3i;
 import net.minecraft.world.level.chunk.ChunkGeneratorStructureState;
 import net.minecraft.world.level.levelgen.structure.placement.StructurePlacement;
 import net.minecraft.world.level.levelgen.structure.placement.StructurePlacementType;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Optional;
 
 public class GriddyStructureSystem extends StructurePlacement {
@@ -23,7 +25,9 @@ public class GriddyStructureSystem extends StructurePlacement {
     private final int xOffset;
     private final int zOffset;
 
-    public GriddyStructureSystem(Vec3i locateOffset, FrequencyReductionMethod frequencyReductionMethod, float frequency, int salt, Optional<ExclusionZone> exclusionZone, int spacing, int xOffset, int zOffset) {super(locateOffset, frequencyReductionMethod, frequency, salt, exclusionZone);
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+    public GriddyStructureSystem(Vec3i locateOffset, FrequencyReductionMethod frequencyReductionMethod, float frequency, int salt, Optional<ExclusionZone> exclusionZone, int spacing, int xOffset, int zOffset) {
+        super(locateOffset, frequencyReductionMethod, frequency, salt, exclusionZone);
         this.spacing = spacing;
         this.xOffset = xOffset;
         this.zOffset = zOffset;
@@ -40,11 +44,11 @@ public class GriddyStructureSystem extends StructurePlacement {
     public int getXOffset() { return this.xOffset; }
     public int getZOffset() { return this.zOffset; }
 
-    @Override protected boolean isPlacementChunk(ChunkGeneratorStructureState state, int chunkX, int chunkZ) {
+    @Override protected boolean isPlacementChunk(@NotNull ChunkGeneratorStructureState state, int chunkX, int chunkZ) {
         return Math.floorMod(chunkX, this.spacing) == this.xOffset && Math.floorMod(chunkZ, this.spacing) == this.zOffset;
     }
 
-    @Override public StructurePlacementType<?> type() {
+    @Override public @NotNull StructurePlacementType<?> type() {
         return LinggangoTweaks.EXACT_GRID_PLACEMENT.get();
     }
 }

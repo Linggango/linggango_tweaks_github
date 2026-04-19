@@ -26,8 +26,4 @@ public class RailChargeEnchantment extends Enchantment {
         return 60;
     }
 
-    @Override
-    public int getMaxLevel() {
-        return 1;
-    }
 }

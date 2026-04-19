@@ -27,11 +27,16 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.function.Consumer;
 
+@SuppressWarnings("unused")
 public class GameplayTweaksMixins {
 
     @Mixin(AnvilMenu.class)
     public static class AnvilMenuMixin {
-        @ModifyConstant(method = "createResult", constant = @Constant(intValue = 40))
+        @ModifyConstant(
+                method = "createResult",
+                constant = @Constant(intValue = 40),
+                require = 0
+        )
         private int linggango_tweaks$removeAnvilLimit(int original) {
             return Integer.MAX_VALUE;
         }
@@ -39,7 +44,11 @@ public class GameplayTweaksMixins {
 
     @Mixin(AnvilScreen.class)
     public static class AnvilScreenMixin {
-        @ModifyConstant(method = "renderLabels", constant = @Constant(intValue = 40))
+        @ModifyConstant(
+                method = "renderLabels",
+                constant = @Constant(intValue = 40),
+                require = 0
+        )
         private int linggango_tweaks$removeAnvilLimitScreen(int original) {
             return Integer.MAX_VALUE;
         }
