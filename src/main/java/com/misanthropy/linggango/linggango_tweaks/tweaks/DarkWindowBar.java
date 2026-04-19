@@ -1,4 +1,4 @@
-package com.misanthropy.linggango.linggango_tweaks.tweaks; // All credits goes to Txni from curseforge
+package com.misanthropy.linggango.linggango_tweaks.tweaks; // All Credit goes to Txni from Curseforge
 
 import com.mojang.blaze3d.platform.Window;
 import com.sun.jna.Memory;
@@ -34,10 +34,11 @@ public class DarkWindowBar {
         long hwndLong = GLFWNativeWin32.glfwGetWin32Window(glfwWindow);
 
         WinDef.HWND hwnd = new WinDef.HWND(Pointer.createConstant(hwndLong));
-        Memory mem = new Memory(Native.POINTER_SIZE);
-        mem.setInt(0L, 1);
+
+        Memory mem = new Memory(4);
+        mem.setInt(0, 1);
+
         DwmApi.INSTANCE.DwmSetWindowAttribute(hwnd, DwmApi.DWMWA_USE_IMMERSIVE_DARK_MODE, new WinDef.LPVOID(mem), new WinDef.DWORD(4L));
-        mem.close();
 
         int oldWidth = window.getScreenWidth();
         window.setWindowed(oldWidth + 1, window.getScreenHeight());
@@ -45,7 +46,7 @@ public class DarkWindowBar {
     }
 
     public interface DwmApi extends StdCallLibrary {
-        DwmApi INSTANCE = Native.load("dwmapi", DwmApi.class, W32APIOptions.DEFAULT_OPTIONS);
+        DwmApi INSTANCE = (DwmApi) Native.loadLibrary("dwmapi", DwmApi.class, W32APIOptions.DEFAULT_OPTIONS);
         WinDef.DWORD DWMWA_USE_IMMERSIVE_DARK_MODE = new WinDef.DWORD(20L);
         void DwmSetWindowAttribute(WinDef.HWND paramHWND, WinDef.DWORD paramDWORD1, WinDef.LPVOID paramLPVOID, WinDef.DWORD paramDWORD2);
     }

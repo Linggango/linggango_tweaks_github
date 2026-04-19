@@ -1,6 +1,7 @@
 package com.misanthropy.linggango.linggango_tweaks;
 
 import com.misanthropy.linggango.linggango_tweaks.chaos.ChaosDifficultyAddon;
+import com.misanthropy.linggango.linggango_tweaks.client.LinggangoRichPresence;
 import com.misanthropy.linggango.linggango_tweaks.config.TweaksConfig;
 import com.misanthropy.linggango.linggango_tweaks.config.SpawnerClientConfig;
 import com.misanthropy.linggango.linggango_tweaks.enchant.LinggangoEnchantments;
@@ -29,6 +30,7 @@ import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
@@ -60,6 +62,11 @@ public class LinggangoTweaks {
         LanguageRelatedCrashFixes.fixLocale();
         JeiSortStuff.patchJeiSortOrder();
         SpawnChanges.init();
+
+        if (FMLEnvironment.dist.isClient()) {
+            LinggangoRichPresence.init();
+        }
+
         LogSpamFilter.register();
         TweaksSkillNetwork.register();
         ChaosDifficultyAddon.registerChaos();

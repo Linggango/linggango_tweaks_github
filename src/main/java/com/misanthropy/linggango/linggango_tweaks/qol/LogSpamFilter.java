@@ -11,7 +11,7 @@ import java.util.List;
 public class LogSpamFilter extends AbstractFilter {
 
     private static final List<String> SPAM_MESSAGES = List.of(
-            ""
+            "fart"
     );
 
     @Override

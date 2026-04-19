@@ -1,11 +1,10 @@
 buildscript {
     repositories {
-
         maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
         mavenCentral()
     }
     dependencies {
-        classpath 'org.spongepowered:mixingradle:0.7.38'
+        classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
     }
 }
 
@@ -29,56 +28,31 @@ java {
 }
 
 minecraft {
-
     mappings channel: mapping_channel, version: mapping_version
-
     copyIdeResources = true
-
     runs {
-
         configureEach {
             workingDirectory project.file('run')
-
             property 'forge.logging.markers', 'REGISTRIES'
-
             property 'forge.logging.console.level', 'debug'
-
             mods {
                 "${mod_id}" {
                     source sourceSets.main
                 }
             }
         }
-
         client {
-
             property 'forge.enabledGameTestNamespaces', mod_id
-            jvmArgs '--add-opens', 'java.base/java.lang=ALL-UNNAMED',
-                    '--add-opens', 'java.base/java.lang.reflect=ALL-UNNAMED',
-                    '--add-opens', 'java.base/java.util=ALL-UNNAMED'
         }
-
         server {
             property 'forge.enabledGameTestNamespaces', mod_id
             args '--nogui'
-        }
-
-        gameTestServer {
-            property 'forge.enabledGameTestNamespaces', mod_id
-        }
-
-        data {
-
-            workingDirectory project.file('run-data')
-
-            args '--mod', mod_id, '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
         }
     }
 }
 
 mixin {
     add sourceSets.main, "${mod_id}.refmap.json"
-
     config "${mod_id}.mixins.json"
 }
 
@@ -88,6 +62,7 @@ repositories {
     flatDir {
         dir 'libs'
     }
+    mavenCentral()
     maven {
         url "https://cursemaven.com"
         content {
@@ -96,37 +71,51 @@ repositories {
     }
 }
 
+configurations {
+    includeLib
+    implementation.extendsFrom includeLib
+}
+
 dependencies {
-    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-    annotationProcessor 'org.spongepowered:mixin:0.8.7:processor'
-    compileOnly fg.deobf("curse.maven:traveloptics-1046916:7424522")
+    minecraft 'net.minecraftforge:forge:' + minecraft_version + '-' + forge_version
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+
+    includeLib 'org.json:json:20231013'
+    includeLib 'com.kohlschutter.junixsocket:junixsocket-common:2.6.2'
+    includeLib 'com.kohlschutter.junixsocket:junixsocket-native-common:2.6.2'
+
+    compileOnly fg.deobf("blank:traveloptics:6.3.0-1.20.1")
     compileOnly fg.deobf("blank:betterchunkloading:1.20.1-5.4")
     compileOnly fg.deobf("blank:EnigmaticLegacy:2.30.1")
     compileOnly fg.deobf("blank:mowziesmobs:1.7.3")
-    implementation fg.deobf("blank:difficulty_enhancement:0.1")
+    compileOnly fg.deobf("blank:difficulty_enhancement:0.1")
     compileOnly fg.deobf("blank:goetydelight:1.2.0f2+20260225")
-    implementation fg.deobf("blank:goety:2.5.50.2")
+    compileOnly fg.deobf("blank:goety:2.5.50.2")
     compileOnly fg.deobf("blank:domesticationinnovation:1.7.1-1.20.1")
     compileOnly fg.deobf("blank:faunify:forge-1.20.1-1.3.1")
-    compileOnly fg.deobf("curse.maven:alexsmobs-426558:5698791")
+    compileOnly fg.deobf("blank:alexsmobs:1.22.9")
     compileOnly fg.deobf("blank:create:1.20.1-6.0.8")
-    compileOnly fg.deobf("curse.maven:modernfix-790626:7911677")
-    compileOnly fg.deobf("curse.maven:armageddon-1110642:7142556")
+    implementation fg.deobf("curse.maven:macabre-933001:6442644")
+    implementation fg.deobf("curse.maven:modernfix-790626:7911677")
+    implementation fg.deobf("curse.maven:armageddon-1110642:7142556")
+    implementation fg.deobf("curse.maven:l2h-909207:7746182")
+    implementation fg.deobf("curse.maven:l2l-620203:6806000")
     implementation fg.deobf("curse.maven:composite-material-982540:6310307")
     runtimeOnly fg.deobf("curse.maven:cael-308989:5281700")
     implementation fg.deobf("curse.maven:attributefix-280510:7612291")
     implementation fg.deobf("curse.maven:curios-309927:6418456")
     implementation fg.deobf("curse.maven:geckolib-388172:7553267")
     compileOnly fg.deobf("blank:irons_spellbooks:1.20.1-3.15.4")
-    implementation fg.deobf("curse.maven:endinglibrary-1471165:7753331")
+    compileOnly fg.deobf("blank:EndingLibrary:1.20.1-2.1.12beta-all")
     implementation fg.deobf("curse.maven:embeddium-908741:5681725")
     implementation fg.deobf("curse.maven:celestisynth-872712:7686018")
     implementation fg.deobf("curse.maven:class-enhancement-1460324:7801433")
     compileOnly fg.deobf("blank:species:3.5")
     compileOnly fg.deobf("blank:covenant_of_the_seven:2.2.6-hotfix")
     implementation fg.deobf("curse.maven:capybaras-mod-1345431:7354242")
-    compileOnly fg.deobf("curse.maven:mekalus-oculus-fork-with-fixed-mekanism-mekasuit-1130957:6994299")
-    implementation fg.deobf("curse.maven:lendercataclysm-551586:6906993")
+    implementation fg.deobf("curse.maven:born-in-chaos-686437:7366478")
+    implementation fg.deobf("curse.maven:mekalus-oculus-fork-with-fixed-mekanism-mekasuit-1130957:6994299")
+    implementation fg.deobf("curse.maven:lendercataclysm-551586:7867528")
     implementation fg.deobf("curse.maven:legendary-monsters-944035:7628159")
     implementation fg.deobf("curse.maven:lionfish-api-1001614:5922047")
     implementation fg.deobf("curse.maven:l2hostility-909207:7815389")
@@ -137,52 +126,36 @@ dependencies {
     implementation fg.deobf("curse.maven:better-combat-by-daedelus-639842:7287334")
     implementation fg.deobf("curse.maven:xaeros-world-map-317780:7598469")
     compileOnly fg.deobf("blank:photon:forge-1.20.1-1.1.17")
-    implementation fg.deobf("curse.maven:cloth-config-348521:4633444")
-    implementation fg.deobf("curse.maven:l2complements-758349:7606338")
-    implementation fg.deobf("curse.maven:patchouli-306770:4636277")
-    compileOnly fg.deobf("curse.maven:playeranimator-658587:4587214")
-    compileOnly fg.deobf("curse.maven:citadel-331936:7476570")
-    compileOnly fg.deobf("curse.maven:alexs-caves-924854:5848216")
-    compileOnly fg.deobf("curse.maven:farmersdelight-398521:7801523")
-    compileOnly fg.deobf("curse.maven:naturesaura-306626:4963590")
-    compileOnly fg.deobf("curse.maven:cupboard-326652:7905744")
-    compileOnly fg.deobf("curse.maven:bloodmagic-224791:7931370")
-    compileOnly fg.deobf("curse.maven:attributeslib-898963:5634071")
-    compileOnly fg.deobf("curse.maven:placebo-283644:6274231")
-    compileOnly fg.deobf("curse.maven:ldlib-626676:7809449")
-
-
 }
 
 tasks.named('processResources', ProcessResources).configure {
-    var replaceProperties = [minecraft_version   : minecraft_version, minecraft_version_range: minecraft_version_range,
-                             forge_version       : forge_version, forge_version_range: forge_version_range,
+    var replaceProperties = [minecraft_version: minecraft_version, minecraft_version_range: minecraft_version_range,
+                             forge_version: forge_version, forge_version_range: forge_version_range,
                              loader_version_range: loader_version_range,
-                             mod_id              : mod_id, mod_name: mod_name, mod_license: mod_license, mod_version: mod_version,
-                             mod_authors         : mod_authors, mod_description: mod_description,]
-
+                             mod_id: mod_id, mod_name: mod_name, mod_license: mod_license, mod_version: mod_version,
+                             mod_authors: mod_authors, mod_description: mod_description,]
     inputs.properties replaceProperties
-
     filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
         expand replaceProperties + [project: project]
     }
 }
 
 tasks.named('jar', Jar).configure {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from {
+        configurations.includeLib.collect { it.isDirectory() ? it : zipTree(it) }
+    }
     manifest {
         attributes([
-                "Specification-Title"     : mod_id,
-                "Specification-Vendor"    : mod_authors,
-                "Specification-Version"   : "1",
-
-                "Implementation-Title"    : project.name,
-                "Implementation-Version"  : project.jar.archiveVersion,
-                "Implementation-Vendor"   : mod_authors,
+                "Specification-Title": mod_id,
+                "Specification-Vendor": mod_authors,
+                "Specification-Version": "1",
+                "Implementation-Title": project.name,
+                "Implementation-Version": project.jar.archiveVersion,
+                "Implementation-Vendor": mod_authors,
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-                "MixinConfigs"            : "${mod_id}.mixins.json"
+                "MixinConfigs": "${mod_id}.mixins.json"
         ])
     }
-
     finalizedBy 'reobfJar'
 }
-

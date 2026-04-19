@@ -58,6 +58,7 @@ public class TweaksConfig {
     public static final ForgeConfigSpec.IntValue TERRA_ENTITY_OVERWORLD_WEIGHT;
 
     public static final ForgeConfigSpec.ConfigValue<String> BIOME_FALLBACK_NAMESPACE;
+    public static final ForgeConfigSpec.DoubleValue GLOBAL_BIOME_SIZE_MULTIPLIER;
     public static final ForgeConfigSpec.ConfigValue<List<? extends String>> BIOME_REDUCTIONS;
 
     private static final Map<String, Double> parsedCustomSpreads = new HashMap<>();
@@ -119,6 +120,7 @@ public class TweaksConfig {
 
         BUILDER.push("biome_tweaks");
         BIOME_FALLBACK_NAMESPACE = BUILDER.define("biome_fallback_namespace", "dreamwoods:");
+        GLOBAL_BIOME_SIZE_MULTIPLIER = BUILDER.defineInRange("global_biome_size_multiplier", 1.5, 0.1, 100.0);
         BIOME_REDUCTIONS = BUILDER.defineListAllowEmpty(List.of("biome_reductions"),
                 () -> List.of(
                         "dreamwoods:grassy_shore|1.0",

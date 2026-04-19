@@ -57,6 +57,7 @@
     "structure.StructureSpreadRegistryMixin",
     "tweaks.AnvilMenuMixin",
     "tweaks.BedMonsterBypassMixin",
+    "tweaks.BiomeSizeMixin",
     "tweaks.BiomeSpamFixerMixin",
     "tweaks.BoatPlacementSoundMixin",
     "tweaks.ChestLootThinningMixin",
