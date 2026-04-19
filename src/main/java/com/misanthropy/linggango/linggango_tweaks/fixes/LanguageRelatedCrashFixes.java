@@ -2,6 +2,7 @@ package com.misanthropy.linggango.linggango_tweaks.fixes;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
 import java.util.Locale;
 
 public class LanguageRelatedCrashFixes {

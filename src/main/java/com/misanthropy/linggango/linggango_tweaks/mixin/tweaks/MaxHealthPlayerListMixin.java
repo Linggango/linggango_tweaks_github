@@ -1,6 +1,5 @@
 package com.misanthropy.linggango.linggango_tweaks.mixin.tweaks;
 
-import java.util.Optional;
 import com.misanthropy.linggango.linggango_tweaks.util.HealthFix;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -11,6 +10,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
+
+import java.util.Optional;
 
 @Mixin(PlayerList.class)
 public class MaxHealthPlayerListMixin {

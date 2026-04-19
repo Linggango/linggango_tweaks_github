@@ -1,12 +1,13 @@
 package com.misanthropy.linggango.linggango_tweaks.mixin.l2;
 
+import dev.xkmc.l2hostility.content.traits.highlevel.ReprintTrait;
 import net.minecraft.world.item.enchantment.Enchantment;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
+
 import java.util.HashSet;
 import java.util.Map;
-import dev.xkmc.l2hostility.content.traits.highlevel.ReprintTrait;
 import java.util.Set;
 
 @Mixin(value = ReprintTrait.class)

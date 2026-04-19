@@ -15,6 +15,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import top.theillusivec4.curios.api.SlotContext;
+
 import java.util.UUID;
 
 @Mixin(targets = "com.aizistral.enigmaticlegacy.items.CursedRing", remap = false)

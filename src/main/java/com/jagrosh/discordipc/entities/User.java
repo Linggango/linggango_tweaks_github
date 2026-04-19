@@ -167,9 +167,8 @@ public class User
     @Override
     public boolean equals(Object o)
     {
-        if (!(o instanceof User))
+        if (!(o instanceof User oUser))
             return false;
-        User oUser = (User) o;
         return this == oUser || this.id == oUser.id;
     }
     

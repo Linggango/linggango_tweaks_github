@@ -4,12 +4,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.thecelestialworkshop.celestisynth.common.attack.breezebreaker.BreezebreakerAttack;
-import org.thecelestialworkshop.celestisynth.common.attack.breezebreaker.BreezebreakerDualGalestormAttack;
-import org.thecelestialworkshop.celestisynth.common.attack.breezebreaker.BreezebreakerGalestormAttack;
-import org.thecelestialworkshop.celestisynth.common.attack.breezebreaker.BreezebreakerWheelAttack;
-import org.thecelestialworkshop.celestisynth.common.attack.breezebreaker.BreezebreakerWhirlwindAttack;
-import org.thecelestialworkshop.celestisynth.common.attack.breezebreaker.BreezebreakerWindRoarAttack;
+import org.thecelestialworkshop.celestisynth.common.attack.breezebreaker.*;
 
 @Mixin(value = {
         BreezebreakerGalestormAttack.class,

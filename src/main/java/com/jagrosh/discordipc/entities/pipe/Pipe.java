@@ -74,7 +74,7 @@ public abstract class Pipe {
                         .getJSONObject("config")
                         .getString("api_endpoint"));
 
-                LOGGER.debug(String.format("Found a valid client (%s) with packet: %s", pipe.build.name(), p.toString()));
+                LOGGER.debug(String.format("Found a valid client (%s) with packet: %s", pipe.build.name(), p));
                 // we're done if we found our first choice
                 if(pipe.build == preferredOrder[0] || DiscordBuild.ANY == preferredOrder[0])
                 {
@@ -189,7 +189,7 @@ public abstract class Pipe {
             if(callback!=null && !callback.isEmpty())
                 callbacks.put(nonce, callback);
             write(p.toBytes());
-            LOGGER.debug(String.format("Sent packet: %s", p.toString()));
+            LOGGER.debug(String.format("Sent packet: %s", p));
             if(listener != null)
                 listener.onPacketSent(ipcClient, p);
         }

@@ -15,9 +15,10 @@
  */
 package com.jagrosh.discordipc.entities;
 
+import org.json.JSONObject;
+
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import org.json.JSONObject;
 
 /**
  * A data-packet received from Discord via an {@link com.jagrosh.discordipc.IPCClient IPCClient}.<br>

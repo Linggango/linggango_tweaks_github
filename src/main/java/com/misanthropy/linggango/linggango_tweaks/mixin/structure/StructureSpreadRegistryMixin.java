@@ -2,14 +2,10 @@ package com.misanthropy.linggango.linggango_tweaks.mixin.structure;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.mojang.serialization.Decoder;
 import com.misanthropy.linggango.linggango_tweaks.config.TweaksConfig;
+import com.mojang.serialization.Decoder;
 import net.minecraft.core.WritableRegistry;
-import net.minecraft.resources.FileToIdConverter;
-import net.minecraft.resources.RegistryDataLoader;
-import net.minecraft.resources.RegistryOps;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.*;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import org.spongepowered.asm.mixin.Mixin;

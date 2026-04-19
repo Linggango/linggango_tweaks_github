@@ -1,8 +1,8 @@
 package com.misanthropy.linggango.linggango_tweaks.mixin.tweaks;
 
+import com.mojang.logging.LogUtils;
 import net.minecraft.world.entity.ai.sensing.Sensing;
 import org.slf4j.Logger;
-import com.mojang.logging.LogUtils;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;

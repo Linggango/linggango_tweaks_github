@@ -2,6 +2,7 @@ package com.misanthropy.linggango.linggango_tweaks.ai;
 
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.control.LookControl;
+
 import java.util.Optional;
 
 public class FastLookControl extends LookControl {

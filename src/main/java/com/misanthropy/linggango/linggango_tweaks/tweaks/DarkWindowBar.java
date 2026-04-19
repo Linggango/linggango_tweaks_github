@@ -1,4 +1,4 @@
-package com.misanthropy.linggango.linggango_tweaks.tweaks; // All Credit goes to Txni from Curseforge
+package com.misanthropy.linggango.linggango_tweaks.tweaks;
 
 import com.mojang.blaze3d.platform.Window;
 import com.sun.jna.Memory;
