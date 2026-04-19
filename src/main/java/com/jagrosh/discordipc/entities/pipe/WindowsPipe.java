@@ -21,6 +21,7 @@ import com.jagrosh.discordipc.entities.Callback;
 import com.jagrosh.discordipc.entities.Packet;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +35,7 @@ public class WindowsPipe extends Pipe
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WindowsPipe.class);
 
-    private final RandomAccessFile file;
+    private final @NonNull RandomAccessFile file;
 
     WindowsPipe(IPCClient ipcClient, HashMap<String, Callback> callbacks, String location)
     {
@@ -52,7 +53,7 @@ public class WindowsPipe extends Pipe
     }
 
     @Override
-    public Packet read() throws IOException, JSONException {
+    public @NonNull Packet read() throws IOException, JSONException {
         while(file.length() == 0 && status == PipeStatus.CONNECTED)
         {
             try {

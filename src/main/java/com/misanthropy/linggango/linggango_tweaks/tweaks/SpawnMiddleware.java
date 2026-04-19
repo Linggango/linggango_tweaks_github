@@ -14,6 +14,8 @@ import net.minecraftforge.event.entity.living.MobSpawnEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
@@ -27,7 +29,7 @@ public class SpawnMiddleware {
     private static int totalTrackedSpawns = 0;
 
     @SubscribeEvent
-    public static void onCheckSpawn(MobSpawnEvent.FinalizeSpawn event) {
+    public static void onCheckSpawn(MobSpawnEvent.@NonNull FinalizeSpawn event) {
         LevelAccessor level = event.getLevel();
         Mob entity = event.getEntity();
         ResourceLocation id = ForgeRegistries.ENTITY_TYPES.getKey(entity.getType());
@@ -92,7 +94,7 @@ public class SpawnMiddleware {
         }
     }
 
-    private static boolean replaceSpawn(ServerLevelAccessor level, Mob original, EntityType<?> newType, MobSpawnEvent.FinalizeSpawn event) {
+    private static boolean replaceSpawn(@NonNull ServerLevelAccessor level, @NonNull Mob original, @Nullable EntityType<?> newType, MobSpawnEvent.@NonNull FinalizeSpawn event) {
         if (newType != null && newType != original.getType()) {
             Entity wildcard = newType.create(level.getLevel());
             if (wildcard instanceof Mob wildcardMob) {
@@ -106,7 +108,7 @@ public class SpawnMiddleware {
         return false;
     }
 
-    private static EntityType<?> getStarvingMobType(MobCategory targetCategory) {
+    private static @Nullable EntityType<?> getStarvingMobType(MobCategory targetCategory) {
         EntityType<?> starvingType = null;
         int lowestCount = Integer.MAX_VALUE;
 
@@ -127,7 +129,7 @@ public class SpawnMiddleware {
         return starvingType;
     }
 
-    private static EntityType<?> getAbsoluteStarvingMobType() {
+    private static @Nullable EntityType<?> getAbsoluteStarvingMobType() {
         EntityType<?> starvingType = null;
         int lowestCount = Integer.MAX_VALUE;
 

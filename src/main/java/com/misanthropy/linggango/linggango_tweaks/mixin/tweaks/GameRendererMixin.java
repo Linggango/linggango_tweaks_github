@@ -3,6 +3,7 @@ package com.misanthropy.linggango.linggango_tweaks.mixin.tweaks;
 import net.minecraft.client.Camera;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.util.Mth;
+import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -23,7 +24,7 @@ public class GameRendererMixin {
         linggango$frameCounter++;
     }
     @Inject(method = "getFov", at = @At("RETURN"), cancellable = true)
-    private void smoothGlobalFov(Camera camera, float partialTicks, boolean useFOVSetting, CallbackInfoReturnable<Double> cir) {
+    private void smoothGlobalFov(Camera camera, float partialTicks, boolean useFOVSetting, @NonNull CallbackInfoReturnable<Double> cir) {
         if (!useFOVSetting) return;
 
         double targetFov = cir.getReturnValueD();

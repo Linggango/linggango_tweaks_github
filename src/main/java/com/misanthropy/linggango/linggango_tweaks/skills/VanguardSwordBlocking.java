@@ -17,17 +17,18 @@ import net.minecraftforge.client.event.RenderHandEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import org.jspecify.annotations.NonNull;
 
 @Mod.EventBusSubscriber(modid = LinggangoTweaks.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class VanguardSwordBlocking {
 
-    public static boolean isVanguardBlocking(Player player) {
+    public static boolean isVanguardBlocking(@NonNull Player player) {
         return player.isUsingItem() && player.getUseItem().getItem() instanceof SwordItem
                 && ("warrior".equals(SkillManager.getPlayerClass(player)) || "warrior_".equals(SkillManager.getPlayerClass(player)));
     }
 
     @SubscribeEvent
-    public static void onHurt(LivingHurtEvent event) {
+    public static void onHurt(@NonNull LivingHurtEvent event) {
         if (event.getEntity() instanceof Player player && isVanguardBlocking(player)) {
             DamageSource source = event.getSource();
             Vec3 damagePos = source.getSourcePosition();
@@ -51,7 +52,7 @@ public class VanguardSwordBlocking {
     @Mod.EventBusSubscriber(modid = LinggangoTweaks.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
     public static class ClientVisuals {
         @SubscribeEvent
-        public static void onRenderHand(RenderHandEvent event) {
+        public static void onRenderHand(@NonNull RenderHandEvent event) {
             Minecraft mc = Minecraft.getInstance();
             AbstractClientPlayer player = mc.player;
 

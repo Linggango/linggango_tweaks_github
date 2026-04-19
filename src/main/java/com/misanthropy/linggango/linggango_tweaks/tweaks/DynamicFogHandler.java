@@ -7,6 +7,7 @@ import net.minecraftforge.client.event.ViewportEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.loading.FMLPaths;
+import org.jspecify.annotations.NonNull;
 
 import java.io.Reader;
 import java.io.Writer;
@@ -51,7 +52,7 @@ public class DynamicFogHandler {
     }
 
     @SubscribeEvent
-    public static void onRenderFog(ViewportEvent.RenderFog event) {
+    public static void onRenderFog(ViewportEvent.@NonNull RenderFog event) {
         if (!loaded) load();
         if (!dynamicFogEnabled) return;
         if (event.getCamera().getFluidInCamera() != FogType.NONE) return;
@@ -69,7 +70,7 @@ public class DynamicFogHandler {
     }
 
     @SubscribeEvent
-    public static void onComputeFogColor(ViewportEvent.ComputeFogColor event) {
+    public static void onComputeFogColor(ViewportEvent.@NonNull ComputeFogColor event) {
         if (!loaded) load();
         if (!dynamicFogEnabled) return;
         if (event.getCamera().getFluidInCamera() != FogType.NONE) return;

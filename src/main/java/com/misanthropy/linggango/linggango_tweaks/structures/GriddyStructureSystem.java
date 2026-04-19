@@ -9,6 +9,7 @@ import net.minecraft.world.level.chunk.ChunkGeneratorStructureState;
 import net.minecraft.world.level.levelgen.structure.placement.StructurePlacement;
 import net.minecraft.world.level.levelgen.structure.placement.StructurePlacementType;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Optional;
 
@@ -26,14 +27,14 @@ public class GriddyStructureSystem extends StructurePlacement {
     private final int zOffset;
 
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-    public GriddyStructureSystem(Vec3i locateOffset, FrequencyReductionMethod frequencyReductionMethod, float frequency, int salt, Optional<ExclusionZone> exclusionZone, int spacing, int xOffset, int zOffset) {
+    public GriddyStructureSystem(@NonNull Vec3i locateOffset, @NonNull FrequencyReductionMethod frequencyReductionMethod, float frequency, int salt, @NonNull Optional<ExclusionZone> exclusionZone, int spacing, int xOffset, int zOffset) {
         super(locateOffset, frequencyReductionMethod, frequency, salt, exclusionZone);
         this.spacing = spacing;
         this.xOffset = xOffset;
         this.zOffset = zOffset;
     }
 
-    private static DataResult<GriddyStructureSystem> validate(GriddyStructureSystem placement) {
+    private static @NonNull DataResult<GriddyStructureSystem> validate(@NonNull GriddyStructureSystem placement) {
         if (placement.spacing <= placement.xOffset || placement.spacing <= placement.zOffset) {
             return DataResult.error(() -> "Spacing must be strictly greater than offsets!");
         }

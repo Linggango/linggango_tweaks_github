@@ -16,6 +16,7 @@
 package com.jagrosh.discordipc.entities;
 
 import org.json.JSONObject;
+import org.jspecify.annotations.NonNull;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -79,7 +80,7 @@ public class Packet
     }
     
     @Override
-    public String toString()
+    public @NonNull String toString()
     {
         return "Pkt:"+getOp()+getJson().toString();
     }

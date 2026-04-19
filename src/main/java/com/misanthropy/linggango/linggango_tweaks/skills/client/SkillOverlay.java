@@ -12,6 +12,7 @@ import net.minecraftforge.client.gui.overlay.ForgeGui;
 import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import org.jspecify.annotations.NonNull;
 
 @Mod.EventBusSubscriber(modid = LinggangoTweaks.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class SkillOverlay {
@@ -20,12 +21,12 @@ public class SkillOverlay {
     private static float currentActiveAlpha = 0.0f;
 
     @SubscribeEvent
-    public static void registerKeys(RegisterKeyMappingsEvent event) {
+    public static void registerKeys(@NonNull RegisterKeyMappingsEvent event) {
         event.register(ClientSkillEvents.SKILL_KEY);
     }
 
     @SubscribeEvent
-    public static void registerOverlays(RegisterGuiOverlaysEvent event) {
+    public static void registerOverlays(@NonNull RegisterGuiOverlaysEvent event) {
         event.registerAboveAll("class_skill_hud", SKILL_HUD);
     }
 

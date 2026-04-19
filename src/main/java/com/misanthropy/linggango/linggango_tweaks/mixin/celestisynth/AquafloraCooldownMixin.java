@@ -1,5 +1,6 @@
 package com.misanthropy.linggango.linggango_tweaks.mixin.celestisynth;
 
+import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -19,7 +20,7 @@ import org.thecelestialworkshop.celestisynth.common.attack.aquaflora.AquafloraSl
 public abstract class AquafloraCooldownMixin {
 
     @Inject(method = "getCooldown", at = @At("HEAD"), cancellable = true, remap = false)
-    private void tweakAquafloraCooldowns(CallbackInfoReturnable<Integer> cir) {
+    private void tweakAquafloraCooldowns(@NonNull CallbackInfoReturnable<Integer> cir) {
         Object self = this;
 
         if (self instanceof AquafloraBlastOffAttack) {
@@ -34,7 +35,7 @@ public abstract class AquafloraCooldownMixin {
     }
 
     @Inject(method = "tickAttack", at = @At("HEAD"), cancellable = true, remap = false)
-    private void reduceFencingHits(CallbackInfo ci) {
+    private void reduceFencingHits(@NonNull CallbackInfo ci) {
         if ((Object) this instanceof AquafloraPetalPiercesAttack) {
             try {
                 int t = (int) this.getClass().getMethod("getTimerProgress").invoke(this);

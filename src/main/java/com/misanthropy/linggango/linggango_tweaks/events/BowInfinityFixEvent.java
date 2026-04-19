@@ -5,13 +5,14 @@ import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraftforge.event.entity.player.ArrowNockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import org.jspecify.annotations.NonNull;
 
 
 @Mod.EventBusSubscriber(modid = "linggango_tweaks", bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class BowInfinityFixEvent {
 
     @SubscribeEvent
-    public static void linggango$infinityFix(ArrowNockEvent event) {
+    public static void linggango$infinityFix(@NonNull ArrowNockEvent event) {
         if (event.getBow().getEnchantmentLevel(Enchantments.INFINITY_ARROWS) > 0) {
             event.getEntity().startUsingItem(event.getHand());
             event.setAction(InteractionResultHolder.consume(event.getBow()));

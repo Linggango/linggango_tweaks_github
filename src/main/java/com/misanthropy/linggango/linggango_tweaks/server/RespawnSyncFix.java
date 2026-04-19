@@ -6,6 +6,7 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.server.ServerLifecycleHooks;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Map;
 import java.util.UUID;
@@ -17,14 +18,14 @@ public class RespawnSyncFix {
     private static final Map<UUID, Integer> playersToSync = new ConcurrentHashMap<>();
 
     @SubscribeEvent
-    public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
+    public static void onPlayerRespawn(PlayerEvent.@NonNull PlayerRespawnEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
             playersToSync.put(player.getUUID(), 40);
         }
     }
 
     @SubscribeEvent
-    public static void onServerTick(TickEvent.ServerTickEvent event) {
+    public static void onServerTick(TickEvent.@NonNull ServerTickEvent event) {
         if (event.phase != TickEvent.Phase.END) return;
         if (playersToSync.isEmpty()) return;
 

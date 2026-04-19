@@ -8,6 +8,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -16,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(AbstractFurnaceBlockEntity.class)
 public class VillagerDeathSoundMixin {
     @Inject(method = "serverTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;hasCraftingRemainingItem()Z"))
-    private static void onFuelBurned(Level level, BlockPos pos, BlockState state, AbstractFurnaceBlockEntity furnace, CallbackInfo ci) {
+    private static void onFuelBurned(@NonNull Level level, @NonNull BlockPos pos, BlockState state, @NonNull AbstractFurnaceBlockEntity furnace, CallbackInfo ci) {
         ItemStack fuel = furnace.getItem(1);
         if (!fuel.isEmpty()) {
             var itemId = ForgeRegistries.ITEMS.getKey(fuel.getItem());

@@ -11,6 +11,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
+import org.jspecify.annotations.NonNull;
 
 @Mod.EventBusSubscriber(modid = "linggango_tweaks", bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ModParticles {
@@ -26,7 +27,7 @@ public class ModParticles {
     }
 
     @SubscribeEvent
-    public static void registerProviders(RegisterParticleProvidersEvent event) {
+    public static void registerProviders(@NonNull RegisterParticleProvidersEvent event) {
         event.registerSpriteSet(ModParticles.PARRY_SPARKLE.get(), ParrySparkleParticle.Provider::new);
         event.registerSpriteSet(ModParticles.ANIMATED_PARRY.get(), AnimatedParryParticle.Provider::new);
         event.registerSpriteSet(ModParticles.PERFECT_PARRY.get(), AnimatedParryParticle.Provider::new);

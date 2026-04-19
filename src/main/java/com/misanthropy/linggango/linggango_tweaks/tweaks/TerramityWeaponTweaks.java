@@ -11,6 +11,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Collection;
 import java.util.UUID;
@@ -21,7 +22,7 @@ public class TerramityWeaponTweaks {
     private static final UUID TERRAMITY_BUFF_UUID = UUID.fromString("a1b2c3d4-e5f6-4a5b-bc6d-7e8f9a0b1c2d");
 
     @SubscribeEvent
-    public static void onAttributeModifier(ItemAttributeModifierEvent event) {
+    public static void onAttributeModifier(@NonNull ItemAttributeModifierEvent event) {
         if (event.getSlotType() != EquipmentSlot.MAINHAND) return;
 
         ItemStack stack = event.getItemStack();

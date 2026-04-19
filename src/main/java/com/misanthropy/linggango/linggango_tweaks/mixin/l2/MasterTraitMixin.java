@@ -9,6 +9,7 @@ import dev.xkmc.l2hostility.content.traits.legendary.MasterTrait;
 import dev.xkmc.l2hostility.init.L2Hostility;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -28,7 +29,7 @@ public abstract class MasterTraitMixin {
     }
 
     @Inject(method = "getConfig", at = @At("HEAD"), cancellable = true)
-    private static void injectApostleConfigLookup(EntityType<?> type, CallbackInfoReturnable<EntityConfig.MasterConfig> cir) {
+    private static void injectApostleConfigLookup(@NonNull EntityType<?> type, @NonNull CallbackInfoReturnable<EntityConfig.MasterConfig> cir) {
         if (!(ApostleL2Data.CURRENT_APOSTLE instanceof Apostle)) {
             return;
         }

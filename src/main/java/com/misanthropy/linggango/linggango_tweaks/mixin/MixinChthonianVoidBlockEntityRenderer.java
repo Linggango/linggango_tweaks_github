@@ -7,6 +7,7 @@ import net.mcreator.terramity.ChthonianVoidBlockEntityRenderer;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
+import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Unique;
@@ -43,7 +44,7 @@ public class MixinChthonianVoidBlockEntityRenderer {
      * @reason hi gamers
      */
     @Overwrite
-    protected RenderType renderType() {
+    protected @NonNull RenderType renderType() {
         return CHTHONIAN_VOID_RENDER_TYPE;
     }
 }

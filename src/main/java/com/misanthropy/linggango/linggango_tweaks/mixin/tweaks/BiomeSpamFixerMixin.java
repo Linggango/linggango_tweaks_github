@@ -3,6 +3,7 @@ package com.misanthropy.linggango.linggango_tweaks.mixin.tweaks;
 import com.misanthropy.linggango.linggango_tweaks.config.TweaksConfig;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.world.level.biome.Climate;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
@@ -16,7 +17,7 @@ import java.util.Map;
 public class BiomeSpamFixerMixin {
 
     @ModifyVariable(method = "<init>", at = @At("HEAD"), argsOnly = true)
-    private static List<Pair<Climate.ParameterPoint, Object>> linggango$fixBiomeSpam(List<Pair<Climate.ParameterPoint, Object>> values) {
+    private static List<Pair<Climate.ParameterPoint, Object>> linggango$fixBiomeSpam(@Nullable List<Pair<Climate.ParameterPoint, Object>> values) {
         if (values == null || values.isEmpty()) return values;
 
         Object firstItem = values.get(0).getSecond();

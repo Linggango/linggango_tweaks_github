@@ -15,6 +15,8 @@
  */
 package com.jagrosh.discordipc.entities;
 
+import org.jspecify.annotations.NonNull;
+
 /**
  * Constants representing various Discord client builds,
  * such as Stable, Canary, Public Test Build (PTB)
@@ -67,7 +69,7 @@ public enum DiscordBuild
      * @return The DiscordBuild corresponding to the endpoint, or
      *         {@link DiscordBuild#ANY} if none match.
      */
-    public static DiscordBuild from(String endpoint)
+    public static @NonNull DiscordBuild from(String endpoint)
     {
         for(DiscordBuild value : values())
         {

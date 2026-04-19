@@ -24,6 +24,8 @@ import com.jagrosh.discordipc.entities.Packet;
 import com.jagrosh.discordipc.exceptions.NoDiscordClientException;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +39,7 @@ public abstract class Pipe {
     private static final int VERSION = 1;
     PipeStatus status = PipeStatus.CONNECTING;
     IPCListener listener;
-    private DiscordBuild build;
+    private @Nullable DiscordBuild build;
     final IPCClient ipcClient;
     private final HashMap<String,Callback> callbacks;
 
@@ -47,8 +49,8 @@ public abstract class Pipe {
         this.callbacks = callbacks;
     }
 
-    public static Pipe openPipe(IPCClient ipcClient, long clientId, HashMap<String,Callback> callbacks,
-                                DiscordBuild... preferredOrder) throws NoDiscordClientException
+    public static @NonNull Pipe openPipe(IPCClient ipcClient, long clientId, HashMap<String,Callback> callbacks,
+                                         DiscordBuild @Nullable ... preferredOrder) throws NoDiscordClientException
     {
 
         if(preferredOrder == null || preferredOrder.length == 0)
@@ -150,7 +152,7 @@ public abstract class Pipe {
         return pipe;
     }
 
-    private static Pipe createPipe(IPCClient ipcClient, HashMap<String, Callback> callbacks, String location) {
+    private static @NonNull Pipe createPipe(IPCClient ipcClient, HashMap<String, Callback> callbacks, String location) {
         String osName = System.getProperty("os.name").toLowerCase();
 
         if (osName.contains("win"))
@@ -180,7 +182,7 @@ public abstract class Pipe {
      * @param data The data to send.
      * @param callback callback for the response
      */
-    public void send(Packet.OpCode op, JSONObject data, Callback callback)
+    public void send(Packet.OpCode op, @NonNull JSONObject data, @Nullable Callback callback)
     {
         try
         {
@@ -257,7 +259,7 @@ public abstract class Pipe {
      *
      * @return The IPC location.
      */
-    private static String getPipeLocation(int i)
+    private static @NonNull String getPipeLocation(int i)
     {
         if(System.getProperty("os.name").contains("Win"))
             return "\\\\?\\pipe\\discord-ipc-"+i;

@@ -27,6 +27,7 @@ import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +37,7 @@ import java.util.Objects;
 public class LinggangoCommands {
 
     @SubscribeEvent
-    public static void onRegisterCommands(RegisterCommandsEvent event) {
+    public static void onRegisterCommands(@NonNull RegisterCommandsEvent event) {
         CommandDispatcher<CommandSourceStack> d = event.getDispatcher();
 
         d.register(Commands.literal("gm1").requires(s -> s.hasPermission(2)).executes(c -> setGameMode(c.getSource(), GameType.SURVIVAL)));
@@ -259,7 +260,7 @@ public class LinggangoCommands {
         }));
     }
 
-    private static int setGameMode(CommandSourceStack source, GameType type) {
+    private static int setGameMode(@NonNull CommandSourceStack source, @NonNull GameType type) {
         try {
             source.getPlayerOrException().setGameMode(type);
         } catch (Exception ignored) {}

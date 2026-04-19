@@ -23,12 +23,14 @@ import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 @Mod.EventBusSubscriber(modid = LinggangoTweaks.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class GunEnchantmentEventHandler {
 
     @SubscribeEvent
-    public static void onGunFire(net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickItem event) {
+    public static void onGunFire(net.minecraftforge.event.entity.player.PlayerInteractEvent.@NonNull RightClickItem event) {
         Player player = event.getEntity();
         if (!player.level().isClientSide && player.getPersistentData().getBoolean("lt_gunner_active")) {
             ResourceLocation weaponId = ForgeRegistries.ITEMS.getKey(event.getItemStack().getItem());
@@ -43,12 +45,12 @@ public class GunEnchantmentEventHandler {
     }
 
     @SubscribeEvent
-    public static void onPlayerAttack(AttackEntityEvent event) {
+    public static void onPlayerAttack(@NonNull AttackEntityEvent event) {
         event.getEntity().getPersistentData().putLong("linggango_last_melee", event.getEntity().level().getGameTime());
     }
 
     @SubscribeEvent
-    public static void onLivingAttack(LivingAttackEvent event) {
+    public static void onLivingAttack(@NonNull LivingAttackEvent event) {
         if (event.getSource().getEntity() instanceof Player player) {
             ItemStack weapon = player.getMainHandItem();
             ResourceLocation weaponId = ForgeRegistries.ITEMS.getKey(weapon.getItem());
@@ -59,7 +61,7 @@ public class GunEnchantmentEventHandler {
     }
 
     @SubscribeEvent
-    public static void onLivingHurt(LivingHurtEvent event) {
+    public static void onLivingHurt(@NonNull LivingHurtEvent event) {
         if (event.getSource().getEntity() instanceof Player player) {
             ItemStack weapon = player.getMainHandItem();
             ResourceLocation weaponId = ForgeRegistries.ITEMS.getKey(weapon.getItem());
@@ -235,7 +237,7 @@ public class GunEnchantmentEventHandler {
     }
 
     @SubscribeEvent
-    public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
+    public static void onPlayerTick(TickEvent.@NonNull PlayerTickEvent event) {
         if (event.phase == TickEvent.Phase.END && !event.player.level().isClientSide()) {
             ItemStack weapon = event.player.getMainHandItem();
             if (EnchantmentHelper.getItemEnchantmentLevel(LinggangoEnchantments.RAIL_CHARGE.get(), weapon) > 0) {
@@ -247,7 +249,7 @@ public class GunEnchantmentEventHandler {
         }
     }
 
-    private static Item getAmmoForGun(Item gunItem) {
+    private static @Nullable Item getAmmoForGun(Item gunItem) {
         ResourceLocation gunId = ForgeRegistries.ITEMS.getKey(gunItem);
         if (gunId == null) return Items.IRON_NUGGET;
 

@@ -17,6 +17,7 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.jspecify.annotations.NonNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,7 +26,7 @@ import java.util.Map;
 public class DisenchantedBookFix {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public static void onBookUse(PlayerInteractEvent.RightClickItem event) {
+    public static void onBookUse(PlayerInteractEvent.@NonNull RightClickItem event) {
         Player player = event.getEntity();
         ItemStack bookStack = event.getItemStack();
         ResourceLocation registryName = ForgeRegistries.ITEMS.getKey(bookStack.getItem());

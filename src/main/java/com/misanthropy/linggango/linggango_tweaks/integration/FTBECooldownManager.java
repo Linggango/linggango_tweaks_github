@@ -10,6 +10,8 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,7 +23,7 @@ public class FTBECooldownManager {
     private static final Map<UUID, Map<String, Long>> PLAYER_COOLDOWNS = new HashMap<>();
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public static void onCommand(CommandEvent event) {
+    public static void onCommand(@NonNull CommandEvent event) {
 
         if (!ModList.get().isLoaded("ftbessentials")) return;
 
@@ -81,7 +83,7 @@ public class FTBECooldownManager {
         }
     }
 
-    private static String getCommandGroup(String cmd) {
+    private static @Nullable String getCommandGroup(@NonNull String cmd) {
         return switch (cmd) {
             case "home", "sethome" -> "home";
             case "warp", "setwarp" -> "warp";
@@ -93,7 +95,7 @@ public class FTBECooldownManager {
         };
     }
 
-    private static boolean isDisabled(String diff, String group) {
+    private static boolean isDisabled(@NonNull String diff, String group) {
 
         if (diff.equals("chaos")) return true;
 
@@ -110,7 +112,7 @@ public class FTBECooldownManager {
         };
     }
 
-    private static int getCooldownSeconds(String diff, String group) {
+    private static int getCooldownSeconds(@NonNull String diff, @NonNull String group) {
         return switch (diff) {
             case "cozy" -> group.equals("rtp") ? 60 : 10;
             case "normal" -> group.equals("rtp") ? 180 : 30;

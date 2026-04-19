@@ -8,6 +8,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterShadersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
+import org.jspecify.annotations.NonNull;
 
 import java.io.IOException;
 
@@ -20,7 +21,7 @@ public class ChthonianVoidShaderFix {
     public static ShaderInstance chthonianVoidShader;
 
     @SubscribeEvent
-    public static void onRegisterShaders(RegisterShadersEvent event) throws IOException {
+    public static void onRegisterShaders(@NonNull RegisterShadersEvent event) throws IOException {
         event.registerShader(
                 new ShaderInstance(
                         event.getResourceProvider(),

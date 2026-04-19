@@ -6,6 +6,7 @@ import net.mcreator.armageddonmod.entity.SanghorLordOfBloodp2Entity;
 import net.mcreator.armageddonmod.procedures.SanghorLordOfBloodph2EntityDiesProcedure;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.LevelAccessor;
+import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -19,7 +20,7 @@ public class MixinSanghorLordOfBloodp2Entity {
             target = "Lnet/mcreator/armageddonmod/procedures/SanghorLordOfBloodph2EntityDiesProcedure;execute(Lnet/minecraft/world/level/LevelAccessor;DDD)V"),
         remap = false
     )
-    private void skipLootIfSplit(LevelAccessor world, double x, double y, double z) {
+    private void skipLootIfSplit(@NonNull LevelAccessor world, double x, double y, double z) {
         LivingEntity self = (LivingEntity)(Object) this;
         if ((MobTraitCap.HOLDER.isProper(self)
                 && MobTraitCap.HOLDER.get(self).traits.keySet().stream().anyMatch(t -> t instanceof SplitTrait))

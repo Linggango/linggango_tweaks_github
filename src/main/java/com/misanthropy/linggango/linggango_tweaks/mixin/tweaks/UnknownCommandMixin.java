@@ -4,6 +4,7 @@ import com.mojang.brigadier.exceptions.BuiltInExceptionProvider;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
+import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -18,7 +19,7 @@ public class UnknownCommandMixin {
                     remap = false
             )
     )
-    private static SimpleCommandExceptionType linggango$customUnknownCommand(BuiltInExceptionProvider instance) {
+    private static @NonNull SimpleCommandExceptionType linggango$customUnknownCommand(BuiltInExceptionProvider instance) {
         return new SimpleCommandExceptionType(Component.literal("Unknown command. Please check your spelling or permissions!"));
     }
 }

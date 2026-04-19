@@ -12,6 +12,7 @@ import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import org.jspecify.annotations.NonNull;
 
 import java.lang.reflect.Field;
 import java.util.HashSet;
@@ -20,12 +21,12 @@ import java.util.Set;
 @Mod.EventBusSubscriber(modid = LinggangoTweaks.MOD_ID)
 public class AITweaksManager {
 
-    public static void onCommonSetup(final FMLCommonSetupEvent event) {
+    public static void onCommonSetup(final @NonNull FMLCommonSetupEvent event) {
         event.enqueueWork(FastTrig::init);
     }
 
     @SubscribeEvent
-    public static void onEntityJoin(EntityJoinLevelEvent event) {
+    public static void onEntityJoin(@NonNull EntityJoinLevelEvent event) {
         if (!(event.getEntity() instanceof Mob mob)) return;
         if (event.getLevel().isClientSide) return;
         if (mob.getLookControl().getClass() == LookControl.class) {

@@ -25,6 +25,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Map;
 import java.util.UUID;
@@ -35,7 +36,7 @@ public class ParryServerHandler {
     public static final Map<UUID, Long> activeParries = new ConcurrentHashMap<>();
 
     @SubscribeEvent
-    public static void onLivingAttack(LivingAttackEvent event) {
+    public static void onLivingAttack(@NonNull LivingAttackEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
 
             if (event.getSource().getEntity() == null) {
@@ -179,7 +180,7 @@ public class ParryServerHandler {
         }
     }
 
-    private static void spawnParrySparkles(Player player, int tier) {
+    private static void spawnParrySparkles(@NonNull Player player, int tier) {
         if (player.level() instanceof ServerLevel serverLevel) {
             Vec3 playerPos = player.position().add(0, player.getEyeHeight() - 0.2, 0);
             Vec3 lookVec = player.getLookAngle();

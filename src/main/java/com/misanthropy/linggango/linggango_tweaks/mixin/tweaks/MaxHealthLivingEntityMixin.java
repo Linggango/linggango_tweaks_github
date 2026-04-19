@@ -3,6 +3,8 @@ package com.misanthropy.linggango.linggango_tweaks.mixin.tweaks;
 import com.misanthropy.linggango.linggango_tweaks.util.HealthFix;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.LivingEntity;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -14,14 +16,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class MaxHealthLivingEntityMixin implements HealthFix {
 
     @Unique
-    private Float linggango$actualHealth = null;
+    private @Nullable Float linggango$actualHealth = null;
 
     @Shadow public abstract float getMaxHealth();
     @Shadow public abstract float getHealth();
     @Shadow public abstract void setHealth(float health);
 
     @Inject(method = "readAdditionalSaveData", at = @At("HEAD"))
-    private void linggango$readAdditionalSaveData(CompoundTag tag, CallbackInfo callback) {
+    private void linggango$readAdditionalSaveData(@NonNull CompoundTag tag, CallbackInfo callback) {
         if (tag.contains("Health", 99)) {
             float savedHealth = tag.getFloat("Health");
             if (savedHealth > this.getMaxHealth() && savedHealth > 0.0F) {

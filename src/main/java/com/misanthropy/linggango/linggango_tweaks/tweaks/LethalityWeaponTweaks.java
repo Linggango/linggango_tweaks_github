@@ -11,6 +11,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Collection;
 import java.util.Set;
@@ -27,7 +28,7 @@ public class LethalityWeaponTweaks {
     );
 
     @SubscribeEvent
-    public static void onAttributeModifier(ItemAttributeModifierEvent event) {
+    public static void onAttributeModifier(@NonNull ItemAttributeModifierEvent event) {
         if (event.getSlotType() != EquipmentSlot.MAINHAND) return;
 
         ItemStack stack = event.getItemStack();
@@ -52,12 +53,12 @@ public class LethalityWeaponTweaks {
         }
     }
 
-    private static boolean isBafsWeapon(ResourceLocation name) {
+    private static boolean isBafsWeapon(@NonNull ResourceLocation name) {
         String path = name.getPath();
         return path.contains("_bafs") || path.contains("_bafpb");
     }
 
-    private static @NotNull AttributeModifier getLethalityModifier(String path) {
+    private static @NotNull AttributeModifier getLethalityModifier(@NonNull String path) {
         double bonus = 10.0;
 
         switch (path) {

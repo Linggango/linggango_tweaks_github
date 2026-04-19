@@ -3,6 +3,7 @@ package com.misanthropy.linggango.linggango_tweaks.mixin.tweaks;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
+import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -20,7 +21,7 @@ public class BedMonsterBypassMixin {
                     target = "Lnet/minecraft/world/level/Level;getEntitiesOfClass(Ljava/lang/Class;Lnet/minecraft/world/phys/AABB;Ljava/util/function/Predicate;)Ljava/util/List;"
             )
     )
-    private List<?> linggango$bypassMonsterCheck(Level instance, Class<?> entityClass, AABB aabb, Predicate<?> predicate) {
+    private @NonNull List<?> linggango$bypassMonsterCheck(Level instance, Class<?> entityClass, AABB aabb, Predicate<?> predicate) {
         return Collections.emptyList();
     }
 }

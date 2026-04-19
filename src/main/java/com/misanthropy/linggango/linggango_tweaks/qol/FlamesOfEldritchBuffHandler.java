@@ -20,6 +20,7 @@ import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 import java.util.UUID;
@@ -30,7 +31,7 @@ public class FlamesOfEldritchBuffHandler {
     private static final UUID SPEED_MODIFIER_UUID = UUID.fromString("FA233E1C-4180-4865-B01B-BCCE9785ACA3");
     private static final UUID REACH_MODIFIER_UUID = UUID.fromString("6a172778-5b1d-4054-ac5f-6a9c7ebed072");
     @SubscribeEvent
-    public static void onAttributeModifier(ItemAttributeModifierEvent event) {
+    public static void onAttributeModifier(@NonNull ItemAttributeModifierEvent event) {
         if (event.getSlotType() != EquipmentSlot.MAINHAND) return;
 
         Item item = event.getItemStack().getItem();
@@ -55,7 +56,7 @@ public class FlamesOfEldritchBuffHandler {
         }
     }
     @SubscribeEvent
-    public static void onLivingHurt(LivingHurtEvent event) {
+    public static void onLivingHurt(@NonNull LivingHurtEvent event) {
         if (!(event.getSource().getEntity() instanceof Player player)) return;
         int evoLevel = getEvoLevel(player.getMainHandItem().getItem());
         if (evoLevel >= 0) {
@@ -85,7 +86,7 @@ public class FlamesOfEldritchBuffHandler {
         }
     }
     @SubscribeEvent
-    public static void onTooltip(ItemTooltipEvent event) {
+    public static void onTooltip(@NonNull ItemTooltipEvent event) {
         int evoLevel = getEvoLevel(event.getItemStack().getItem());
 
         if (evoLevel >= 0) {
@@ -124,7 +125,7 @@ public class FlamesOfEldritchBuffHandler {
 
         return -1;
     }
-    private static void applyProgressiveEffect(LivingEntity target, String effectId, int duration, int maxAmp) {
+    private static void applyProgressiveEffect(@NonNull LivingEntity target, @NonNull String effectId, int duration, int maxAmp) {
         MobEffect effect = ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation(effectId));
         if (effect != null) {
             MobEffectInstance current = target.getEffect(effect);

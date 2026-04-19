@@ -11,6 +11,7 @@ import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
+import org.jspecify.annotations.NonNull;
 
 import java.util.function.Supplier;
 
@@ -51,7 +52,7 @@ public class ParryNetwork {
 
         public void toBytes(FriendlyByteBuf buf) {}
 
-        public void handle(Supplier<NetworkEvent.Context> supplier) {
+        public void handle(@NonNull Supplier<NetworkEvent.Context> supplier) {
             NetworkEvent.Context context = supplier.get();
             context.enqueueWork(() -> {
                 ServerPlayer player = context.getSender();
@@ -71,15 +72,15 @@ public class ParryNetwork {
             this.entityId = entityId;
         }
 
-        public S2CParryStartPacket(FriendlyByteBuf buf) {
+        public S2CParryStartPacket(@NonNull FriendlyByteBuf buf) {
             this.entityId = buf.readInt();
         }
 
-        public void toBytes(FriendlyByteBuf buf) {
+        public void toBytes(@NonNull FriendlyByteBuf buf) {
             buf.writeInt(this.entityId);
         }
 
-        public void handle(Supplier<NetworkEvent.Context> supplier) {
+        public void handle(@NonNull Supplier<NetworkEvent.Context> supplier) {
             NetworkEvent.Context context = supplier.get();
             context.enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> com.misanthropy.linggango.linggango_tweaks.client.ParryEffects.triggerParryStartForOther(this.entityId)));
             context.setPacketHandled(true);
@@ -95,17 +96,17 @@ public class ParryNetwork {
             this.tier = tier;
         }
 
-        public S2CParrySuccessPacket(FriendlyByteBuf buf) {
+        public S2CParrySuccessPacket(@NonNull FriendlyByteBuf buf) {
             this.entityId = buf.readInt();
             this.tier = buf.readInt();
         }
 
-        public void toBytes(FriendlyByteBuf buf) {
+        public void toBytes(@NonNull FriendlyByteBuf buf) {
             buf.writeInt(this.entityId);
             buf.writeInt(this.tier);
         }
 
-        public void handle(Supplier<NetworkEvent.Context> supplier) {
+        public void handle(@NonNull Supplier<NetworkEvent.Context> supplier) {
             NetworkEvent.Context context = supplier.get();
             context.enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> com.misanthropy.linggango.linggango_tweaks.client.ParryEffects.triggerSuccessfulParry(this.entityId, this.tier)));
             context.setPacketHandled(true);

@@ -8,6 +8,7 @@ import net.minecraft.core.WritableRegistry;
 import net.minecraft.resources.*;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
+import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -40,10 +41,10 @@ public class StructureSpreadRegistryMixin {
             Iterator<?> iterator,
             Map.Entry<?, ?> entry,
             ResourceLocation resourceLocation,
-            ResourceKey<?> elementKey,
+            @NonNull ResourceKey<?> elementKey,
             Resource resource,
             Reader reader,
-            JsonElement jsonElement) {
+            @NonNull JsonElement jsonElement) {
 
         if ("worldgen/structure_set".equals(directory) && jsonElement.isJsonObject()) {
             JsonObject jsonObject = jsonElement.getAsJsonObject();

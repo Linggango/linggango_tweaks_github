@@ -7,11 +7,12 @@ import net.minecraftforge.event.furnace.FurnaceFuelBurnTimeEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.jspecify.annotations.NonNull;
 
 @Mod.EventBusSubscriber(modid = LinggangoTweaks.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class BurnTheBabyVillager {
     @SubscribeEvent
-    public static void onFuelBurnTime(FurnaceFuelBurnTimeEvent event) {
+    public static void onFuelBurnTime(@NonNull FurnaceFuelBurnTimeEvent event) {
         ItemStack stack = event.getItemStack();
         if (stack.isEmpty()) return;
         var itemId = ForgeRegistries.ITEMS.getKey(stack.getItem());

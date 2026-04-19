@@ -6,6 +6,7 @@ import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.filter.AbstractFilter;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 
@@ -16,7 +17,7 @@ public class LogSpamFilter extends AbstractFilter {
     );
 
     @Override
-    public Result filter(LogEvent event) {
+    public @NonNull Result filter(@NonNull LogEvent event) {
         String message = event.getMessage() != null ? event.getMessage().getFormattedMessage() : null;
 
         if (message != null) {

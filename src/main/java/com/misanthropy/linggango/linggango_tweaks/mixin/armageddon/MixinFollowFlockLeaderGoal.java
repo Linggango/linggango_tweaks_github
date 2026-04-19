@@ -2,6 +2,7 @@ package com.misanthropy.linggango.linggango_tweaks.mixin.armageddon;
 
 import net.minecraft.world.entity.ai.goal.FollowFlockLeaderGoal;
 import net.minecraft.world.entity.animal.AbstractSchoolingFish;
+import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
@@ -18,7 +19,7 @@ public class MixinFollowFlockLeaderGoal {
                     ordinal = 1
             )
     )
-    private Predicate<AbstractSchoolingFish> linggango$addHasFollowersCheck(Predicate<AbstractSchoolingFish> originalPredicate) {
+    private @NonNull Predicate<AbstractSchoolingFish> linggango$addHasFollowersCheck(@NonNull Predicate<AbstractSchoolingFish> originalPredicate) {
         return originalPredicate.and(Predicate.not(AbstractSchoolingFish::hasFollowers));
     }
 }

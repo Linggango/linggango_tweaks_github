@@ -6,6 +6,7 @@ import net.mcreator.armageddonmod.procedures.TheDiscordEntityDiesProcedure;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.LevelAccessor;
+import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -16,7 +17,7 @@ public class MixinTheDiscordEntityDiesProcedure {
 
     @Inject(method = "execute", at = @At("HEAD"), cancellable = true, remap = false)
     private static void cancelIfSplitWithoutMain(LevelAccessor world, double x, double y, double z,
-                                                  Entity entity, CallbackInfo ci) {
+                                                 Entity entity, @NonNull CallbackInfo ci) {
         if (entity instanceof LivingEntity living
                 && ((MobTraitCap.HOLDER.isProper(living)
                         && MobTraitCap.HOLDER.get(living).traits.keySet().stream().anyMatch(t -> t instanceof SplitTrait))

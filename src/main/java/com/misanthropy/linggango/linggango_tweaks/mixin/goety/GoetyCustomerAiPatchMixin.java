@@ -2,6 +2,8 @@ package com.misanthropy.linggango.linggango_tweaks.mixin.goety;
 
 import com.mojang.serialization.Dynamic;
 import net.minecraft.nbt.NbtOps;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
@@ -17,7 +19,7 @@ public class GoetyCustomerAiPatchMixin {
             argsOnly = true,
             remap = false
     )
-    private static Dynamic<?> interceptMakeBrainCrash(Dynamic<?> dynamic) {
+    private static @NonNull Dynamic<?> interceptMakeBrainCrash(@Nullable Dynamic<?> dynamic) {
         if (dynamic == null || dynamic.getValue() == null || dynamic.getValue() instanceof net.minecraft.nbt.EndTag) {
             NbtOps nbtops = NbtOps.INSTANCE;
             return new Dynamic<>(nbtops, nbtops.createMap(Map.of(nbtops.createString("memories"), nbtops.emptyMap())));

@@ -4,6 +4,7 @@ import com.Polarice3.Goety.common.entities.boss.Apostle;
 import com.misanthropy.linggango.linggango_tweaks.integration.l2.ApostleL2Data;
 import dev.xkmc.l2hostility.content.capability.mob.MobTraitCap;
 import net.minecraft.world.entity.LivingEntity;
+import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -20,7 +21,7 @@ public abstract class ApostleTitleMixin {
             method = "allTitleApostle$titleNumber(F)I", //goety_revelation.ApostleMixin::allTitleApostle$titleNumber
             at = @At("RETURN"),
             remap = false)
-    private void onTitleNumberReturn(float health, CallbackInfoReturnable<Integer> cir) {
+    private void onTitleNumberReturn(float health, @NonNull CallbackInfoReturnable<Integer> cir) {
         int newTitle = cir.getReturnValue();
         if (newTitle == blank_mixin_mod$lastTitleNumber) return;
 

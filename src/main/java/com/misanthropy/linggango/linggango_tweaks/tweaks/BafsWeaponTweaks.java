@@ -16,6 +16,8 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.UUID;
 
@@ -26,7 +28,7 @@ public class BafsWeaponTweaks {
     private static final ResourceLocation PULVERIZED_ID = new ResourceLocation("brutality", "pulverized");
 
     @SubscribeEvent
-    public static void onAttributeModifier(ItemAttributeModifierEvent event) {
+    public static void onAttributeModifier(@NonNull ItemAttributeModifierEvent event) {
         if (event.getSlotType() != EquipmentSlot.MAINHAND) return;
 
         Item item = event.getItemStack().getItem();
@@ -43,7 +45,7 @@ public class BafsWeaponTweaks {
     }
 
     @SubscribeEvent
-    public static void onLivingHurt(LivingHurtEvent event) {
+    public static void onLivingHurt(@NonNull LivingHurtEvent event) {
         if (event.getSource().getDirectEntity() instanceof LivingEntity attacker) {
             ItemStack weapon = attacker.getMainHandItem();
             ResourceLocation name = ForgeRegistries.ITEMS.getKey(weapon.getItem());
@@ -61,13 +63,13 @@ public class BafsWeaponTweaks {
         }
     }
 
-    private static boolean isBafsWeapon(ResourceLocation name) {
+    private static boolean isBafsWeapon(@Nullable ResourceLocation name) {
         if (name == null || !name.getNamespace().equals("lethality")) return false;
         String path = name.getPath();
         return path.contains("_bafs") || path.contains("_bafpb");
     }
 
-    private static boolean isPicklePaddle(ResourceLocation name) {
+    private static boolean isPicklePaddle(@Nullable ResourceLocation name) {
         return name != null && name.getNamespace().equals("lethality") && name.getPath().equals("pickle_paddle");
     }
 }

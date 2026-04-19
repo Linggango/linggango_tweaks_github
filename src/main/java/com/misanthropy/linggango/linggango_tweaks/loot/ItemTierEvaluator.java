@@ -5,6 +5,7 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.*;
+import org.jspecify.annotations.NonNull;
 
 public class ItemTierEvaluator {
 
@@ -37,7 +38,7 @@ public class ItemTierEvaluator {
         return false;
     }
 
-    public static Rarity evaluateRarity(Item item) {
+    public static @NonNull Rarity evaluateRarity(Item item) {
         if (item instanceof SwordItem || item instanceof DiggerItem || item instanceof TridentItem) {
             double damage = 1.0 + getAttributeValue(item, Attributes.ATTACK_DAMAGE, EquipmentSlot.MAINHAND);
             double speed = 4.0 + getAttributeValue(item, Attributes.ATTACK_SPEED, EquipmentSlot.MAINHAND);
@@ -60,7 +61,7 @@ public class ItemTierEvaluator {
         return item.getDefaultInstance().getRarity();
     }
 
-    public static boolean hasTooManyBuffs(Item item) {
+    public static boolean hasTooManyBuffs(@NonNull Item item) {
         int buffCount = 0;
         for (EquipmentSlot slot : EquipmentSlot.values()) {
             item.getDefaultAttributeModifiers(slot);
@@ -69,7 +70,7 @@ public class ItemTierEvaluator {
         return buffCount > 5;
     }
 
-    private static double getAttributeValue(Item item, Attribute attribute, EquipmentSlot slot) {
+    private static double getAttributeValue(@NonNull Item item, Attribute attribute, @NonNull EquipmentSlot slot) {
         double total = 0;
         item.getDefaultAttributeModifiers(slot);
         if (item.getDefaultAttributeModifiers(slot).containsKey(attribute)) {

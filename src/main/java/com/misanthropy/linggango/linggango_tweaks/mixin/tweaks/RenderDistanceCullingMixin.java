@@ -15,6 +15,7 @@ import me.jellysquid.mods.sodium.client.render.viewport.CameraTransform;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
+import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -32,7 +33,7 @@ public class RenderDistanceCullingMixin {
     @Mixin(Entity.class)
     public static class EntityCullMixin {
         @Redirect(method = "shouldRender", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;shouldRenderAtSqrDistance(D)Z"))
-        private boolean adaptEntityRenderDist(Entity instance, double orgSqDist, double x, double y, double z) {
+        private boolean adaptEntityRenderDist(@NonNull Entity instance, double orgSqDist, double x, double y, double z) {
             double adjusted = RenderCullingHandler.getAdjustedDistance(instance.getX(), instance.getY(), instance.getZ(), x, y, z);
             return instance.shouldRenderAtSqrDistance(adjusted);
         }
@@ -41,7 +42,7 @@ public class RenderDistanceCullingMixin {
     @Mixin(value = OcclusionCuller.class, remap = false)
     public static class SodiumCullMixin {
         @Inject(method = "isWithinRenderDistance", at = @At("HEAD"), cancellable = true)
-        private static void adaptSodiumRenderDist(CameraTransform camera, RenderSection section, float maxDistance, CallbackInfoReturnable<Boolean> cir) {
+        private static void adaptSodiumRenderDist(CameraTransform camera, @NonNull RenderSection section, float maxDistance, @NonNull CallbackInfoReturnable<Boolean> cir) {
             Minecraft mc = Minecraft.getInstance();
             if (mc.player != null) {
                 double adjusted = RenderCullingHandler.getAdjustedDistance(
@@ -66,7 +67,7 @@ public class RenderDistanceCullingMixin {
                 at = @At(value = "INVOKE", target = "Ljava/util/List;add(Ljava/lang/Object;)Z", remap = false, ordinal = 0, shift = At.Shift.AFTER),
                 locals = LocalCapture.CAPTURE_FAILHARD
         )
-        private static void addLinggangoCullingTweaks(CallbackInfoReturnable<OptionPage> cir, List<OptionGroup> groups) {
+        private static void addLinggangoCullingTweaks(CallbackInfoReturnable<OptionPage> cir, @NonNull List<OptionGroup> groups) {
 
             var horizontalOption = OptionImpl.createBuilder(Integer.TYPE, sodiumOpts)
                     .setName(Component.literal("Horizontal Culling Stretch"))

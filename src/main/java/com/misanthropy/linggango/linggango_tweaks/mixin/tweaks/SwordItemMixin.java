@@ -9,6 +9,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
+import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -18,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class SwordItemMixin {
 
     @Inject(method = "getUseDuration", at = @At("HEAD"), cancellable = true)
-    public void getUseDuration(ItemStack pStack, CallbackInfoReturnable<Integer> cir) {
+    public void getUseDuration(ItemStack pStack, @NonNull CallbackInfoReturnable<Integer> cir) {
         if ((Object) this instanceof SwordItem) {
             cir.setReturnValue(72000);
 
@@ -26,14 +27,14 @@ public class SwordItemMixin {
     }
 
     @Inject(method = "getUseAnimation", at = @At("HEAD"), cancellable = true)
-    public void getUseAnimation(ItemStack pStack, CallbackInfoReturnable<UseAnim> cir) {
+    public void getUseAnimation(ItemStack pStack, @NonNull CallbackInfoReturnable<UseAnim> cir) {
         if ((Object) this instanceof SwordItem) {
             cir.setReturnValue(UseAnim.BLOCK);
         }
     }
 
     @Inject(method = "use", at = @At("HEAD"), cancellable = true)
-    public void use(Level pLevel, Player pPlayer, InteractionHand pHand, CallbackInfoReturnable<InteractionResultHolder<ItemStack>> cir) {
+    public void use(Level pLevel, @NonNull Player pPlayer, @NonNull InteractionHand pHand, @NonNull CallbackInfoReturnable<InteractionResultHolder<ItemStack>> cir) {
         if ((Object) this instanceof SwordItem) {
             ItemStack itemstack = pPlayer.getItemInHand(pHand);
             String pClass = SkillManager.getPlayerClass(pPlayer);

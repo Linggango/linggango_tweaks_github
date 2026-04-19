@@ -5,6 +5,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;
+import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -23,7 +24,7 @@ public class MaxHealthPlayerListMixin {
     )
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType") // bro either im stupid or it's intelliJ so im suppressing till sm1 fixes
     private void linggango$onPlayerRespawn(
-            ServerPlayer oldPlayer,
+            @NonNull ServerPlayer oldPlayer,
             boolean fromEnd,
             CallbackInfoReturnable<ServerPlayer> cbi,
             BlockPos respawnPos,

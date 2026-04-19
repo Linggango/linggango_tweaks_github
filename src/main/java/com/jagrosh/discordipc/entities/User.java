@@ -15,6 +15,9 @@
  */
 package com.jagrosh.discordipc.entities;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 /**
  * A encapsulation of a Discord User's data provided when a
  * {@link com.jagrosh.discordipc.IPCListener IPCListener} fires
@@ -81,7 +84,7 @@ public class User
      *
      * @return The Users Snowflake ID as a {@code String}.
      */
-    public String getId()
+    public @NonNull String getId()
     {
         return Long.toString(id);
     }
@@ -101,7 +104,7 @@ public class User
      *
      * @return The Users avatar URL.
      */
-    public String getAvatarUrl()
+    public @Nullable String getAvatarUrl()
     {
         return getAvatarId() == null ? null : "https://cdn.discordapp.com/avatars/" + getId() + "/" + getAvatarId()
             + (getAvatarId().startsWith("a_") ? ".gif" : ".png");
@@ -122,7 +125,7 @@ public class User
      *
      * @return The Users {@link DefaultAvatar} avatar URL.
      */
-    public String getDefaultAvatarUrl()
+    public @NonNull String getDefaultAvatarUrl()
     {
         return "https://discordapp.com/assets/" + getDefaultAvatarId() + ".png";
     }
@@ -159,7 +162,7 @@ public class User
      *
      * @return A discord formatted mention of this User.
      */
-    public String getAsMention()
+    public @NonNull String getAsMention()
     {
         return "<@" + id + '>';
     }
@@ -179,7 +182,7 @@ public class User
     }
 
     @Override
-    public String toString()
+    public @NonNull String toString()
     {
         return "U:" + getName() + '(' + id + ')';
     }

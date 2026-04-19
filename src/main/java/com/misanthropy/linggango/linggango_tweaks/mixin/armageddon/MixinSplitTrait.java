@@ -5,6 +5,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -26,7 +27,7 @@ public class MixinSplitTrait {
         at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;m_7967_(Lnet/minecraft/world/entity/Entity;)Z"),
         remap = false
     )
-    private boolean tagAndAdd(Level level, Entity entity) {
+    private boolean tagAndAdd(@NonNull Level level, @NonNull Entity entity) {
         boolean result = level.addFreshEntity(entity);
         if (linggango_tweaks$splitMainNext.get()) {
             entity.addTag("l2hostility:split_main");

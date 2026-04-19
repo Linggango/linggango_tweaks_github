@@ -21,6 +21,7 @@ import com.jagrosh.discordipc.entities.Callback;
 import com.jagrosh.discordipc.entities.Packet;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.jspecify.annotations.NonNull;
 import org.newsclub.net.unix.AFUNIXSocket;
 import org.newsclub.net.unix.AFUNIXSocketAddress;
 import org.slf4j.Logger;
@@ -38,7 +39,7 @@ public class UnixPipe extends Pipe
     private static final Logger LOGGER = LoggerFactory.getLogger(UnixPipe.class);
     private final AFUNIXSocket socket;
 
-    UnixPipe(IPCClient ipcClient, HashMap<String, Callback> callbacks, String location) throws IOException
+    UnixPipe(IPCClient ipcClient, HashMap<String, Callback> callbacks, @NonNull String location) throws IOException
     {
         super(ipcClient, callbacks);
 
@@ -48,7 +49,7 @@ public class UnixPipe extends Pipe
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     @Override
-    public Packet read() throws IOException, JSONException
+    public @NonNull Packet read() throws IOException, JSONException
     {
         InputStream is = socket.getInputStream();
 
@@ -88,7 +89,7 @@ public class UnixPipe extends Pipe
     }
 
     @Override
-    public void write(byte[] b) throws IOException
+    public void write(byte @NonNull [] b) throws IOException
     {
         socket.getOutputStream().write(b);
     }

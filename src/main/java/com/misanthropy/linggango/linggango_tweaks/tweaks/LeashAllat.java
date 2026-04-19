@@ -7,12 +7,13 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import org.jspecify.annotations.NonNull;
 
 @Mod.EventBusSubscriber(modid = LinggangoTweaks.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class LeashAllat {
 
     @SubscribeEvent
-    public static void onMobTick(LivingEvent.LivingTickEvent event) {
+    public static void onMobTick(LivingEvent.@NonNull LivingTickEvent event) {
         if (event.getEntity() instanceof Mob mob && mob.isLeashed()) {
             Entity holder = mob.getLeashHolder();
             if (holder == null) return;

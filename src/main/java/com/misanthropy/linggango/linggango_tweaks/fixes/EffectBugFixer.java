@@ -8,6 +8,7 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.server.ServerLifecycleHooks;
+import org.jspecify.annotations.NonNull;
 
 @Mod.EventBusSubscriber(modid  = LinggangoTweaks.MOD_ID)
 public class EffectBugFixer {
@@ -16,7 +17,7 @@ public class EffectBugFixer {
     private static int tickTimer = 0;
 
     @SubscribeEvent
-    public static void onServerTick(TickEvent.ServerTickEvent event) {
+    public static void onServerTick(TickEvent.@NonNull ServerTickEvent event) {
         if (event.phase != TickEvent.Phase.END) return;
 
         tickTimer++;

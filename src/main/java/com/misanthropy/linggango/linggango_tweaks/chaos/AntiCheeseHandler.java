@@ -10,6 +10,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import org.jspecify.annotations.NonNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,7 +26,7 @@ public class AntiCheeseHandler {
     private static final int PENALTY_TIME = 60;
 
     @SubscribeEvent
-    public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
+    public static void onPlayerTick(TickEvent.@NonNull PlayerTickEvent event) {
         if (event.phase != TickEvent.Phase.END || event.player.level().isClientSide || !ChaosDifficultyAddon.isChaos(event.player.level())) {
             return;
         }
@@ -52,7 +53,7 @@ public class AntiCheeseHandler {
         }
     }
 
-    private static void applyDesperationLogic(ServerPlayer player, PlayerPositionData data) {
+    private static void applyDesperationLogic(@NonNull ServerPlayer player, @NonNull PlayerPositionData data) {
         if (data.stationaryTime >= PENALTY_TIME) {
             player.addEffect(new MobEffectInstance(MobEffects.HUNGER, 100, 1, false, false));
             player.addEffect(new MobEffectInstance(MobEffects.GLOWING, 100, 0, false, false));

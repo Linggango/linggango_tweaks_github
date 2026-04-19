@@ -8,6 +8,8 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.BaseSpawner;
 import net.minecraft.world.level.Level;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -19,7 +21,7 @@ public class SpawnerRenderMixin {
             method = "render(Lnet/minecraft/world/level/block/entity/SpawnerBlockEntity;FLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;II)V",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/BaseSpawner;getOrCreateDisplayEntity(Lnet/minecraft/world/level/Level;Lnet/minecraft/util/RandomSource;Lnet/minecraft/core/BlockPos;)Lnet/minecraft/world/entity/Entity;")
     )
-    private Entity hideSpinningEntity(BaseSpawner spawner, Level level, RandomSource random, BlockPos pos) {
+    private @Nullable Entity hideSpinningEntity(@NonNull BaseSpawner spawner, @NonNull Level level, @NonNull RandomSource random, @NonNull BlockPos pos) {
         if (SpawnerClientConfig.REQUIRE_SNEAK_FOR_ENTITY.get()) {
             Minecraft mc = Minecraft.getInstance();
             if (mc.player == null || !mc.player.isShiftKeyDown()) {

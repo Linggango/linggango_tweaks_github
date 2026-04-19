@@ -10,6 +10,7 @@ import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import org.jspecify.annotations.NonNull;
 import org.lwjgl.glfw.GLFW;
 
 @Mod.EventBusSubscriber(modid = LinggangoTweaks.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
@@ -35,7 +36,7 @@ public class ClientSkillEvents {
     }
 
     @SubscribeEvent
-    public static void onClientTick(TickEvent.ClientTickEvent event) {
+    public static void onClientTick(TickEvent.@NonNull ClientTickEvent event) {
         if (event.phase != TickEvent.Phase.END) return;
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null) return;
@@ -60,14 +61,14 @@ public class ClientSkillEvents {
     }
 
     @SubscribeEvent
-    public static void onAttack(AttackEntityEvent event) {
+    public static void onAttack(@NonNull AttackEntityEvent event) {
         if (event.getEntity().level().isClientSide) {
             combatTimer = 200;
         }
     }
 
     @SubscribeEvent
-    public static void onHurt(LivingDamageEvent event) {
+    public static void onHurt(@NonNull LivingDamageEvent event) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player != null && event.getEntity().getUUID().equals(mc.player.getUUID())) {
             combatTimer = 200;

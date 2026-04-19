@@ -15,6 +15,7 @@ import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.jspecify.annotations.NonNull;
 import top.theillusivec4.curios.api.CuriosApi;
 
 @Mod.EventBusSubscriber(modid = "linggango_tweaks")
@@ -39,7 +40,7 @@ public class ScumSynergyEvents {
         }
         return false;
     }
-    public static boolean hasCursedRing(LivingEntity entity) {
+    public static boolean hasCursedRing(@NonNull LivingEntity entity) {
         if (!ModList.get().isLoaded("enigmaticlegacy") || !ModList.get().isLoaded("curios")) return false;
 
         return CuriosApi.getCuriosHelper().findFirstCurio(entity, stack -> {
@@ -48,11 +49,11 @@ public class ScumSynergyEvents {
         }).isPresent();
     }
 
-    public static boolean isScumWithRing(LivingEntity entity) {
+    public static boolean isScumWithRing(@NonNull LivingEntity entity) {
         return isScumClass(entity) && hasCursedRing(entity);
     }
     @SubscribeEvent
-    public static void onLivingDamage(LivingDamageEvent event) {
+    public static void onLivingDamage(@NonNull LivingDamageEvent event) {
         if (event.getEntity().level().isClientSide) return;
         if (isScumWithRing(event.getEntity())) {
             event.setAmount(event.getAmount() * 0.6f);
@@ -65,7 +66,7 @@ public class ScumSynergyEvents {
         }
     }
     @SubscribeEvent
-    public static void onTargetChange(LivingChangeTargetEvent event) {
+    public static void onTargetChange(@NonNull LivingChangeTargetEvent event) {
         if (event.getEntity().level().isClientSide) return;
 
         LivingEntity newTarget = event.getNewTarget();

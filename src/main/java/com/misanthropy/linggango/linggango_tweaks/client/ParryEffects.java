@@ -27,6 +27,8 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
@@ -50,7 +52,7 @@ public class ParryEffects {
 
     private static long lastParrySoundTime = 0;
 
-    public static StateManager getStateManager() {
+    public static @NonNull StateManager getStateManager() {
         return stateManager;
     }
 
@@ -132,7 +134,7 @@ public class ParryEffects {
     }
 
     @SubscribeEvent
-    public static void onClientTick(TickEvent.ClientTickEvent event) {
+    public static void onClientTick(TickEvent.@NonNull ClientTickEvent event) {
         if (event.phase != TickEvent.Phase.END) return;
 
         stateManager.tick();
@@ -149,7 +151,7 @@ public class ParryEffects {
     }
 
     @SubscribeEvent
-    public static void onRenderGui(RenderGuiEvent.Post event) {
+    public static void onRenderGui(RenderGuiEvent.@NonNull Post event) {
         visualEffects.renderOverlay(event.getGuiGraphics());
 
         if (TweaksConfig.PARRY_DEBUG_MODE.get()) {
@@ -158,19 +160,19 @@ public class ParryEffects {
     }
 
     @SubscribeEvent
-    public static void onCameraSetup(ViewportEvent.ComputeCameraAngles event) {
+    public static void onCameraSetup(ViewportEvent.@NonNull ComputeCameraAngles event) {
         cameraEffects.applyCameraEffects(event, (float) event.getPartialTick());
     }
 
     @SubscribeEvent
-    public static void onComputeFov(ViewportEvent.ComputeFov event) {
+    public static void onComputeFov(ViewportEvent.@NonNull ComputeFov event) {
         event.setFOV(event.getFOV() + cameraEffects.getFovBoost());
     }
 
     @Mod.EventBusSubscriber(modid = "linggango_tweaks", bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     public static class ModBusEvents {
         @SubscribeEvent
-        public static void onKeyRegister(RegisterKeyMappingsEvent event) {
+        public static void onKeyRegister(@NonNull RegisterKeyMappingsEvent event) {
             event.register(PARRY_KEY);
         }
     }
@@ -180,7 +182,7 @@ public class ParryEffects {
     }
 
     public static class StateManager {
-        private ParryState currentState = ParryState.IDLE;
+        private @NonNull ParryState currentState = ParryState.IDLE;
         private int stateTicks = 0;
         private int cooldownTicks = 0;
         private boolean useAlternateAnim = false;
@@ -295,7 +297,7 @@ public class ParryEffects {
         public void tick() {
             if (this.flashAlpha > 0) this.flashAlpha -= 0.04f;
         }
-        public void renderOverlay(GuiGraphics graphics) {
+        public void renderOverlay(@NonNull GuiGraphics graphics) {
             if (this.flashAlpha <= 0) return;
             int width = Minecraft.getInstance().getWindow().getGuiScaledWidth();
             int height = Minecraft.getInstance().getWindow().getGuiScaledHeight();
@@ -356,7 +358,7 @@ public class ParryEffects {
             }
         }
 
-        public void applyCameraEffects(ViewportEvent.ComputeCameraAngles event, float partialTick) {
+        public void applyCameraEffects(ViewportEvent.@NonNull ComputeCameraAngles event, float partialTick) {
             Minecraft mc = Minecraft.getInstance();
             if (isShaking && mc.screen == null && mc.mouseHandler.isMouseGrabbed()) {
                 float shakeYaw = Mth.lerp(partialTick, currentShakeYaw, targetShakeYaw);
@@ -378,11 +380,11 @@ public class ParryEffects {
     }
 
     public static class SoundManager {
-        public void playParryStartSound(Minecraft mc, Player player) {
+        public void playParryStartSound(@NonNull Minecraft mc, Player player) {
             playSound(mc, player, "create", "confirm_2", 1.0f, 1.0f);
         }
 
-        public void playParrySuccessSound(Minecraft mc, Player player, float volumeMultiplier, int tier) {
+        public void playParrySuccessSound(@NonNull Minecraft mc, @NonNull Player player, float volumeMultiplier, int tier) {
             if (tier == 3) {
                 float pitch = 0.5f + player.getRandom().nextFloat() * 0.3f;
                 playSound(mc, player, "linggango_tweaks", "perfect_parry", 1.3f * volumeMultiplier, pitch);
@@ -393,11 +395,11 @@ public class ParryEffects {
             playSound(mc, player, "create", "confirm_2", 0.7f * volumeMultiplier, 1.8f);
         }
 
-        public void playParryMissSound(Minecraft mc, Player player) {
+        public void playParryMissSound(@NonNull Minecraft mc, Player player) {
             playSound(mc, player, "create", "confirm_2", 0.7f, 0.6f);
         }
 
-        private void playSound(Minecraft mc, Player player, String namespace, String path, float volume, float pitch) {
+        private void playSound(@NonNull Minecraft mc, @Nullable Player player, @NonNull String namespace, @NonNull String path, float volume, float pitch) {
             if (mc.level != null && player != null) {
                 ResourceLocation soundLocation = new ResourceLocation(namespace, path);
                 SoundEvent soundEvent = ForgeRegistries.SOUND_EVENTS.getValue(soundLocation);
@@ -408,7 +410,7 @@ public class ParryEffects {
     }
 
     public static class DebugOverlay {
-        public static void render(GuiGraphics graphics, StateManager stateManager, CameraEffects cameraEffects) {
+        public static void render(@NonNull GuiGraphics graphics, @NonNull StateManager stateManager, @NonNull CameraEffects cameraEffects) {
             Minecraft mc = Minecraft.getInstance();
             List<String> lines = new ArrayList<>();
             lines.add("=== PARRY DEBUG ===");

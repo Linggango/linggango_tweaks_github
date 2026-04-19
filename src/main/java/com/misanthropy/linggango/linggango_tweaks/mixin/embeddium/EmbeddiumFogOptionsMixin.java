@@ -11,6 +11,7 @@ import me.jellysquid.mods.sodium.client.gui.options.control.SliderControl;
 import me.jellysquid.mods.sodium.client.gui.options.control.TickBoxControl;
 import me.jellysquid.mods.sodium.client.gui.options.storage.SodiumOptionsStorage;
 import net.minecraft.network.chat.Component;
+import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -31,7 +32,7 @@ public class EmbeddiumFogOptionsMixin {
             at = @At(value = "INVOKE", target = "Ljava/util/List;add(Ljava/lang/Object;)Z", remap = false, ordinal = 0, shift = At.Shift.AFTER),
             locals = LocalCapture.CAPTURE_FAILHARD
     )
-    private static void addLinggangoFogTweaks(CallbackInfoReturnable<OptionPage> cir, List<OptionGroup> groups) {
+    private static void addLinggangoFogTweaks(CallbackInfoReturnable<OptionPage> cir, @NonNull List<OptionGroup> groups) {
 
         var enableFogOption = OptionImpl.createBuilder(Boolean.TYPE, sodiumOpts)
                 .setName(Component.literal("Dynamic Atmospheric Fog"))

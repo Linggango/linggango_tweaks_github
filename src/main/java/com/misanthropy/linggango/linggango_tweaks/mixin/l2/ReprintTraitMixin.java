@@ -2,6 +2,7 @@ package com.misanthropy.linggango.linggango_tweaks.mixin.l2;
 
 import dev.xkmc.l2hostility.content.traits.highlevel.ReprintTrait;
 import net.minecraft.world.item.enchantment.Enchantment;
+import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -18,7 +19,7 @@ public class ReprintTraitMixin {
             at = @At(value = "INVOKE", target = "Ljava/util/Map;entrySet()Ljava/util/Set;", ordinal = 0),
             remap = false
     )
-    private Set<Map.Entry<Enchantment, Integer>> filterCursesFromReprintLoop(Map<Enchantment, Integer> instance) {
+    private @NonNull Set<Map.Entry<Enchantment, Integer>> filterCursesFromReprintLoop(@NonNull Map<Enchantment, Integer> instance) {
         Set<Map.Entry<Enchantment, Integer>> filteredSet = new HashSet<>();
         for (Map.Entry<Enchantment, Integer> entry : instance.entrySet()) {
             if (!entry.getKey().isCurse()) {

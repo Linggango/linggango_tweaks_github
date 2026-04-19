@@ -2,6 +2,7 @@ package com.misanthropy.linggango.linggango_tweaks.mixin.tweaks;
 
 import com.mojang.logging.LogUtils;
 import net.minecraft.world.entity.ai.sensing.Sensing;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -22,7 +23,7 @@ public class SensingMixin {
     private int linggango$tickDelay = 0;
 
     @Inject(method = "tick", at = @At("HEAD"), cancellable = true)
-    private void linggango$cacheLOS(CallbackInfo ci) {
+    private void linggango$cacheLOS(@NonNull CallbackInfo ci) {
         if (!linggango$loggedInit) {
             LINGGANGO_LOGGER.info("[Linggango Tweaks] Line of Sight Caching active! Intercepted Sensing.class.");
             linggango$loggedInit = true;

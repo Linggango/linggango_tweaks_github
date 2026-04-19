@@ -84,6 +84,16 @@ dependencies {
     includeLib 'com.kohlschutter.junixsocket:junixsocket-common:2.6.2'
     includeLib 'com.kohlschutter.junixsocket:junixsocket-native-common:2.6.2'
 
+    implementation("org.apache.commons:commons-compress:1.28.0")
+    implementation 'commons-io:commons-io:2.15.1'
+    implementation 'org.apache.logging.log4j:log4j-core:2.25.4'
+    implementation 'org.apache.commons:commons-lang3:3.18.0'
+    implementation 'org.codehaus.plexus:plexus-utils:4.0.3'
+    implementation 'io.netty:netty-common:4.1.118.Final'
+    implementation("io.netty:netty-handler:4.2.12.Final")
+    implementation 'io.netty:netty-codec:4.1.125.Final'
+    implementation 'com.google.guava:guava:33.0.0-jre'
+
     compileOnly fg.deobf("blank:traveloptics:6.3.0-1.20.1")
     compileOnly fg.deobf("blank:betterchunkloading:1.20.1-5.4")
     compileOnly fg.deobf("blank:EnigmaticLegacy:2.30.1")
@@ -95,23 +105,24 @@ dependencies {
     compileOnly fg.deobf("blank:faunify:forge-1.20.1-1.3.1")
     compileOnly fg.deobf("blank:alexsmobs:1.22.9")
     compileOnly fg.deobf("blank:create:1.20.1-6.0.8")
+    compileOnly fg.deobf("blank:irons_spellbooks:1.20.1-3.15.4")
+    compileOnly fg.deobf("blank:EndingLibrary:1.20.1-2.1.12beta-all")
+    compileOnly fg.deobf("blank:species:3.5")
+    compileOnly fg.deobf("blank:covenant_of_the_seven:2.2.6-hotfix")
+    compileOnly fg.deobf("blank:photon:forge-1.20.1-1.1.17")
+
     implementation fg.deobf("curse.maven:macabre-933001:6442644")
     implementation fg.deobf("curse.maven:modernfix-790626:7911677")
     implementation fg.deobf("curse.maven:armageddon-1110642:7142556")
     implementation fg.deobf("curse.maven:l2h-909207:7746182")
     implementation fg.deobf("curse.maven:l2l-620203:6806000")
     implementation fg.deobf("curse.maven:composite-material-982540:6310307")
-    runtimeOnly fg.deobf("curse.maven:cael-308989:5281700")
     implementation fg.deobf("curse.maven:attributefix-280510:7612291")
     implementation fg.deobf("curse.maven:curios-309927:6418456")
     implementation fg.deobf("curse.maven:geckolib-388172:7553267")
-    compileOnly fg.deobf("blank:irons_spellbooks:1.20.1-3.15.4")
-    compileOnly fg.deobf("blank:EndingLibrary:1.20.1-2.1.12beta-all")
     implementation fg.deobf("curse.maven:embeddium-908741:5681725")
     implementation fg.deobf("curse.maven:celestisynth-872712:7686018")
     implementation fg.deobf("curse.maven:class-enhancement-1460324:7801433")
-    compileOnly fg.deobf("blank:species:3.5")
-    compileOnly fg.deobf("blank:covenant_of_the_seven:2.2.6-hotfix")
     implementation fg.deobf("curse.maven:capybaras-mod-1345431:7354242")
     implementation fg.deobf("curse.maven:born-in-chaos-686437:7366478")
     implementation fg.deobf("curse.maven:mekalus-oculus-fork-with-fixed-mekanism-mekasuit-1130957:6994299")
@@ -125,6 +136,9 @@ dependencies {
     implementation fg.deobf("curse.maven:terramity-1084134:6054971")
     implementation fg.deobf("curse.maven:better-combat-by-daedelus-639842:7287334")
     implementation fg.deobf("curse.maven:xaeros-world-map-317780:7598469")
+
+    runtimeOnly fg.deobf("curse.maven:cael-308989:5281700")
+
     compileOnly fg.deobf("blank:photon:forge-1.20.1-1.1.17")
 }
 

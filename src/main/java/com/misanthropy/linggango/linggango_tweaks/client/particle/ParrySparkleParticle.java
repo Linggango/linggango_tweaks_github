@@ -11,11 +11,12 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 @OnlyIn(Dist.CLIENT)
 public class ParrySparkleParticle extends TextureSheetParticle {
 
-    protected ParrySparkleParticle(ClientLevel level, double x, double y, double z, double vx, double vy, double vz, SpriteSet spriteSet) {
+    protected ParrySparkleParticle(@NonNull ClientLevel level, double x, double y, double z, double vx, double vy, double vz, @NonNull SpriteSet spriteSet) {
         super(level, x, y, z, vx, vy, vz);
 
         this.friction = 0.98f;
@@ -33,7 +34,7 @@ public class ParrySparkleParticle extends TextureSheetParticle {
         this.hasPhysics = false;
     }
 
-    public static void spawnExplosion(int tier, Vec3 pos) {
+    public static void spawnExplosion(int tier, @NonNull Vec3 pos) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null) return;
         RandomSource random = mc.level.random;

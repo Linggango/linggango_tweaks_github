@@ -4,6 +4,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.Unique;
@@ -32,7 +33,7 @@ public abstract class TurretFlashFix {
     @Unique
     private static Field linggango$xRotOField;
     @Inject(method = "getEffectInstance", at = @At("RETURN"), remap = false)
-    private static void linggango$fixTurretMuzzleRotation(LivingEntity owner, @Nullable Entity toFollow, CSVisualType visual, double offsetX, double offsetY, double offsetZ, CallbackInfoReturnable<?> cir) {
+    private static void linggango$fixTurretMuzzleRotation(LivingEntity owner, @Nullable Entity toFollow, CSVisualType visual, double offsetX, double offsetY, double offsetZ, @NonNull CallbackInfoReturnable<?> cir) {
         Object effectObj = cir.getReturnValue();
         if (!(effectObj instanceof Entity effect) || toFollow == null) return;
         if (toFollow.getClass().getSimpleName().equals("RainfallTurret")) {
@@ -90,7 +91,7 @@ public abstract class TurretFlashFix {
     }
 
     @Unique
-    private static Vec3 linggango$getTurretViewVector(Entity turret) {
+    private static Vec3 linggango$getTurretViewVector(@NonNull Entity turret) {
         try {
             if (linggango$getViewVectorMethod == null) {
                 try {

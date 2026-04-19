@@ -3,6 +3,7 @@ package com.misanthropy.linggango.linggango_tweaks.integration.l2;
 import com.Polarice3.Goety.common.entities.boss.Apostle;
 import dev.xkmc.l2hostility.content.config.SpecialConfigCondition;
 import dev.xkmc.l2serial.serialization.SerialClass;
+import org.jspecify.annotations.NonNull;
 import z1gned.goetyrevelation.util.ApollyonAbilityHelper;
 
 import javax.annotation.Nullable;
@@ -27,7 +28,7 @@ public class ApostleCondition extends SpecialConfigCondition<ApostleEntityContex
     }
 
     @Override
-    public boolean test(ApostleEntityContext context) {
+    public boolean test(@NonNull ApostleEntityContext context) {
         if (!(context.le() instanceof Apostle apostle)) return false;
         ApollyonAbilityHelper helper = (ApollyonAbilityHelper) apostle;
         if (titleNumber != null) {
@@ -39,7 +40,6 @@ public class ApostleCondition extends SpecialConfigCondition<ApostleEntityContex
             if (!matched) return false;
         }
         if (isApollyon != null && helper.allTitlesApostle_1_20_1$isApollyon() != isApollyon) return false;
-        if (isSecondPhase != null && apostle.isSecondPhase() != isSecondPhase) return false;
-        return true;
+        return isSecondPhase == null || apostle.isSecondPhase() == isSecondPhase;
     }
 }

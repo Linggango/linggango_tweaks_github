@@ -3,6 +3,7 @@ package com.misanthropy.linggango.linggango_tweaks.mixin.tweaks;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
+import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -29,7 +30,7 @@ public abstract class ResistanceNerfMixin {
         return originalI;
     }
     @Inject(method = "getDamageAfterMagicAbsorb", at = @At("RETURN"), cancellable = true)
-    private void applyCustomResistanceScaling(DamageSource source, float damage, CallbackInfoReturnable<Float> cir) {
+    private void applyCustomResistanceScaling(@NonNull DamageSource source, float damage, @NonNull CallbackInfoReturnable<Float> cir) {
         if (this.linggango$capturedNetAmplifier >= 0 && !source.is(DamageTypeTags.BYPASSES_RESISTANCE)) {
             float currentDamage = cir.getReturnValue();
             int level = this.linggango$capturedNetAmplifier + 1;

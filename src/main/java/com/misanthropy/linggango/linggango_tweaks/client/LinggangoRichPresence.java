@@ -13,6 +13,8 @@ import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.json.JSONObject;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.time.OffsetDateTime;
 
@@ -23,7 +25,7 @@ public class LinggangoRichPresence {
     private static final long CLIENT_ID = 1413254364633628826L;
     private static boolean initialized = false;
     private static boolean libraryPresent = false;
-    private static OffsetDateTime startTime = null;
+    private static @Nullable OffsetDateTime startTime = null;
 
     public static void init() {
         if (initialized) return;
@@ -53,14 +55,14 @@ public class LinggangoRichPresence {
     }
 
     @SubscribeEvent
-    public static void onScreenOpen(ScreenEvent.Opening event) {
+    public static void onScreenOpen(ScreenEvent.@NonNull Opening event) {
         if (event.getScreen() instanceof TitleScreen) {
             updatePresence("Main Menu", "Idling");
         }
     }
 
     @SubscribeEvent
-    public static void onWorldJoin(EntityJoinLevelEvent event) {
+    public static void onWorldJoin(@NonNull EntityJoinLevelEvent event) {
         if (!event.getLevel().isClientSide() || event.getEntity() != Minecraft.getInstance().player) return;
 
         Minecraft mc = Minecraft.getInstance();

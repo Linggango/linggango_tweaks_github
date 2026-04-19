@@ -13,6 +13,7 @@ import net.minecraftforge.client.gui.overlay.ForgeGui;
 import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import org.jspecify.annotations.NonNull;
 
 @Mod.EventBusSubscriber(modid = LinggangoTweaks.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ParryOverlay {
@@ -22,7 +23,7 @@ public class ParryOverlay {
     private static float currentYOffset = 0.0f;
 
     @SubscribeEvent
-    public static void registerOverlays(RegisterGuiOverlaysEvent event) {
+    public static void registerOverlays(@NonNull RegisterGuiOverlaysEvent event) {
         event.registerAboveAll("parry_hud", PARRY_HUD);
     }
 

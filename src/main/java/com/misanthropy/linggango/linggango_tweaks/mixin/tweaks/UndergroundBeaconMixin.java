@@ -5,6 +5,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BeaconBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
+import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -19,7 +20,7 @@ public class UndergroundBeaconMixin {
                     target = "Lnet/minecraft/world/level/Level;getHeight(Lnet/minecraft/world/level/levelgen/Heightmap$Types;II)I"
             )
     )
-    private static int forceMaxHeight(Level level, Heightmap.Types types, int x, int z) {
+    private static int forceMaxHeight(@NonNull Level level, Heightmap.Types types, int x, int z) {
         return level.getMaxBuildHeight();
     }
 

@@ -7,6 +7,7 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Objects;
 
@@ -14,7 +15,7 @@ import java.util.Objects;
 public class BossDamageTweakEvent {
 
     @SubscribeEvent
-    public static void onBossAttack(LivingHurtEvent event) {
+    public static void onBossAttack(@NonNull LivingHurtEvent event) {
         if (!(event.getEntity() instanceof Player)) return;
 
         Entity attacker = event.getSource().getEntity();

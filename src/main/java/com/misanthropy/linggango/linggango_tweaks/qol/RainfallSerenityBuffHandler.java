@@ -13,6 +13,7 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.jspecify.annotations.NonNull;
 
 import java.lang.reflect.Field;
 
@@ -20,7 +21,7 @@ import java.lang.reflect.Field;
 public class RainfallSerenityBuffHandler {
 
     @SubscribeEvent
-    public static void onEntityJoin(EntityJoinLevelEvent event) {
+    public static void onEntityJoin(@NonNull EntityJoinLevelEvent event) {
         Entity entity = event.getEntity();
         ResourceLocation id = ForgeRegistries.ENTITY_TYPES.getKey(entity.getType());
 
@@ -53,7 +54,7 @@ public class RainfallSerenityBuffHandler {
     }
 
     @SubscribeEvent
-    public static void onRightClick(PlayerInteractEvent.RightClickItem event) {
+    public static void onRightClick(PlayerInteractEvent.@NonNull RightClickItem event) {
         Player player = event.getEntity();
         ItemStack stack = event.getItemStack();
 

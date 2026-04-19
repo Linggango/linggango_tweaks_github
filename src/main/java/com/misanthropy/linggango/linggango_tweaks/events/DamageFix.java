@@ -5,31 +5,32 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import org.jspecify.annotations.NonNull;
 
 @Mod.EventBusSubscriber(modid = LinggangoTweaks.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE) public class DamageFix {
     @SubscribeEvent
-    public static void onLivingHurt(LivingHurtEvent e) {
+    public static void onLivingHurt(@NonNull LivingHurtEvent e) {
         if (Float.isNaN(e.getAmount())) {
             e.setCanceled(true);
             rectify(e.getEntity());
         }
     }
     @SubscribeEvent
-    public static void onLivingDamage(LivingDamageEvent e) {
+    public static void onLivingDamage(@NonNull LivingDamageEvent e) {
         if (Float.isNaN(e.getAmount())) {
             e.setCanceled(true);
             rectify(e.getEntity());
         }
     }
     @SubscribeEvent
-    public static void onAttackEntity(LivingAttackEvent e) {
+    public static void onAttackEntity(@NonNull LivingAttackEvent e) {
         if (Float.isNaN(e.getAmount())) { e.setCanceled(true);
             rectify(e.getEntity());
         }
     }
 
     @SubscribeEvent
-    public static void onLivingHeal(LivingHealEvent e) {
+    public static void onLivingHeal(@NonNull LivingHealEvent e) {
         LivingEntity le = e.getEntity();
         if (Float.isNaN(e.getAmount())) {
             e.setCanceled(true);
@@ -39,12 +40,12 @@ import net.minecraftforge.fml.common.Mod;
     }
 
     @SubscribeEvent
-    public static void onLivingDeath(LivingDeathEvent e) {
+    public static void onLivingDeath(@NonNull LivingDeathEvent e) {
         if (Float.isNaN(e.getEntity().getHealth())) {
             e.setCanceled(true);
             rectify(e.getEntity());
         }
-    } private static void rectify(LivingEntity le) {
+    } private static void rectify(@NonNull LivingEntity le) {
         le.setHealth(le.getMaxHealth());
         le.setAbsorptionAmount(0.0F);
     }

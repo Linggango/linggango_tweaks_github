@@ -22,6 +22,8 @@ import com.jagrosh.discordipc.entities.pipe.PipeStatus;
 import com.jagrosh.discordipc.exceptions.NoDiscordClientException;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,9 +60,9 @@ public final class IPCClient implements Closeable
     private static final Logger LOGGER = LoggerFactory.getLogger(IPCClient.class);
     private final long clientId;
     private final HashMap<String,Callback> callbacks = new HashMap<>();
-    private volatile Pipe pipe;
-    private IPCListener listener = null;
-    private Thread readThread = null;
+    private volatile @Nullable Pipe pipe;
+    private @Nullable IPCListener listener = null;
+    private @Nullable Thread readThread = null;
     
     /**
      * Constructs a new IPCClient using the provided {@code clientId}.<br>
@@ -161,7 +163,7 @@ public final class IPCClient implements Closeable
      *
      * @see RichPresence
      */
-    public void sendRichPresence(RichPresence presence, Callback callback)
+    public void sendRichPresence(@Nullable RichPresence presence, Callback callback)
     {
         checkConnected(true);
         LOGGER.debug("Sending RichPresence to discord: "+(presence == null ? null : presence.toJson().toString()));
@@ -186,7 +188,7 @@ public final class IPCClient implements Closeable
      *         If a connection was not made prior to invoking
      *         this method.
      */
-    public void subscribe(Event sub)
+    public void subscribe(@NonNull Event sub)
     {
         subscribe(sub, null);
     }
@@ -206,7 +208,7 @@ public final class IPCClient implements Closeable
      *         If a connection was not made prior to invoking
      *         this method.
      */
-    public void subscribe(Event sub, Callback callback)
+    public void subscribe(@NonNull Event sub, Callback callback)
     {
         checkConnected(true);
         if(!sub.isSubscribable())
@@ -263,7 +265,7 @@ public final class IPCClient implements Closeable
      *
      * @return The {@link DiscordBuild} of this IPCClient, or null if not connected.
      */
-    public DiscordBuild getDiscordBuild()
+    public @Nullable DiscordBuild getDiscordBuild()
     {
         if (pipe == null) return null;
 
@@ -306,7 +308,7 @@ public final class IPCClient implements Closeable
             return subscribable;
         }
         
-        static Event of(String str)
+        static @NonNull Event of(@Nullable String str)
         {
             if(str==null)
                 return NULL;

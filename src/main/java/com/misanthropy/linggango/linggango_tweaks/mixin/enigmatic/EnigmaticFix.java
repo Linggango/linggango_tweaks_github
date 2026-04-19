@@ -1,6 +1,8 @@
 package com.misanthropy.linggango.linggango_tweaks.mixin.enigmatic;
 
 import net.minecraft.world.item.ItemStack;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -15,7 +17,7 @@ public class EnigmaticFix {
             cancellable = true,
             remap = false
     )
-    private static void linggango$preventVerifyCrash(ItemStack stack, String key, CallbackInfoReturnable<Boolean> cir) {
+    private static void linggango$preventVerifyCrash(@Nullable ItemStack stack, String key, @NonNull CallbackInfoReturnable<Boolean> cir) {
         if (stack == null || !stack.hasTag()) {
             cir.setReturnValue(false);
         }

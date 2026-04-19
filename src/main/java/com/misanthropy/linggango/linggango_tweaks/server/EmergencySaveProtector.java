@@ -7,16 +7,18 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 @Mod.EventBusSubscriber(modid = "linggango_tweaks")
 public class EmergencySaveProtector {
 
     private static final Logger LOGGER = LogManager.getLogger();
-    private static MinecraftServer activeServer;
+    private static @Nullable MinecraftServer activeServer;
     private static Thread shutdownHook;
 
     @SubscribeEvent
-    public static void onServerStart(ServerStartedEvent event) {
+    public static void onServerStart(@NonNull ServerStartedEvent event) {
         activeServer = event.getServer();
 
         if (shutdownHook == null) {

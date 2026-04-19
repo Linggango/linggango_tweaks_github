@@ -32,6 +32,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +47,7 @@ public class SkillManager {
     private static final UUID NMAGE_MANA_ID = UUID.fromString("44a3b8d9-6f1c-4b3a-92e2-5c8e7e120f2d");
     private static final UUID NMAGE_SHRED_ID = UUID.fromString("55a3b8d9-6f1c-4b3a-92e2-5c8e7e120f2e");
 
-    public static void playCustomSound(Player player, String soundId, float vol, float pitch) {
+    public static void playCustomSound(@NonNull Player player, @NonNull String soundId, float vol, float pitch) {
         ResourceLocation loc = new ResourceLocation(soundId);
         SoundEvent sound = ForgeRegistries.SOUND_EVENTS.getValue(loc);
         if (sound == null) {
@@ -55,7 +56,7 @@ public class SkillManager {
         player.level().playSound(null, player.getX(), player.getY(), player.getZ(), sound, SoundSource.PLAYERS, vol, pitch);
     }
 
-    public static String getPlayerClass(Player player) {
+    public static String getPlayerClass(@NonNull Player player) {
         if (player.level().isClientSide) {
             return com.misanthropy.linggango.linggango_tweaks.skills.client.ClientSkillEvents.currentClassId;
         } else {
@@ -64,7 +65,7 @@ public class SkillManager {
         }
     }
 
-    public static void useActiveSkill(ServerPlayer player) {
+    public static void useActiveSkill(@NonNull ServerPlayer player) {
         String classId = getPlayerClass(player);
         CompoundTag data = player.getPersistentData();
 
@@ -143,12 +144,12 @@ public class SkillManager {
         if (synced) syncToClient(player, classId);
     }
 
-    public static void setCooldown(ServerPlayer player, String classId, int ticks) {
+    public static void setCooldown(@NonNull ServerPlayer player, String classId, int ticks) {
         player.getPersistentData().putLong("lt_cd_" + classId, player.level().getGameTime() + ticks);
         player.getPersistentData().putInt("lt_maxcd_" + classId, ticks);
     }
 
-    public static void syncToClient(ServerPlayer player, String classId) {
+    public static void syncToClient(@NonNull ServerPlayer player, @NonNull String classId) {
         CompoundTag data = player.getPersistentData();
         long end = data.getLong("lt_cd_" + classId);
         int remaining = (int) Math.max(0, end - player.level().getGameTime());
@@ -169,7 +170,7 @@ public class SkillManager {
     }
 
     @SubscribeEvent
-    public static void onLivingDeath(LivingDeathEvent event) {
+    public static void onLivingDeath(@NonNull LivingDeathEvent event) {
         if (event.getEntity().level().isClientSide) return;
 
         if (event.getEntity() instanceof ServerPlayer player && "berserker".equals(getPlayerClass(player))) {
@@ -192,7 +193,7 @@ public class SkillManager {
     }
 
     @SubscribeEvent
-    public static void onLivingDamage(LivingDamageEvent event) {
+    public static void onLivingDamage(@NonNull LivingDamageEvent event) {
         if (event.getEntity().level().isClientSide) return;
 
         if (event.getEntity() instanceof ServerPlayer damagedPlayer) {
@@ -224,7 +225,7 @@ public class SkillManager {
     }
 
     @SubscribeEvent
-    public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
+    public static void onPlayerTick(TickEvent.@NonNull PlayerTickEvent event) {
         if (event.phase != TickEvent.Phase.END) return;
         Player p = event.player;
         CompoundTag data = p.getPersistentData();
@@ -477,7 +478,7 @@ public class SkillManager {
     }
 
     @SubscribeEvent
-    public static void onVisibility(LivingEvent.LivingVisibilityEvent event) {
+    public static void onVisibility(LivingEvent.@NonNull LivingVisibilityEvent event) {
         if (event.getEntity() instanceof Player p && p.isCrouching()) {
             if ("ranger".equals(getPlayerClass(p))) {
                 event.modifyVisibility(0.75);
@@ -486,7 +487,7 @@ public class SkillManager {
     }
 
     @SubscribeEvent
-    public static void onSetTarget(LivingChangeTargetEvent event) {
+    public static void onSetTarget(@NonNull LivingChangeTargetEvent event) {
         if (event.getNewTarget() instanceof Player p && "scum".equals(getPlayerClass(p))) {
             if (p.level().random.nextFloat() < 0.5f) {
                 event.setNewTarget(null);
@@ -494,7 +495,7 @@ public class SkillManager {
         }
     }
 
-    private static void addAttribute(Player p, String regName, UUID id, double val, AttributeModifier.Operation op) {
+    private static void addAttribute(@NonNull Player p, @NonNull String regName, @NonNull UUID id, double val, AttributeModifier.@NonNull Operation op) {
         Attribute attr = ForgeRegistries.ATTRIBUTES.getValue(new ResourceLocation(regName));
         if (attr == null) return;
         AttributeInstance inst = p.getAttribute(attr);
@@ -503,7 +504,7 @@ public class SkillManager {
         }
     }
 
-    private static void removeAttribute(Player p, String regName, UUID id) {
+    private static void removeAttribute(@NonNull Player p, @NonNull String regName, @NonNull UUID id) {
         Attribute attr = ForgeRegistries.ATTRIBUTES.getValue(new ResourceLocation(regName));
         if (attr == null) return;
         AttributeInstance inst = p.getAttribute(attr);

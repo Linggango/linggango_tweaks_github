@@ -5,6 +5,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
+import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -16,7 +17,7 @@ public class ProjectileTweaks {
             method = "onHitEntity",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;hurt(Lnet/minecraft/world/damagesource/DamageSource;F)Z")
     )
-    private boolean redirectProjectileDamage(Entity target, DamageSource originalSource, float damage) {
+    private boolean redirectProjectileDamage(Entity target, @NonNull DamageSource originalSource, float damage) {
         AbstractArrow arrow = (AbstractArrow) (Object) this;
         Entity owner = arrow.getOwner();
 

@@ -13,6 +13,7 @@ import net.minecraftforge.common.loot.IGlobalLootModifier;
 import net.minecraftforge.common.loot.LootModifier;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.HashSet;
 import java.util.List;
@@ -36,13 +37,13 @@ public class BalancedLootRandomizerModifier extends LootModifier {
     private static final AtomicInteger GLOBAL_ROLL_COUNTER = new AtomicInteger(0);
     private static boolean isPoolInitialized = false;
 
-    public BalancedLootRandomizerModifier(LootItemCondition[] conditionsIn, float randomizationChance) {
+    public BalancedLootRandomizerModifier(LootItemCondition @NonNull [] conditionsIn, float randomizationChance) {
         super(conditionsIn);
         this.randomizationChance = randomizationChance;
     }
 
     @Override
-    protected @NotNull ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
+    protected @NotNull ObjectArrayList<ItemStack> doApply(@NonNull ObjectArrayList<ItemStack> generatedLoot, @NonNull LootContext context) {
         ResourceLocation lootTableId = context.getQueriedLootTableId();
 
         if (!lootTableId.getPath().contains("chests/")) {
@@ -166,7 +167,7 @@ public class BalancedLootRandomizerModifier extends LootModifier {
         }
     }
 
-    private static String getCategoryKey(Item item) {
+    private static @NonNull String getCategoryKey(Item item) {
         Rarity rarity = ItemTierEvaluator.evaluateRarity(item);
         String category = "MISC";
 

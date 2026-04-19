@@ -5,12 +5,13 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import org.jspecify.annotations.NonNull;
 
 @Mod.EventBusSubscriber(modid = LinggangoTweaks.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class XpDeathPenalty {
 
     @SubscribeEvent
-    public static void onPlayerRespawn(PlayerEvent.Clone event) {
+    public static void onPlayerRespawn(PlayerEvent.@NonNull Clone event) {
         if (event.isWasDeath()) {
             Player original = event.getOriginal();
             Player newPlayer = event.getEntity();
@@ -25,7 +26,7 @@ public class XpDeathPenalty {
         }
     }
 
-    private static int getTotalXp(Player player) {
+    private static int getTotalXp(@NonNull Player player) {
         int level = player.experienceLevel;
         int total;
         if (level >= 30) {

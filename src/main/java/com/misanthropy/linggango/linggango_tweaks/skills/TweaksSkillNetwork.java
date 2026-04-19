@@ -1,12 +1,14 @@
 package com.misanthropy.linggango.linggango_tweaks.skills;
 
 import com.misanthropy.linggango.linggango_tweaks.LinggangoTweaks;
+import com.misanthropy.linggango.linggango_tweaks.skills.client.ClientSkillEvents;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
+import org.jspecify.annotations.NonNull;
 
 import java.util.function.Supplier;
 
@@ -26,8 +28,8 @@ public class TweaksSkillNetwork {
     public static class SkillUseC2SPacket {
         public SkillUseC2SPacket() {}
         public static void encode(SkillUseC2SPacket msg, FriendlyByteBuf buf) {}
-        public static SkillUseC2SPacket decode(FriendlyByteBuf buf) { return new SkillUseC2SPacket(); }
-        public static void handle(SkillUseC2SPacket msg, Supplier<NetworkEvent.Context> ctx) {
+        public static @NonNull SkillUseC2SPacket decode(FriendlyByteBuf buf) { return new SkillUseC2SPacket(); }
+        public static void handle(SkillUseC2SPacket msg, @NonNull Supplier<NetworkEvent.Context> ctx) {
             ctx.get().enqueueWork(() -> {
                 ServerPlayer player = ctx.get().getSender();
                 if (player != null) {
@@ -38,34 +40,23 @@ public class TweaksSkillNetwork {
         }
     }
 
-    public static class SkillSyncS2CPacket {
-        public final String classId;
-        public final int cdRemaining;
-        public final int maxCd;
-        public final boolean isActive;
+    public record SkillSyncS2CPacket(String classId, int cdRemaining, int maxCd, boolean isActive) {
 
-        public SkillSyncS2CPacket(String classId, int cdRemaining, int maxCd, boolean isActive) {
-            this.classId = classId;
-            this.cdRemaining = cdRemaining;
-            this.maxCd = maxCd;
-            this.isActive = isActive;
-        }
+        public static void encode(@NonNull SkillSyncS2CPacket msg, @NonNull FriendlyByteBuf buf) {
+                buf.writeUtf(msg.classId);
+                buf.writeInt(msg.cdRemaining);
+                buf.writeInt(msg.maxCd);
+                buf.writeBoolean(msg.isActive);
+            }
 
-        public static void encode(SkillSyncS2CPacket msg, FriendlyByteBuf buf) {
-            buf.writeUtf(msg.classId);
-            buf.writeInt(msg.cdRemaining);
-            buf.writeInt(msg.maxCd);
-            buf.writeBoolean(msg.isActive);
-        }
+            public static @NonNull SkillSyncS2CPacket decode(@NonNull FriendlyByteBuf buf) {
+                return new SkillSyncS2CPacket(buf.readUtf(), buf.readInt(), buf.readInt(), buf.readBoolean());
+            }
 
-        public static SkillSyncS2CPacket decode(FriendlyByteBuf buf) {
-            return new SkillSyncS2CPacket(buf.readUtf(), buf.readInt(), buf.readInt(), buf.readBoolean());
+            public static void handle(@NonNull SkillSyncS2CPacket msg, @NonNull Supplier<NetworkEvent.Context> ctx) {
+                ctx.get().enqueueWork(() -> ClientSkillEvents.syncSkillData(
+                        msg.classId, msg.cdRemaining, msg.maxCd, msg.isActive));
+                ctx.get().setPacketHandled(true);
+            }
         }
-
-        public static void handle(SkillSyncS2CPacket msg, Supplier<NetworkEvent.Context> ctx) {
-            ctx.get().enqueueWork(() -> com.misanthropy.linggango.linggango_tweaks.skills.client.ClientSkillEvents.syncSkillData(
-                    msg.classId, msg.cdRemaining, msg.maxCd, msg.isActive));
-            ctx.get().setPacketHandled(true);
-        }
-    }
 }

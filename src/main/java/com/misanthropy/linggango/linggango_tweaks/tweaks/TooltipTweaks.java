@@ -11,6 +11,7 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 
@@ -18,7 +19,7 @@ import java.util.List;
 public class TooltipTweaks {
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
-    public static void onItemTooltip(ItemTooltipEvent event) {
+    public static void onItemTooltip(@NonNull ItemTooltipEvent event) {
         ItemStack stack = event.getItemStack();
         if (stack.isEmpty()) return;
 

@@ -17,6 +17,7 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -92,7 +93,7 @@ public class SpawnChanges implements BiomeModifier {
     }
 
     @SubscribeEvent
-    public static void onMobFallDamage(LivingHurtEvent event) {
+    public static void onMobFallDamage(@NonNull LivingHurtEvent event) {
         if (event.getSource().is(DamageTypes.FALL) && event.getEntity().tickCount < 200) {
             if (TWEAKED_ENTITIES.contains(event.getEntity().getType())) {
                 event.setCanceled(true);
@@ -101,7 +102,7 @@ public class SpawnChanges implements BiomeModifier {
     }
 
     @Override
-    public void modify(Holder<Biome> biome, Phase phase, ModifiableBiomeInfo.BiomeInfo.Builder builder) {
+    public void modify(@NonNull Holder<Biome> biome, Phase phase, ModifiableBiomeInfo.BiomeInfo.@NonNull Builder builder) {
         if (phase != Phase.MODIFY) return;
         init();
 
@@ -173,7 +174,7 @@ public class SpawnChanges implements BiomeModifier {
     }
 
     @Override
-    public Codec<? extends BiomeModifier> codec() {
+    public @NonNull Codec<? extends BiomeModifier> codec() {
         return LinggangoTweaks.SPAWN_CHANGES_CODEC.get();
     }
 }

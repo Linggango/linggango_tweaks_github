@@ -8,6 +8,7 @@ import dev.xkmc.l2hostility.content.capability.mob.MobTraitCap;
 import dev.xkmc.l2hostility.content.config.EntityConfig;
 import dev.xkmc.l2hostility.init.L2Hostility;
 import net.minecraft.world.entity.LivingEntity;
+import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -19,7 +20,7 @@ public abstract class MobTraitCapMixin {
 
     @Inject(method = "getConfigCache", at = @At("HEAD"), cancellable = true)
     private void injectApostleContextLookup(LivingEntity le,
-            CallbackInfoReturnable<EntityConfig.Config> cir) {
+                                            @NonNull CallbackInfoReturnable<EntityConfig.Config> cir) {
         if (!(le instanceof Apostle)) return;
 
         var data = new ApostleEntityContext(le);
@@ -40,7 +41,7 @@ public abstract class MobTraitCapMixin {
             method = "tick",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;setHealth(F)V"),
             remap = true)
-    private void skipTickHealthReset(LivingEntity mob, float health) {
+    private void skipTickHealthReset(@NonNull LivingEntity mob, float health) {
         if (!ApostleL2Data.SKIP_TICK_HEALTH_RESET.remove(mob.getUUID())) {
             mob.setHealth(health);
         }

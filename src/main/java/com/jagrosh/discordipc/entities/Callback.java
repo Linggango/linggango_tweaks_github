@@ -15,6 +15,8 @@
  */
 package com.jagrosh.discordipc.entities;
 
+import org.jspecify.annotations.NonNull;
+
 import java.util.function.Consumer;
 
 /**
@@ -69,7 +71,7 @@ public class Callback
      * @param failure The Consumer to launch if the process has an error.
      */
     @Deprecated
-    public Callback(Runnable success, Consumer<String> failure)
+    public Callback(@NonNull Runnable success, Consumer<String> failure)
     {
         this(p -> success.run(), failure);
     }
@@ -78,7 +80,7 @@ public class Callback
      * @param success The Runnable to launch after a successful process.
      */
     @Deprecated
-    public Callback(Runnable success)
+    public Callback(@NonNull Runnable success)
     {
         this(p -> success.run(), null);
     }

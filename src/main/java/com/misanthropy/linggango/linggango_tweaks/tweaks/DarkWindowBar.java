@@ -9,6 +9,7 @@ import com.sun.jna.platform.win32.WinDef;
 import com.sun.jna.platform.win32.WinNT;
 import com.sun.jna.win32.StdCallLibrary;
 import com.sun.jna.win32.W32APIOptions;
+import org.jspecify.annotations.NonNull;
 import org.lwjgl.glfw.GLFWNativeWin32;
 import org.lwjgl.system.Platform;
 import org.slf4j.Logger;
@@ -18,7 +19,7 @@ import org.slf4j.LoggerFactory;
 public class DarkWindowBar {
     private static final Logger LOGGER = LoggerFactory.getLogger("Linggango Tweaks");
 
-    public static void setDarkWindowBar(Window window) {
+    public static void setDarkWindowBar(@NonNull Window window) {
         if (Platform.get() != Platform.WINDOWS) {
             return;
         }
@@ -46,7 +47,7 @@ public class DarkWindowBar {
     }
 
     public interface DwmApi extends StdCallLibrary {
-        DwmApi INSTANCE = (DwmApi) Native.loadLibrary("dwmapi", DwmApi.class, W32APIOptions.DEFAULT_OPTIONS);
+        DwmApi INSTANCE = Native.loadLibrary("dwmapi", DwmApi.class, W32APIOptions.DEFAULT_OPTIONS);
         WinDef.DWORD DWMWA_USE_IMMERSIVE_DARK_MODE = new WinDef.DWORD(20L);
         void DwmSetWindowAttribute(WinDef.HWND paramHWND, WinDef.DWORD paramDWORD1, WinDef.LPVOID paramLPVOID, WinDef.DWORD paramDWORD2);
     }

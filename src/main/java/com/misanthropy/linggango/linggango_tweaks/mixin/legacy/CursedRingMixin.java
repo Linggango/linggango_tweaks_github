@@ -10,6 +10,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -22,7 +23,7 @@ import java.util.UUID;
 public class CursedRingMixin {
 
     @Inject(method = "getAttributeModifiers", at = @At("RETURN"), cancellable = true)
-    private void linggango_tweaks$modifyScumRingAttributes(SlotContext slotContext, UUID uuid, ItemStack stack, CallbackInfoReturnable<Multimap<Attribute, AttributeModifier>> cir) {
+    private void linggango_tweaks$modifyScumRingAttributes(@NonNull SlotContext slotContext, UUID uuid, ItemStack stack, @NonNull CallbackInfoReturnable<Multimap<Attribute, AttributeModifier>> cir) {
         if (!ScumSynergyEvents.isScumClass(slotContext.entity())) return;
         Multimap<Attribute, AttributeModifier> newMap = ArrayListMultimap.create(cir.getReturnValue());
         newMap.removeAll(Attributes.ARMOR);

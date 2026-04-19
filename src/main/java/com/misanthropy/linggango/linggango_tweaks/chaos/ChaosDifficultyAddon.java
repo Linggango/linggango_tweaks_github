@@ -19,6 +19,8 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,7 +32,7 @@ import java.util.stream.Collectors;
 public class ChaosDifficultyAddon {
 
     private static final String NYXARIS_ID = "armageddon_mod:nyxaris_the_veil_of_oblivion";
-    private static List<EntityType<?>> cachedChaosPool = null;
+    private static @Nullable List<EntityType<?>> cachedChaosPool = null;
 
     public static void registerChaos() {
         if (ModList.get().isLoaded("difficulty_enhancement")) {
@@ -64,12 +66,12 @@ public class ChaosDifficultyAddon {
         }
     }
 
-    public static boolean isChaos(Level level) {
+    public static boolean isChaos(@NonNull Level level) {
         return LinggangoEvents.getCurrentDifficulty(level).id.equals("chaos");
     }
 
     @SubscribeEvent
-    public static void onServerTick(TickEvent.ServerTickEvent event) {
+    public static void onServerTick(TickEvent.@NonNull ServerTickEvent event) {
         if (event.phase != TickEvent.Phase.END) return;
         var server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
         if (server == null || server.getTickCount() % 40 != 0) return;
@@ -81,7 +83,7 @@ public class ChaosDifficultyAddon {
         }
     }
 
-    private static void triggerChaosSpawning(ServerLevel level) {
+    private static void triggerChaosSpawning(@NonNull ServerLevel level) {
         List<ServerPlayer> players = level.players();
         if (players.isEmpty()) return;
 
@@ -123,7 +125,7 @@ public class ChaosDifficultyAddon {
     }
 
     @SubscribeEvent
-    public static void onCheckSpawn(MobSpawnEvent.SpawnPlacementCheck event) {
+    public static void onCheckSpawn(MobSpawnEvent.@NonNull SpawnPlacementCheck event) {
         if (event.getLevel() instanceof ServerLevel sl) {
             if (isChaos(sl)) {
                 event.setResult(Event.Result.ALLOW);
@@ -132,7 +134,7 @@ public class ChaosDifficultyAddon {
     }
 
     @SubscribeEvent
-    public static void onBossDeath(LivingDeathEvent event) {
+    public static void onBossDeath(@NonNull LivingDeathEvent event) {
         LivingEntity victim = event.getEntity();
         if (victim.level().isClientSide()) return;
         ResourceLocation id = ForgeRegistries.ENTITY_TYPES.getKey(victim.getType());

@@ -1,5 +1,6 @@
 package com.misanthropy.linggango.linggango_tweaks.mixin.celestisynth;
 
+import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -16,7 +17,7 @@ import org.thecelestialworkshop.celestisynth.common.attack.breezebreaker.*;
 public abstract class BreezebreakerCooldownMixin {
 
     @Inject(method = "getCooldown", at = @At("HEAD"), cancellable = true, remap = false)
-    private void tweakBreezebreakerCooldowns(CallbackInfoReturnable<Integer> cir) {
+    private void tweakBreezebreakerCooldowns(@NonNull CallbackInfoReturnable<Integer> cir) {
         Object self = this;
 
         if (self instanceof BreezebreakerAttack attack) {

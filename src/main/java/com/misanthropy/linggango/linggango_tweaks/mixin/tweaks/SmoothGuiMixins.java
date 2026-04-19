@@ -17,6 +17,8 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -38,7 +40,7 @@ public class SmoothGuiMixins {
         @Unique private long linggango_tweaks$lastTime = 0L;
 
         @Inject(method = "render", at = @At("HEAD"))
-        private void linggango_tweaks$pushHoverScale(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
+        private void linggango_tweaks$pushHoverScale(@NonNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
             AbstractWidget widget = (AbstractWidget) (Object) this;
             if (!widget.visible || !(widget instanceof Button)) return;
 
@@ -61,7 +63,7 @@ public class SmoothGuiMixins {
         }
 
         @Inject(method = "render", at = @At("RETURN"))
-        private void linggango_tweaks$popHoverScale(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
+        private void linggango_tweaks$popHoverScale(@NonNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
             AbstractWidget widget = (AbstractWidget) (Object) this;
             if (!widget.visible || !(widget instanceof Button)) return;
             guiGraphics.pose().popPose();
@@ -70,8 +72,8 @@ public class SmoothGuiMixins {
 
     @Mixin(CreativeModeInventoryScreen.class)
     public static abstract class AnimatedCreativeTabsMixin {
-        @Unique private static java.lang.reflect.Field linggango_tweaks$tabField1 = null;
-        @Unique private static CreativeModeTab linggango_tweaks$getTab1() {
+        @Unique private static java.lang.reflect.@Nullable Field linggango_tweaks$tabField1 = null;
+        @Unique private static @Nullable CreativeModeTab linggango_tweaks$getTab1() {
             if (linggango_tweaks$tabField1 == null) {
                 for (java.lang.reflect.Field f : CreativeModeInventoryScreen.class.getDeclaredFields()) {
                     if (f.getType() == CreativeModeTab.class && java.lang.reflect.Modifier.isStatic(f.getModifiers())) {
@@ -90,10 +92,10 @@ public class SmoothGuiMixins {
         @Unique private float linggango_tweaks$dt = 0.0F;
         @Unique private int linggango_tweaks$mouseX = 0;
         @Unique private int linggango_tweaks$mouseY = 0;
-        @Unique private CreativeModeTab linggango_tweaks$currentTab = null;
+        @Unique private @Nullable CreativeModeTab linggango_tweaks$currentTab = null;
         @Unique private boolean linggango_tweaks$matrixPushed = false;
         @Unique private static long linggango_tweaks$lastClickSoundTime = 0L;
-        @Unique private static CreativeModeTab linggango_tweaks$lastClickedTab = null;
+        @Unique private static @Nullable CreativeModeTab linggango_tweaks$lastClickedTab = null;
 
         @Inject(method = "render", at = @At("HEAD"))
         private void linggango_tweaks$captureMouse(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
@@ -113,7 +115,7 @@ public class SmoothGuiMixins {
         }
 
         @Redirect(method = "renderTabButton", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V"))
-        private void linggango_tweaks$wrapTabWithScale(GuiGraphics guiGraphics, ResourceLocation texture, int x, int y, int uOffset, int vOffset, int uWidth, int vHeight) {
+        private void linggango_tweaks$wrapTabWithScale(@NonNull GuiGraphics guiGraphics, @NonNull ResourceLocation texture, int x, int y, int uOffset, int vOffset, int uWidth, int vHeight) {
             if (!linggango_tweaks$matrixPushed && linggango_tweaks$currentTab != null) {
                 CreativeModeTab selectedTab = linggango_tweaks$getTab1();
                 boolean isSelected = linggango_tweaks$currentTab == selectedTab;
@@ -138,7 +140,7 @@ public class SmoothGuiMixins {
         }
 
         @Inject(method = "renderTabButton", at = @At("RETURN"))
-        private void linggango_tweaks$endTabRender(GuiGraphics guiGraphics, CreativeModeTab tab, CallbackInfo ci) {
+        private void linggango_tweaks$endTabRender(@NonNull GuiGraphics guiGraphics, CreativeModeTab tab, CallbackInfo ci) {
             if (linggango_tweaks$matrixPushed) {
                 guiGraphics.pose().popPose();
                 linggango_tweaks$matrixPushed = false;
@@ -167,12 +169,12 @@ public class SmoothGuiMixins {
         @Shadow private float scrollOffs;
         @Shadow private boolean scrolling;
 
-        public SmoothCreativeScrollMixin(CreativeModeInventoryScreen.ItemPickerMenu menu, Inventory playerInventory, Component title) {
+        public SmoothCreativeScrollMixin(CreativeModeInventoryScreen.@NonNull ItemPickerMenu menu, @NonNull Inventory playerInventory, @NonNull Component title) {
             super(menu, playerInventory, title);
         }
 
-        @Unique private static java.lang.reflect.Field linggango_tweaks$tabField2 = null;
-        @Unique private static CreativeModeTab linggango_tweaks$getTab2() {
+        @Unique private static java.lang.reflect.@Nullable Field linggango_tweaks$tabField2 = null;
+        @Unique private static @Nullable CreativeModeTab linggango_tweaks$getTab2() {
             if (linggango_tweaks$tabField2 == null) {
                 for (java.lang.reflect.Field f : CreativeModeInventoryScreen.class.getDeclaredFields()) {
                     if (f.getType() == CreativeModeTab.class && java.lang.reflect.Modifier.isStatic(f.getModifiers())) {
@@ -218,10 +220,10 @@ public class SmoothGuiMixins {
         @Unique private int linggango_tweaks$lastPixelOffset = 0;
         @Unique private int linggango_tweaks$lastBaseRow = 0;
         @Unique private int linggango_tweaks$lastItemCount = -1;
-        @Unique private CreativeModeTab linggango_tweaks$lastTab = null;
+        @Unique private @Nullable CreativeModeTab linggango_tweaks$lastTab = null;
 
         @Inject(method = "mouseScrolled", at = @At("HEAD"), cancellable = true)
-        private void linggango_tweaks$onMouseScrolled(double mouseX, double mouseY, double scrollDelta, CallbackInfoReturnable<Boolean> cir) {
+        private void linggango_tweaks$onMouseScrolled(double mouseX, double mouseY, double scrollDelta, @NonNull CallbackInfoReturnable<Boolean> cir) {
             CreativeModeTab tab = linggango_tweaks$getTab2();
             if (tab == null || !tab.canScroll() || tab.getType() == CreativeModeTab.Type.INVENTORY) return;
 
@@ -316,7 +318,7 @@ public class SmoothGuiMixins {
         }
 
         @Inject(method = "renderBg", at = @At("TAIL"))
-        private void linggango_tweaks$renderScrollingSlotBackground(GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY, CallbackInfo ci) {
+        private void linggango_tweaks$renderScrollingSlotBackground(@NonNull GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY, CallbackInfo ci) {
             CreativeModeTab tab = linggango_tweaks$getTab2();
             if (tab == null || !tab.canScroll() || tab.getType() == CreativeModeTab.Type.INVENTORY) return;
 
@@ -347,7 +349,7 @@ public class SmoothGuiMixins {
                         target = "Lnet/minecraft/client/gui/screens/inventory/CreativeModeInventoryScreen;renderTooltip(Lnet/minecraft/client/gui/GuiGraphics;II)V"
                 )
         )
-        private void linggango_tweaks$renderExtraRow(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
+        private void linggango_tweaks$renderExtraRow(@NonNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
             if (linggango_tweaks$lastPixelOffset >= 0) return;
 
             CreativeModeTab tab = linggango_tweaks$getTab2();
@@ -379,8 +381,8 @@ public class SmoothGuiMixins {
         @Shadow protected int leftPos;
         @Shadow protected int topPos;
 
-        @Unique private static java.lang.reflect.Field linggango_tweaks$tabField3 = null;
-        @Unique private static CreativeModeTab linggango_tweaks$getTab3() {
+        @Unique private static java.lang.reflect.@Nullable Field linggango_tweaks$tabField3 = null;
+        @Unique private static @Nullable CreativeModeTab linggango_tweaks$getTab3() {
             if (linggango_tweaks$tabField3 == null) {
                 for (java.lang.reflect.Field f : CreativeModeInventoryScreen.class.getDeclaredFields()) {
                     if (f.getType() == CreativeModeTab.class && java.lang.reflect.Modifier.isStatic(f.getModifiers())) {
@@ -397,7 +399,7 @@ public class SmoothGuiMixins {
         @Unique private boolean linggango_tweaks$scissorActive = false;
 
         @Inject(method = "renderSlot", at = @At("HEAD"))
-        private void linggango_tweaks$preRenderSlot(GuiGraphics guiGraphics, Slot slot, CallbackInfo ci) {
+        private void linggango_tweaks$preRenderSlot(@NonNull GuiGraphics guiGraphics, @NonNull Slot slot, CallbackInfo ci) {
             if (((AbstractContainerScreen<?>) (Object) this) instanceof CreativeModeInventoryScreen) {
                 CreativeModeTab tab = linggango_tweaks$getTab3();
                 if (tab != null && tab.canScroll() && tab.getType() != CreativeModeTab.Type.INVENTORY) {
@@ -415,7 +417,7 @@ public class SmoothGuiMixins {
         }
 
         @Inject(method = "render", at = @At("RETURN"))
-        private void linggango_tweaks$postRenderCleanup(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
+        private void linggango_tweaks$postRenderCleanup(@NonNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
             if (linggango_tweaks$scissorActive) {
                 guiGraphics.disableScissor();
                 linggango_tweaks$scissorActive = false;
@@ -439,7 +441,7 @@ public class SmoothGuiMixins {
         }
 
         @Inject(method = "render", at = @At("HEAD"))
-        private void linggango_tweaks$fadeInScreen(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
+        private void linggango_tweaks$fadeInScreen(@NonNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
             long time = Util.getMillis();
             if (linggango_tweaks$lastFadeTime == 0L) linggango_tweaks$lastFadeTime = time;
             float dt = (time - linggango_tweaks$lastFadeTime) / 1000.0F;
@@ -464,7 +466,7 @@ public class SmoothGuiMixins {
         }
 
         @Inject(method = "render", at = @At("RETURN"))
-        private void linggango_tweaks$popFadeTransform(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
+        private void linggango_tweaks$popFadeTransform(@NonNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
             if (linggango_tweaks$screenFade < 1.0F) {
                 guiGraphics.pose().popPose();
             }
@@ -475,12 +477,12 @@ public class SmoothGuiMixins {
     public static abstract class SmoothSlotHighlightMixin {
         @Shadow protected int leftPos;
         @Shadow protected int topPos;
-        @Unique private Slot linggango_tweaks$hoveredSlot = null;
+        @Unique private @Nullable Slot linggango_tweaks$hoveredSlot = null;
         @Unique private float linggango_tweaks$highlightAlpha = 0.0F;
         @Unique private long linggango_tweaks$lastHighlightTime = 0L;
 
-        @Unique private static java.lang.reflect.Field linggango_tweaks$tabField4 = null;
-        @Unique private static CreativeModeTab linggango_tweaks$getTab4() {
+        @Unique private static java.lang.reflect.@Nullable Field linggango_tweaks$tabField4 = null;
+        @Unique private static @Nullable CreativeModeTab linggango_tweaks$getTab4() {
             if (linggango_tweaks$tabField4 == null) {
                 for (java.lang.reflect.Field f : CreativeModeInventoryScreen.class.getDeclaredFields()) {
                     if (f.getType() == CreativeModeTab.class && java.lang.reflect.Modifier.isStatic(f.getModifiers())) {
@@ -524,7 +526,7 @@ public class SmoothGuiMixins {
         }
 
         @Inject(method = "render", at = @At("TAIL"))
-        private void linggango_tweaks$renderSmoothHighlight(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
+        private void linggango_tweaks$renderSmoothHighlight(@NonNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
             if (linggango_tweaks$hoveredSlot != null && linggango_tweaks$highlightAlpha > 0.01F) {
                 int x = this.leftPos + linggango_tweaks$hoveredSlot.x;
                 int y = this.topPos + linggango_tweaks$hoveredSlot.y;
@@ -542,7 +544,7 @@ public class SmoothGuiMixins {
         }
 
         @Inject(method = "isHovering(Lnet/minecraft/world/inventory/Slot;DD)Z", at = @At("HEAD"), cancellable = true)
-        private void linggango_tweaks$restrictHoverBounds(Slot slot, double mx, double my, CallbackInfoReturnable<Boolean> cir) {
+        private void linggango_tweaks$restrictHoverBounds(@NonNull Slot slot, double mx, double my, @NonNull CallbackInfoReturnable<Boolean> cir) {
             if (((AbstractContainerScreen<?>) (Object) this) instanceof CreativeModeInventoryScreen) {
                 CreativeModeTab selectedTab = linggango_tweaks$getTab4();
                 if (selectedTab != null && selectedTab.getType() != CreativeModeTab.Type.INVENTORY && slot.index < 45) {

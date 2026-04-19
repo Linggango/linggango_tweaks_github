@@ -7,12 +7,13 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentCategory;
 import net.minecraft.world.item.enchantment.ProtectionEnchantment;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 public class ExtraProtectionEnchantment extends Enchantment {
 
     public final ProtectionType type;
 
-    public ExtraProtectionEnchantment(Rarity rarity, ProtectionType type) {
+    public ExtraProtectionEnchantment(@NonNull Rarity rarity, ProtectionType type) {
         super(rarity, EnchantmentCategory.ARMOR, new EquipmentSlot[]{
                 EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET
         });
@@ -35,7 +36,7 @@ public class ExtraProtectionEnchantment extends Enchantment {
     }
 
     @Override
-    public int getDamageProtection(int level, DamageSource source) {
+    public int getDamageProtection(int level, @NonNull DamageSource source) {
         if (source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) return 0;
 
         return switch (this.type) {

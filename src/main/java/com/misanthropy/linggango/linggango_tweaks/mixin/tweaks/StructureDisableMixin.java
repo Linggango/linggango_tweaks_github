@@ -13,6 +13,7 @@ import net.minecraft.world.level.levelgen.RandomState;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureStart;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
+import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -25,7 +26,7 @@ public class StructureDisableMixin {
 
     @Inject(method = "generate", at = @At("HEAD"), cancellable = true)
     private void linggango$disableSpecificStructures(
-            RegistryAccess registryAccess,
+            @NonNull RegistryAccess registryAccess,
             ChunkGenerator chunkGenerator,
             BiomeSource biomeSource,
             RandomState randomState,
@@ -35,7 +36,7 @@ public class StructureDisableMixin {
             int references,
             LevelHeightAccessor heightAccessor,
             Predicate<Holder<Biome>> validBiome,
-            CallbackInfoReturnable<StructureStart> cir
+            @NonNull CallbackInfoReturnable<StructureStart> cir
     ) {
         ResourceLocation id = registryAccess.registryOrThrow(Registries.STRUCTURE).getKey((Structure) (Object) this);
         if (id != null) {

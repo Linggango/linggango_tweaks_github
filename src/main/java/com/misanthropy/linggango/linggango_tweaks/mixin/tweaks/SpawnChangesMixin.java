@@ -8,6 +8,8 @@ import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.NaturalSpawner;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -23,7 +25,7 @@ public class SpawnChangesMixin {
             at = @At("HEAD"),
             cancellable = true
     )
-    private static void onCheckSpawnPosition(SpawnPlacements.Type placementType, LevelReader world, BlockPos pos, EntityType<?> entityType, CallbackInfoReturnable<Boolean> cir) {
+    private static void onCheckSpawnPosition(SpawnPlacements.Type placementType, @NonNull LevelReader world, @NonNull BlockPos pos, @Nullable EntityType<?> entityType, @NonNull CallbackInfoReturnable<Boolean> cir) {
         if (entityType == null) return;
         if (SpawnChanges.TWEAKED_ENTITIES.contains(entityType)) {
             if (ThreadLocalRandom.current().nextFloat() > 0.25f) {

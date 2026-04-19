@@ -11,12 +11,13 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import org.jspecify.annotations.NonNull;
 
 @Mod.EventBusSubscriber(modid = LinggangoTweaks.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class TweaksEventHandler {
 
     @SubscribeEvent
-    public static void onLivingHurt(LivingHurtEvent event) {
+    public static void onLivingHurt(@NonNull LivingHurtEvent event) {
         if (event.getSource().getEntity() instanceof LivingEntity attacker) {
             ItemStack weapon = attacker.getMainHandItem();
 
@@ -27,7 +28,7 @@ public class TweaksEventHandler {
     }
 
     @SubscribeEvent
-    public static void onCropBreak(BlockEvent.BreakEvent event) {
+    public static void onCropBreak(BlockEvent.@NonNull BreakEvent event) {
         BlockState state = event.getState();
 
         if (state.getBlock() instanceof CropBlock crop) {

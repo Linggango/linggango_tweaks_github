@@ -1,6 +1,7 @@
 package com.misanthropy.linggango.linggango_tweaks.mixin.celestisynth;
 
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -18,7 +19,7 @@ public class BreezebreakerPassiveMixin {
             ),
             remap = false
     )
-    private void nerfPassiveVulnerability(LivingHurtEvent instance, float amount) {
+    private void nerfPassiveVulnerability(@NonNull LivingHurtEvent instance, float amount) {
         instance.setAmount(instance.getAmount() * 1.20F);
     }
 }

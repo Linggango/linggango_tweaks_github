@@ -17,6 +17,7 @@ package com.jagrosh.discordipc.entities;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.jspecify.annotations.NonNull;
 
 import java.time.OffsetDateTime;
 
@@ -128,7 +129,7 @@ public class RichPresence
          *
          * @return The RichPresence built.
          */
-        public RichPresence build()
+        public @NonNull RichPresence build()
         {
             return new RichPresence(state, details, startTimestamp, endTimestamp, 
                     largeImageKey, largeImageText, smallImageKey, smallImageText, 
@@ -143,7 +144,7 @@ public class RichPresence
          *
          * @return This Builder.
          */
-        public Builder setState(String state)
+        public @NonNull Builder setState(String state)
         {
             this.state = state;
             return this;
@@ -156,7 +157,7 @@ public class RichPresence
          *
          * @return This Builder.
          */
-        public Builder setDetails(String details)
+        public @NonNull Builder setDetails(String details)
         {
             this.details = details;
             return this;
@@ -169,7 +170,7 @@ public class RichPresence
          *
          * @return This Builder.
          */
-        public Builder setStartTimestamp(OffsetDateTime startTimestamp)
+        public @NonNull Builder setStartTimestamp(OffsetDateTime startTimestamp)
         {
             this.startTimestamp = startTimestamp;
             return this;
@@ -182,7 +183,7 @@ public class RichPresence
          *
          * @return This Builder.
          */
-        public Builder setEndTimestamp(OffsetDateTime endTimestamp)
+        public @NonNull Builder setEndTimestamp(OffsetDateTime endTimestamp)
         {
             this.endTimestamp = endTimestamp;
             return this;
@@ -200,7 +201,7 @@ public class RichPresence
          *
          * @return This Builder.
          */
-        public Builder setLargeImage(String largeImageKey, String largeImageText)
+        public @NonNull Builder setLargeImage(String largeImageKey, String largeImageText)
         {
             this.largeImageKey = largeImageKey;
             this.largeImageText = largeImageText;
@@ -234,7 +235,7 @@ public class RichPresence
          *
          * @return This Builder.
          */
-        public Builder setSmallImage(String smallImageKey, String smallImageText)
+        public @NonNull Builder setSmallImage(String smallImageKey, String smallImageText)
         {
             this.smallImageKey = smallImageKey;
             this.smallImageText = smallImageText;
@@ -269,7 +270,7 @@ public class RichPresence
          *
          * @return This Builder.
          */
-        public Builder setParty(String partyId, int partySize, int partyMax)
+        public @NonNull Builder setParty(String partyId, int partySize, int partyMax)
         {
             this.partyId = partyId;
             this.partySize = partySize;
@@ -284,7 +285,7 @@ public class RichPresence
          *
          * @return This Builder.
          */
-        public Builder setMatchSecret(String matchSecret)
+        public @NonNull Builder setMatchSecret(String matchSecret)
         {
             this.matchSecret = matchSecret;
             return this;
@@ -297,7 +298,7 @@ public class RichPresence
          *
          * @return This Builder.
          */
-        public Builder setJoinSecret(String joinSecret)
+        public @NonNull Builder setJoinSecret(String joinSecret)
         {
             this.joinSecret = joinSecret;
             return this;
@@ -310,7 +311,7 @@ public class RichPresence
          *
          * @return This Builder.
          */
-        public Builder setSpectateSecret(String spectateSecret)
+        public @NonNull Builder setSpectateSecret(String spectateSecret)
         {
             this.spectateSecret = spectateSecret;
             return this;
@@ -325,7 +326,7 @@ public class RichPresence
          *
          * @return This Builder.
          */
-        public Builder setInstance(boolean instance)
+        public @NonNull Builder setInstance(boolean instance)
         {
             this.instance = instance;
             return this;

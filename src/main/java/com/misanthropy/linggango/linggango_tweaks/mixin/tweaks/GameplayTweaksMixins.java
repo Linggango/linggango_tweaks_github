@@ -15,6 +15,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.FireBlock;
 import net.minecraft.world.level.block.SweetBerryBushBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -56,7 +57,7 @@ public class GameplayTweaksMixins {
                 at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;explode(Lnet/minecraft/world/entity/Entity;DDDFLnet/minecraft/world/level/Level$ExplosionInteraction;)Lnet/minecraft/world/level/Explosion;"),
                 index = 5
         )
-        private Level.ExplosionInteraction linggango_tweaks$modifyCreeperExplosion(Level.ExplosionInteraction originalInteraction) {
+        private Level.@NonNull ExplosionInteraction linggango_tweaks$modifyCreeperExplosion(Level.ExplosionInteraction originalInteraction) {
             Creeper creeper = (Creeper) (Object) this;
             boolean mobGriefing = creeper.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING);
             return mobGriefing ? Level.ExplosionInteraction.TNT : Level.ExplosionInteraction.NONE;
@@ -66,7 +67,7 @@ public class GameplayTweaksMixins {
     @Mixin(SweetBerryBushBlock.class)
     public static class SweetBerryBushMixin {
         @Inject(method = "entityInside", at = @At("HEAD"), cancellable = true)
-        private void linggango_tweaks$preventBushDamage(BlockState state, Level level, BlockPos pos, Entity entity, CallbackInfo ci) {
+        private void linggango_tweaks$preventBushDamage(BlockState state, Level level, BlockPos pos, Entity entity, @NonNull CallbackInfo ci) {
             if (entity instanceof LivingEntity living) {
                 if (living.isCrouching()) {
                     ci.cancel();
@@ -82,12 +83,12 @@ public class GameplayTweaksMixins {
     @Mixin(FireBlock.class)
     public static class FireBlockMixin {
         @Inject(method = "getIgniteOdds(Lnet/minecraft/world/level/block/state/BlockState;)I", at = @At("HEAD"), cancellable = true)
-        private void linggango_tweaks$cobwebIgnite(BlockState state, CallbackInfoReturnable<Integer> cir) {
+        private void linggango_tweaks$cobwebIgnite(@NonNull BlockState state, @NonNull CallbackInfoReturnable<Integer> cir) {
             if (state.is(Blocks.COBWEB)) cir.setReturnValue(15);
         }
 
         @Inject(method = "getBurnOdds(Lnet/minecraft/world/level/block/state/BlockState;)I", at = @At("HEAD"), cancellable = true)
-        private void linggango_tweaks$cobwebBurn(BlockState state, CallbackInfoReturnable<Integer> cir) {
+        private void linggango_tweaks$cobwebBurn(@NonNull BlockState state, @NonNull CallbackInfoReturnable<Integer> cir) {
             if (state.is(Blocks.COBWEB)) cir.setReturnValue(100);
         }
     }

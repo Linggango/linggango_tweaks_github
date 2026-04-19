@@ -7,12 +7,13 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 @OnlyIn(Dist.CLIENT)
 public class AnimatedParryParticle extends TextureSheetParticle {
     private final SpriteSet sprites;
 
-    protected AnimatedParryParticle(ClientLevel level, double x, double y, double z, SpriteSet spriteSet) {
+    protected AnimatedParryParticle(@NonNull ClientLevel level, double x, double y, double z, SpriteSet spriteSet) {
         super(level, x, y, z, 0, 0, 0);
         this.sprites = spriteSet;
         this.lifetime = 10;

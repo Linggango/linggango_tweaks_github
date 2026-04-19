@@ -6,6 +6,7 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.loading.FMLPaths;
+import org.jspecify.annotations.NonNull;
 
 import java.io.Reader;
 import java.io.Writer;
@@ -57,7 +58,7 @@ public class RenderCullingHandler {
     }
 
     @SubscribeEvent
-    public static void onClientTick(TickEvent.ClientTickEvent event) {
+    public static void onClientTick(TickEvent.@NonNull ClientTickEvent event) {
         if (event.phase != TickEvent.Phase.START) return;
         if (!loaded) load();
 

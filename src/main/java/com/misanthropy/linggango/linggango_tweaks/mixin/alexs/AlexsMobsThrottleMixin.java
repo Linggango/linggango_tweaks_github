@@ -3,6 +3,7 @@ package com.misanthropy.linggango.linggango_tweaks.mixin.alexs;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.entity.living.LivingEvent;
+import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -12,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class AlexsMobsThrottleMixin {
 
     @Inject(method = "onLivingUpdateEvent", at = @At("HEAD"), cancellable = true, remap = false)
-    private void throttleLivingUpdate(LivingEvent.LivingTickEvent event, CallbackInfo ci) {
+    private void throttleLivingUpdate(LivingEvent.@NonNull LivingTickEvent event, @NonNull CallbackInfo ci) {
         LivingEntity entity = event.getEntity();
         if (entity instanceof Player) {
             return;

@@ -7,6 +7,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
+import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.injection.At;
@@ -23,7 +24,7 @@ public class HiddenRecipeMixin {
             cancellable = true,
             remap = false
     )
-    private void linggango$transferPrimevalData(CraftingContainer container, RegistryAccess access, CallbackInfoReturnable<ItemStack> cir) {
+    private void linggango$transferPrimevalData(@NonNull CraftingContainer container, RegistryAccess access, @NonNull CallbackInfoReturnable<ItemStack> cir) {
         ItemStack result = cir.getReturnValue();
 
         if (result.isEmpty()) {

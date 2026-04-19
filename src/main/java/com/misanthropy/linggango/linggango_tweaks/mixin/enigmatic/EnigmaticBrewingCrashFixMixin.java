@@ -1,5 +1,6 @@
 package com.misanthropy.linggango.linggango_tweaks.mixin.enigmatic;
 
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -18,7 +19,7 @@ public class EnigmaticBrewingCrashFixMixin {
             ),
             require = 0
     )
-    private boolean bypassNullListCrash(List<Object> list, Object recipe) {
+    private boolean bypassNullListCrash(@Nullable List<Object> list, Object recipe) {
         if (list == null) {
             return false;
         }

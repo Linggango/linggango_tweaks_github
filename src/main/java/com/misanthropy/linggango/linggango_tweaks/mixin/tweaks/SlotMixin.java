@@ -6,6 +6,7 @@ import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -19,7 +20,7 @@ public abstract class SlotMixin {
     @Shadow @Final public Container container;
     @Shadow @Final private int slot;
     @Inject(method = "getItem", at = @At("HEAD"), cancellable = true)
-    private void getItemInject(CallbackInfoReturnable<ItemStack> cir) {
+    private void getItemInject(@NonNull CallbackInfoReturnable<ItemStack> cir) {
         if (this.container != null) {
             ItemStack stack = this.container.getItem(this.slot);
             if (!stack.isEmpty()) {
