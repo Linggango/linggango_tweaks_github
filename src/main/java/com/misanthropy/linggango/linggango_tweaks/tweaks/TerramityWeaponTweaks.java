@@ -10,7 +10,6 @@ import net.minecraftforge.event.ItemAttributeModifierEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
-import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Collection;
@@ -45,7 +44,7 @@ public class TerramityWeaponTweaks {
         }
     }
 
-    private static @NotNull AttributeModifier getAttributeModifier(double baseDamage) {
+    private static @NonNull AttributeModifier getAttributeModifier(double baseDamage) {
         double bonus = 3.0;
 
         if (baseDamage >= 30.0) {

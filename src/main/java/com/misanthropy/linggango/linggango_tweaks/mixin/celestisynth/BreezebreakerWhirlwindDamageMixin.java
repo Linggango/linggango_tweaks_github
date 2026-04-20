@@ -1,5 +1,6 @@
 package com.misanthropy.linggango.linggango_tweaks.mixin.celestisynth;
 
+
 import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

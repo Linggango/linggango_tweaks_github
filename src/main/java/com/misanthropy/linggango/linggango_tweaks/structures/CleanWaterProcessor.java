@@ -12,7 +12,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProc
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import javax.annotation.Nullable;
 
@@ -23,7 +23,7 @@ public class CleanWaterProcessor extends StructureProcessor {
     @Nullable
     @Override
     @SuppressWarnings("unused")
-    public StructureTemplate.StructureBlockInfo process(@NotNull LevelReader level, @NotNull BlockPos offset, @NotNull BlockPos pos, @NotNull StructureTemplate.StructureBlockInfo original, @NotNull StructureTemplate.StructureBlockInfo after, @NotNull StructurePlaceSettings settings, @Nullable StructureTemplate template) {
+    public StructureTemplate.StructureBlockInfo process(@NonNull LevelReader level, @NonNull BlockPos offset, @NonNull BlockPos pos, StructureTemplate.@NonNull StructureBlockInfo original, StructureTemplate.@NonNull StructureBlockInfo after, @NonNull StructurePlaceSettings settings, @Nullable StructureTemplate template) {
         BlockState state = after.state();
         if (state.hasProperty(BlockStateProperties.WATERLOGGED) && state.getValue(BlockStateProperties.WATERLOGGED)) {
             FluidState worldFluid = level.getFluidState(after.pos());
@@ -36,9 +36,9 @@ public class CleanWaterProcessor extends StructureProcessor {
         return after;
     }
 
-    @NotNull
+    
     @Override
-    protected StructureProcessorType<?> getType() {
+    protected @NonNull StructureProcessorType<?> getType() {
         return LinggangoTweaks.CLEAN_WATER_PROCESSOR.get();
     }
 }

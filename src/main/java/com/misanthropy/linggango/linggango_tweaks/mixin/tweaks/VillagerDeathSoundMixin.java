@@ -1,4 +1,5 @@
 package com.misanthropy.linggango.linggango_tweaks.mixin.tweaks;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvents;

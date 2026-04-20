@@ -11,7 +11,6 @@ public class AnvilMenuMixin {
     @ModifyConstant(
             method = "createResult",
             constant = @Constant(intValue = 40),
-            remap = true,
             require = 0
     )
     private int linggango$removeAnvilLimit(int constant) {

@@ -1,5 +1,6 @@
 package com.misanthropy.linggango.linggango_tweaks.mixin.embeddium;
 
+import com.llamalad7.mixinextras.sugar.Local;
 import com.misanthropy.linggango.linggango_tweaks.config.SpawnerClientConfig;
 import me.jellysquid.mods.sodium.client.gui.SodiumGameOptionPages;
 import me.jellysquid.mods.sodium.client.gui.options.OptionGroup;
@@ -29,10 +30,9 @@ public class EmbeddiumOptionsMixin {
 
     @Inject(
             method = "performance",
-            at = @At(value = "INVOKE", target = "Ljava/util/List;add(Ljava/lang/Object;)Z", remap = false, ordinal = 0, shift = At.Shift.AFTER),
-            locals = LocalCapture.CAPTURE_FAILHARD
+            at = @At(value = "INVOKE", target = "Ljava/util/List;add(Ljava/lang/Object;)Z", remap = false, ordinal = 0, shift = At.Shift.AFTER)
     )
-    private static void addLinggangoSpawnerTweaks(CallbackInfoReturnable<OptionPage> cir, @NonNull List<OptionGroup> groups) {
+    private static void addLinggangoSpawnerTweaks(CallbackInfoReturnable<OptionPage> cir, @Local(name = "groups") @NonNull List<OptionGroup> groups) {
 
         var particleOption = OptionImpl.createBuilder(Integer.TYPE, sodiumOpts)
                 .setName(Component.literal("Spawner Particles (%)"))

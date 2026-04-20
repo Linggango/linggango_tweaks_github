@@ -1,5 +1,6 @@
 package com.misanthropy.linggango.linggango_tweaks.mixin.tweaks;
 
+import com.llamalad7.mixinextras.sugar.Local;
 import com.misanthropy.linggango.linggango_tweaks.tweaks.RenderCullingHandler;
 import me.jellysquid.mods.sodium.client.gui.SodiumGameOptionPages;
 import me.jellysquid.mods.sodium.client.gui.options.OptionGroup;
@@ -23,7 +24,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.util.List;
 
@@ -64,10 +64,9 @@ public class RenderDistanceCullingMixin {
 
         @Inject(
                 method = "performance",
-                at = @At(value = "INVOKE", target = "Ljava/util/List;add(Ljava/lang/Object;)Z", remap = false, ordinal = 0, shift = At.Shift.AFTER),
-                locals = LocalCapture.CAPTURE_FAILHARD
+                at = @At(value = "INVOKE", target = "Ljava/util/List;add(Ljava/lang/Object;)Z", remap = false, ordinal = 0, shift = At.Shift.AFTER)
         )
-        private static void addLinggangoCullingTweaks(CallbackInfoReturnable<OptionPage> cir, @NonNull List<OptionGroup> groups) {
+        private static void addLinggangoCullingTweaks(CallbackInfoReturnable<OptionPage> cir, @Local(name = "groups") @NonNull List<OptionGroup> groups) {
 
             var horizontalOption = OptionImpl.createBuilder(Integer.TYPE, sodiumOpts)
                     .setName(Component.literal("Horizontal Culling Stretch"))

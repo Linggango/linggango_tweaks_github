@@ -1,6 +1,7 @@
 package com.misanthropy.linggango.linggango_tweaks.config;
 
 import com.misanthropy.linggango.linggango_tweaks.LinggangoTweaks;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -9,9 +10,7 @@ import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
 import org.jspecify.annotations.NonNull;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Mod.EventBusSubscriber(modid = LinggangoTweaks.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class TweaksConfig {
@@ -59,11 +58,29 @@ public class TweaksConfig {
     public static final ForgeConfigSpec.IntValue TERRA_ENTITY_OVERWORLD_WEIGHT;
 
     public static final ForgeConfigSpec.ConfigValue<String> BIOME_FALLBACK_NAMESPACE;
-    public static final ForgeConfigSpec.DoubleValue GLOBAL_BIOME_SIZE_MULTIPLIER;
     public static final ForgeConfigSpec.ConfigValue<List<? extends String>> BIOME_REDUCTIONS;
+
+    public static final ForgeConfigSpec.BooleanValue ONLY_OVERLAP;
+    public static final ForgeConfigSpec.DoubleValue CHECK_RADIUS;
+    public static final ForgeConfigSpec.IntValue MAX_NEARBY;
+    public static final ForgeConfigSpec.ConfigValue<List<? extends String>> WHITELIST_STRUCTURES;
+    public static final ForgeConfigSpec.ConfigValue<List<? extends String>> WHITELIST_FEATURES;
+    public static final ForgeConfigSpec.ConfigValue<List<? extends String>> BLACKLIST_STRUCTURES;
+    public static final ForgeConfigSpec.ConfigValue<List<? extends String>> BLACKLIST_FEATURES;
+    public static final ForgeConfigSpec.ConfigValue<List<? extends String>> IGNORE_STRUCTURES;
+    public static final ForgeConfigSpec.ConfigValue<List<? extends String>> IGNORE_FEATURES;
+    public static final ForgeConfigSpec.ConfigValue<List<? extends String>> AUTO_RESET_DIMENSIONS;
+    public static final ForgeConfigSpec.BooleanValue DEBUG_OVERLAP;
 
     private static final Map<String, Double> parsedCustomSpreads = new HashMap<>();
     public static final Map<String, Float> parsedBiomeReductions = new HashMap<>();
+
+    private static final Set<ResourceLocation> whitelistStructuresSet = new HashSet<>();
+    private static final Set<ResourceLocation> whitelistFeaturesSet = new HashSet<>();
+    private static final Set<ResourceLocation> blacklistStructuresSet = new HashSet<>();
+    private static final Set<ResourceLocation> blacklistFeaturesSet = new HashSet<>();
+    private static final Set<ResourceLocation> ignoreStructuresSet = new HashSet<>();
+    private static final Set<ResourceLocation> ignoreFeaturesSet = new HashSet<>();
 
     static {
         ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
@@ -121,7 +138,6 @@ public class TweaksConfig {
 
         BUILDER.push("biome_tweaks");
         BIOME_FALLBACK_NAMESPACE = BUILDER.define("biome_fallback_namespace", "dreamwoods:");
-        GLOBAL_BIOME_SIZE_MULTIPLIER = BUILDER.defineInRange("global_biome_size_multiplier", 1.5, 0.1, 100.0);
         BIOME_REDUCTIONS = BUILDER.defineListAllowEmpty(List.of("biome_reductions"),
                 () -> List.of(
                         "dreamwoods:grassy_shore|1.0",
@@ -132,6 +148,42 @@ public class TweaksConfig {
                 ),
                 o -> o instanceof String && ((String) o).contains("|")
         );
+        BUILDER.pop();
+
+        BUILDER.push("structure_overlap_prevention");
+        ONLY_OVERLAP = BUILDER.define("only_overlap", false);
+        CHECK_RADIUS = BUILDER.defineInRange("checkRadius", 300.0, 0.0, 1000.0);
+        MAX_NEARBY = BUILDER.defineInRange("maxNearby", 1, 0, 16);
+        WHITELIST_STRUCTURES = BUILDER.defineListAllowEmpty(List.of("whitelistStructures"), List::of, o -> o instanceof String);
+        WHITELIST_FEATURES = BUILDER.defineListAllowEmpty(List.of("whitelistFeatures"), List::of, o -> o instanceof String);
+        BLACKLIST_STRUCTURES = BUILDER.defineListAllowEmpty(List.of("blacklistStructures"), () -> List.of("minecraft:shipwreck", "minecraft:mineshaft"), o -> o instanceof String);
+        BLACKLIST_FEATURES = BUILDER.defineListAllowEmpty(List.of("blacklistFeatures"), List::of, o -> o instanceof String);
+        IGNORE_STRUCTURES = BUILDER.defineListAllowEmpty(List.of("ignoreStructures"), List::of, o -> o instanceof String);
+        IGNORE_FEATURES = BUILDER.defineListAllowEmpty(List.of("ignoreFeatures"), () -> List.of(
+                "minecraft:seagrass",
+                "minecraft:kelp",
+                "minecraft:random_selector",
+                "minecraft:random_patch",
+                "minecraft:ore",
+                "minecraft:simple_block",
+                "minecraft:flower",
+                "minecraft:vegetation_patch",
+                "minecraft:multiface_growth",
+                "minecraft:simple_random_selector",
+                "minecraft:random_boolean_selector",
+                "minecraft:block_column"
+        ), o -> o instanceof String);
+        AUTO_RESET_DIMENSIONS = BUILDER.defineListAllowEmpty(List.of("autoResetDimensions"), () -> List.of(
+                "cataclysm_dimension:cataclysm_abyssal_depths",
+                "cataclysm_dimension:cataclysm_bastion_lost",
+                "cataclysm_dimension:cataclysm_eternal_frosthold",
+                "cataclysm_dimension:cataclysm_forge_of_aeons",
+                "cataclysm_dimension:cataclysm_infernos_maw",
+                "cataclysm_dimension:cataclysm_pharaohs_bane",
+                "cataclysm_dimension:cataclysm_sanctum_fallen",
+                "cataclysm_dimension:cataclysm_souls_anvil"
+        ), o -> o instanceof String);
+        DEBUG_OVERLAP = BUILDER.define("debug_overlap", false);
         BUILDER.pop();
 
         COMMON_SPEC = BUILDER.build();
@@ -163,10 +215,70 @@ public class TweaksConfig {
                     } catch (NumberFormatException ignored) {}
                 }
             }
+
+            whitelistStructuresSet.clear();
+            WHITELIST_STRUCTURES.get().forEach(s -> {
+                ResourceLocation rl = ResourceLocation.tryParse(s);
+                if (rl != null) whitelistStructuresSet.add(rl);
+            });
+
+            whitelistFeaturesSet.clear();
+            WHITELIST_FEATURES.get().forEach(s -> {
+                ResourceLocation rl = ResourceLocation.tryParse(s);
+                if (rl != null) whitelistFeaturesSet.add(rl);
+            });
+
+            blacklistStructuresSet.clear();
+            BLACKLIST_STRUCTURES.get().forEach(s -> {
+                ResourceLocation rl = ResourceLocation.tryParse(s);
+                if (rl != null) blacklistStructuresSet.add(rl);
+            });
+
+            blacklistFeaturesSet.clear();
+            BLACKLIST_FEATURES.get().forEach(s -> {
+                ResourceLocation rl = ResourceLocation.tryParse(s);
+                if (rl != null) blacklistFeaturesSet.add(rl);
+            });
+
+            ignoreStructuresSet.clear();
+            IGNORE_STRUCTURES.get().forEach(s -> {
+                ResourceLocation rl = ResourceLocation.tryParse(s);
+                if (rl != null) ignoreStructuresSet.add(rl);
+            });
+
+            ignoreFeaturesSet.clear();
+            IGNORE_FEATURES.get().forEach(s -> {
+                ResourceLocation rl = ResourceLocation.tryParse(s);
+                if (rl != null) ignoreFeaturesSet.add(rl);
+            });
         }
     }
 
     public static double getFactor(String structureSetId) {
         return parsedCustomSpreads.getOrDefault(structureSetId, GLOBAL_SPREAD_FACTOR.get());
+    }
+
+    public static boolean isStructureWhitelisted(ResourceLocation id) {
+        return whitelistStructuresSet.contains(id);
+    }
+
+    public static boolean isFeatureWhitelisted(ResourceLocation id) {
+        return whitelistFeaturesSet.contains(id);
+    }
+
+    public static boolean isStructureBlacklisted(ResourceLocation id) {
+        return blacklistStructuresSet.contains(id);
+    }
+
+    public static boolean isFeatureBlacklisted(ResourceLocation id) {
+        return blacklistFeaturesSet.contains(id);
+    }
+
+    public static boolean isStructureIgnored(ResourceLocation id) {
+        return ignoreStructuresSet.contains(id);
+    }
+
+    public static boolean isFeatureIgnored(ResourceLocation id) {
+        return ignoreFeaturesSet.contains(id);
     }
 }

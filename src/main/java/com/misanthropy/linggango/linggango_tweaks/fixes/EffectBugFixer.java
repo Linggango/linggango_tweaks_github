@@ -10,6 +10,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import org.jspecify.annotations.NonNull;
 
+
 @Mod.EventBusSubscriber(modid  = LinggangoTweaks.MOD_ID)
 public class EffectBugFixer {
 

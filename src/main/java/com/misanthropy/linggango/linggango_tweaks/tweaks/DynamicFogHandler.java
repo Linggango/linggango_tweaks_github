@@ -60,9 +60,8 @@ public class DynamicFogHandler {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null || mc.player == null) return;
 
-        float renderDistBlocks = mc.options.getEffectiveRenderDistance() * 16.0F;
-        float fogStart = renderDistBlocks * (float) fogStartMultiplier;
-        float fogEnd = renderDistBlocks;
+        float fogEnd = mc.options.getEffectiveRenderDistance() * 16.0F;
+        float fogStart = fogEnd * (float) fogStartMultiplier;
 
         event.setNearPlaneDistance(fogStart);
         event.setFarPlaneDistance(fogEnd);

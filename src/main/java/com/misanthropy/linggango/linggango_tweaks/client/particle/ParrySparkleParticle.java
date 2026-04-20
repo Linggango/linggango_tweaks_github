@@ -9,9 +9,9 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NonNull;
+
 
 @OnlyIn(Dist.CLIENT)
 public class ParrySparkleParticle extends TextureSheetParticle {
@@ -77,7 +77,7 @@ public class ParrySparkleParticle extends TextureSheetParticle {
     }
 
     @Override
-    public @NotNull ParticleRenderType getRenderType() {
+    public @NonNull ParticleRenderType getRenderType() {
         return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
     }
 
@@ -93,7 +93,7 @@ public class ParrySparkleParticle extends TextureSheetParticle {
 
         @Nullable
         @Override
-        public Particle createParticle(@NotNull SimpleParticleType type, @NotNull ClientLevel level, double x, double y, double z, double dx, double dy, double dz) {
+        public Particle createParticle(@NonNull SimpleParticleType type, @NonNull ClientLevel level, double x, double y, double z, double dx, double dy, double dz) {
             return new ParrySparkleParticle(level, x, y, z, dx, dy, dz, this.spriteSet);
         }
     }

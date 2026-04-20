@@ -2,21 +2,17 @@ package com.misanthropy.linggango.linggango_tweaks.mixin.structure;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.llamalad7.mixinextras.sugar.Local;
 import com.misanthropy.linggango.linggango_tweaks.config.TweaksConfig;
 import com.mojang.serialization.Decoder;
 import net.minecraft.core.WritableRegistry;
 import net.minecraft.resources.*;
-import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
-
-import java.io.Reader;
-import java.util.Iterator;
 import java.util.Map;
 
 @Mixin(RegistryDataLoader.class)
@@ -24,8 +20,7 @@ public class StructureSpreadRegistryMixin {
 
     @Inject(
             method = "loadRegistryContents",
-            at = @At(value = "INVOKE", target = "Lcom/mojang/serialization/Decoder;parse(Lcom/mojang/serialization/DynamicOps;Ljava/lang/Object;)Lcom/mojang/serialization/DataResult;"),
-            locals = LocalCapture.CAPTURE_FAILHARD
+            at = @At(value = "INVOKE", target = "Lcom/mojang/serialization/Decoder;parse(Lcom/mojang/serialization/DynamicOps;Ljava/lang/Object;)Lcom/mojang/serialization/DataResult;")
     )
     private static void linggango$modifyStructureSpawns(
             RegistryOps.RegistryInfoLookup lookup,
@@ -35,16 +30,9 @@ public class StructureSpreadRegistryMixin {
             Decoder<?> decoder,
             Map<?, ?> exceptions,
             CallbackInfo ci,
-            String directory,
-            FileToIdConverter converter,
-            RegistryOps<?> ops,
-            Iterator<?> iterator,
-            Map.Entry<?, ?> entry,
-            ResourceLocation resourceLocation,
-            @NonNull ResourceKey<?> elementKey,
-            Resource resource,
-            Reader reader,
-            @NonNull JsonElement jsonElement) {
+            @Local String directory,
+            @Local(ordinal = 1) @NonNull ResourceKey<?> elementKey,
+            @Local @NonNull JsonElement jsonElement) {
 
         if ("worldgen/structure_set".equals(directory) && jsonElement.isJsonObject()) {
             JsonObject jsonObject = jsonElement.getAsJsonObject();

@@ -10,6 +10,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.jspecify.annotations.NonNull;
 
+
 @Mod.EventBusSubscriber(modid = LinggangoTweaks.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class CommandStuff {
 
@@ -23,7 +24,7 @@ public class CommandStuff {
                                     if (context.getSource().getEntity() instanceof ServerPlayer player) {
                                         boolean deleted = GlobalProgressionHandler.resetProgression();
                                         if (deleted) {
-                                            player.sendSystemMessage(Component.literal("Global progression has been reset. Chaos difficulty is locked once again.")
+                                            player.sendSystemMessage(Component.literal("Global progression has been reset. Chaos difficulty is locked once again..")
                                                     .withStyle(ChatFormatting.YELLOW));
                                         } else {
                                             player.sendSystemMessage(Component.literal("No progression file found to reset. Make sure to unlock chaos difficulty first!")

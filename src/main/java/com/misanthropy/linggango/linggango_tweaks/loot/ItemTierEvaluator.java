@@ -7,6 +7,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.*;
 import org.jspecify.annotations.NonNull;
 
+
 public class ItemTierEvaluator {
 
     public static boolean isEquipmentOP(Item item) {

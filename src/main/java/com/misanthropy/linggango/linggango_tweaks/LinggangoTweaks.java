@@ -1,7 +1,6 @@
 package com.misanthropy.linggango.linggango_tweaks;
 
 import com.misanthropy.linggango.linggango_tweaks.chaos.ChaosDifficultyAddon;
-import com.misanthropy.linggango.linggango_tweaks.client.LinggangoRichPresence;
 import com.misanthropy.linggango.linggango_tweaks.config.SpawnerClientConfig;
 import com.misanthropy.linggango.linggango_tweaks.config.TweaksConfig;
 import com.misanthropy.linggango.linggango_tweaks.enchant.LinggangoEnchantments;
@@ -13,7 +12,6 @@ import com.misanthropy.linggango.linggango_tweaks.registry.LinggangoAttributes;
 import com.misanthropy.linggango.linggango_tweaks.registry.ModParticles;
 import com.misanthropy.linggango.linggango_tweaks.skills.TweaksSkillNetwork;
 import com.misanthropy.linggango.linggango_tweaks.structures.CleanWaterProcessor;
-import com.misanthropy.linggango.linggango_tweaks.structures.GriddyStructureSystem;
 import com.misanthropy.linggango.linggango_tweaks.tweaks.JeiSortStuff;
 import com.misanthropy.linggango.linggango_tweaks.tweaks.LeashAllat;
 import com.misanthropy.linggango.linggango_tweaks.tweaks.SpawnChanges;
@@ -30,7 +28,6 @@ import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
@@ -44,7 +41,6 @@ public class LinggangoTweaks {
     public static final DeferredRegister<StructureProcessorType<?>> PROCESSORS = DeferredRegister.create(Registries.STRUCTURE_PROCESSOR, MOD_ID);
     public static final RegistryObject<StructureProcessorType<CleanWaterProcessor>> CLEAN_WATER_PROCESSOR = PROCESSORS.register("clean_water", () -> () -> CleanWaterProcessor.CODEC);
     public static final DeferredRegister<StructurePlacementType<?>> PLACEMENTS = DeferredRegister.create(Registries.STRUCTURE_PLACEMENT, MOD_ID);
-    public static final RegistryObject<StructurePlacementType<GriddyStructureSystem>> EXACT_GRID_PLACEMENT = PLACEMENTS.register("exact_grid", () -> () -> GriddyStructureSystem.CODEC);
     public static final DeferredRegister<Codec<? extends IGlobalLootModifier>> LOOT_MODIFIERS = DeferredRegister.create(ForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, MOD_ID);
     public static final RegistryObject<Codec<BalancedLootRandomizerModifier>> BALANCED_RANDOMIZER = LOOT_MODIFIERS.register("balanced_loot_randomizer", () -> BalancedLootRandomizerModifier.CODEC);
     public static final ResourceLocation APOSTLE_CONTEXT = new ResourceLocation(MOD_ID, "apostle_context");
@@ -62,11 +58,6 @@ public class LinggangoTweaks {
         LanguageRelatedCrashFixes.fixLocale();
         JeiSortStuff.patchJeiSortOrder();
         SpawnChanges.init();
-
-        if (FMLEnvironment.dist.isClient()) {
-            LinggangoRichPresence.init();
-        }
-
         LogSpamFilter.register();
         TweaksSkillNetwork.register();
         ChaosDifficultyAddon.registerChaos();

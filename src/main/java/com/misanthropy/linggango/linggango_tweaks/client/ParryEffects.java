@@ -275,7 +275,7 @@ public class ParryEffects {
             }
         }
 
-        public ParryState getCurrentState() { return currentState; }
+        public @NonNull ParryState getCurrentState() { return currentState; }
         public int getStateTicks() { return stateTicks; }
         public int getCooldownTicks() { return cooldownTicks; }
         public boolean isParryActive() { return currentState == ParryState.ACTIVE; }

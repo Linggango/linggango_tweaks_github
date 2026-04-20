@@ -10,7 +10,6 @@ import net.minecraftforge.event.ItemAttributeModifierEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
-import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Collection;
@@ -58,7 +57,7 @@ public class LethalityWeaponTweaks {
         return path.contains("_bafs") || path.contains("_bafpb");
     }
 
-    private static @NotNull AttributeModifier getLethalityModifier(@NonNull String path) {
+    private static @NonNull AttributeModifier getLethalityModifier(@NonNull String path) {
         double bonus = 10.0;
 
         switch (path) {

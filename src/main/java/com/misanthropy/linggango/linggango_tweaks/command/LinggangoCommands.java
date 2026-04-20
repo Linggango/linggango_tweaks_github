@@ -26,7 +26,6 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
@@ -114,7 +113,7 @@ public class LinggangoCommands {
             ServerPlayer p = c.getSource().getPlayerOrException();
             p.openMenu(new SimpleMenuProvider((id, inv, pl) -> new CraftingMenu(id, inv, ContainerLevelAccess.create(p.level(), p.blockPosition())) {
                 @Override
-                public boolean stillValid(@NotNull Player playerIn) {
+                public boolean stillValid(@NonNull Player playerIn) {
                     return true;
                 }
             }, Component.literal("Crafting")));

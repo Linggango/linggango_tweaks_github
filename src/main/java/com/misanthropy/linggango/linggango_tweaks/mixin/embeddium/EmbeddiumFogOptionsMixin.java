@@ -1,5 +1,6 @@
 package com.misanthropy.linggango.linggango_tweaks.mixin.embeddium;
 
+import com.llamalad7.mixinextras.sugar.Local;
 import com.misanthropy.linggango.linggango_tweaks.tweaks.DynamicFogHandler;
 import me.jellysquid.mods.sodium.client.gui.SodiumGameOptionPages;
 import me.jellysquid.mods.sodium.client.gui.options.OptionGroup;
@@ -29,10 +30,9 @@ public class EmbeddiumFogOptionsMixin {
 
     @Inject(
             method = "quality",
-            at = @At(value = "INVOKE", target = "Ljava/util/List;add(Ljava/lang/Object;)Z", remap = false, ordinal = 0, shift = At.Shift.AFTER),
-            locals = LocalCapture.CAPTURE_FAILHARD
+            at = @At(value = "INVOKE", target = "Ljava/util/List;add(Ljava/lang/Object;)Z", remap = false, ordinal = 0, shift = At.Shift.AFTER)
     )
-    private static void addLinggangoFogTweaks(CallbackInfoReturnable<OptionPage> cir, @NonNull List<OptionGroup> groups) {
+    private static void addLinggangoFogTweaks(CallbackInfoReturnable<OptionPage> cir, @Local(name = "groups") @NonNull List<OptionGroup> groups) {
 
         var enableFogOption = OptionImpl.createBuilder(Boolean.TYPE, sodiumOpts)
                 .setName(Component.literal("Dynamic Atmospheric Fog"))

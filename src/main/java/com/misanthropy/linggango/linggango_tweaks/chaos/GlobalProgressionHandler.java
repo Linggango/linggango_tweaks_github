@@ -5,7 +5,7 @@ import net.minecraftforge.fml.loading.FMLPaths;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-
+@SuppressWarnings("unused")
 public class GlobalProgressionHandler {
     private static final Path PROGRESSION_PATH = FMLPaths.CONFIGDIR.get().resolve("linggango/progression.dat");
 

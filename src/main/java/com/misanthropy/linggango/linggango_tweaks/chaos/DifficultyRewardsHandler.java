@@ -5,6 +5,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.jspecify.annotations.NonNull;
 
+
 @Mod.EventBusSubscriber(modid = "linggango_tweaks")
 public class DifficultyRewardsHandler {
 
