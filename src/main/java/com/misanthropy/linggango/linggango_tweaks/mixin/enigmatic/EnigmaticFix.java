@@ -17,7 +17,7 @@ public class EnigmaticFix {
             cancellable = true,
             remap = false
     )
-    private static void linggango$preventVerifyCrash(@Nullable ItemStack stack, String key, @NonNull CallbackInfoReturnable<Boolean> cir) {
+    private static void linggango$preventVerifyCrash(@Nullable ItemStack stack, String tag, @NonNull CallbackInfoReturnable<Boolean> cir) {
         if (stack == null || !stack.hasTag()) {
             cir.setReturnValue(false);
         }

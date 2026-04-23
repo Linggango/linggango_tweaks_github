@@ -24,15 +24,15 @@ public class HiddenRecipeMixin {
             cancellable = true,
             remap = false
     )
-    private void linggango$transferPrimevalData(@NonNull CraftingContainer container, RegistryAccess access, @NonNull CallbackInfoReturnable<ItemStack> cir) {
+    private void linggango$transferPrimevalData(@NonNull CraftingContainer inv, RegistryAccess access, @NonNull CallbackInfoReturnable<ItemStack> cir) {
         ItemStack result = cir.getReturnValue();
 
         if (result.isEmpty()) {
             return;
         }
 
-        for (int i = 0; i < container.getContainerSize(); i++) {
-            ItemStack ingredient = container.getItem(i);
+        for (int i = 0; i < inv.getContainerSize(); i++) {
+            ItemStack ingredient = inv.getItem(i);
 
             if (ingredient.is(EnigmaticItems.ENIGMATIC_ITEM) && ingredient.hasTag()) {
                 CompoundTag sourceTag = ingredient.getTag();

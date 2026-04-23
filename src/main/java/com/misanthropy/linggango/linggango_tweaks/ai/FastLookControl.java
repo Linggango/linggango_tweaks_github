@@ -13,7 +13,6 @@ public class FastLookControl extends LookControl {
     }
 
     @Override
-    @SuppressWarnings("NullableProblems")
     protected @NonNull Optional<Float> getXRotD() {
         double d0 = this.wantedX - this.mob.getX();
         double d1 = this.wantedY - this.mob.getEyeY();
@@ -23,7 +22,6 @@ public class FastLookControl extends LookControl {
     }
 
     @Override
-    @SuppressWarnings("NullableProblems")
     protected @NonNull Optional<Float> getYRotD() {
         double d0 = this.wantedX - this.mob.getX();
         double d1 = this.wantedZ - this.mob.getZ();

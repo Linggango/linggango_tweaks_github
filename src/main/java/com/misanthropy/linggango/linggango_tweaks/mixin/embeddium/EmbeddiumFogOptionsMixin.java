@@ -19,7 +19,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.util.List;
 
@@ -62,6 +61,39 @@ public class EmbeddiumFogOptionsMixin {
                 .setImpact(OptionImpact.LOW)
                 .build();
 
-        groups.add(OptionGroup.createBuilder().add(enableFogOption).add(fogStartOption).build());
+        var enableVoidFogOption = OptionImpl.createBuilder(Boolean.TYPE, sodiumOpts)
+                .setName(Component.literal("Atmospheric Void Fog"))
+                .setTooltip(Component.literal("Darkens deep caves dynamically based on biome colors."))
+                .setControl(TickBoxControl::new)
+                .setBinding(
+                        (opts, val) -> {
+                            DynamicFogHandler.voidFogEnabled = val;
+                            DynamicFogHandler.save();
+                        },
+                        (opts) -> DynamicFogHandler.voidFogEnabled
+                )
+                .setImpact(OptionImpact.LOW)
+                .build();
+
+        var rainFogDensityOption = OptionImpl.createBuilder(Integer.TYPE, sodiumOpts)
+                .setName(Component.literal("Rain Mist Density (%)"))
+                .setTooltip(Component.literal("How thick the fog gets during rainstorms. Lower = heavier mist."))
+                .setControl(option -> new SliderControl(option, 0, 50, 1, ControlValueFormatter.percentage()))
+                .setBinding(
+                        (opts, val) -> {
+                            DynamicFogHandler.rainFogDensity = val / 100.0;
+                            DynamicFogHandler.save();
+                        },
+                        (opts) -> (int) (DynamicFogHandler.rainFogDensity * 100)
+                )
+                .setImpact(OptionImpact.LOW)
+                .build();
+
+        groups.add(OptionGroup.createBuilder()
+                .add(enableFogOption)
+                .add(fogStartOption)
+                .add(enableVoidFogOption)
+                .add(rainFogDensityOption)
+                .build());
     }
 }

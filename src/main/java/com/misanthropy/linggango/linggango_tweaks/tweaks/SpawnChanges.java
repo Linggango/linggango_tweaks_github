@@ -19,16 +19,14 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jspecify.annotations.NonNull;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Mod.EventBusSubscriber(modid = LinggangoTweaks.MOD_ID)
 public class SpawnChanges implements BiomeModifier {
     public static final SpawnChanges INSTANCE = new SpawnChanges();
 
-    public static final Set<EntityType<?>> TWEAKED_ENTITIES = new HashSet<>();
+    public static final Set<String> TWEAKED_ENTITIES = new HashSet<>();
+    private static final Set<ModifiableBiomeInfo.BiomeInfo.Builder> PROCESSED_BUILDERS = Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
 
     private static final List<String> ENTITY_IDS = List.of("alexsmobs:skunk",
             "alexsmobs:anteater", "alexsmobs:centipede_head", "alexsmobs:anaconda", "alexsmobs:terrapin", "alexsmobs:soul_vulture",
@@ -79,15 +77,13 @@ public class SpawnChanges implements BiomeModifier {
 
     public static void init() {
         if (!TWEAKED_ENTITIES.isEmpty()) return;
-        for (String id : ENTITY_IDS) {
-            EntityType<?> type = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(id));
-            if (type != null) TWEAKED_ENTITIES.add(type);
-        }
+
+        TWEAKED_ENTITIES.addAll(ENTITY_IDS);
 
         for (EntityType<?> type : ForgeRegistries.ENTITY_TYPES.getValues()) {
             ResourceLocation id = ForgeRegistries.ENTITY_TYPES.getKey(type);
             if (id != null && id.getNamespace().equals("terra_entity") && !DISABLED_ENTITIES.contains(id.toString())) {
-                TWEAKED_ENTITIES.add(type);
+                TWEAKED_ENTITIES.add(id.toString());
             }
         }
     }
@@ -95,7 +91,8 @@ public class SpawnChanges implements BiomeModifier {
     @SubscribeEvent
     public static void onMobFallDamage(@NonNull LivingHurtEvent event) {
         if (event.getSource().is(DamageTypes.FALL) && event.getEntity().tickCount < 200) {
-            if (TWEAKED_ENTITIES.contains(event.getEntity().getType())) {
+            ResourceLocation id = ForgeRegistries.ENTITY_TYPES.getKey(event.getEntity().getType());
+            if (id != null && TWEAKED_ENTITIES.contains(id.toString())) {
                 event.setCanceled(true);
             }
         }
@@ -104,6 +101,8 @@ public class SpawnChanges implements BiomeModifier {
     @Override
     public void modify(@NonNull Holder<Biome> biome, Phase phase, ModifiableBiomeInfo.BiomeInfo.@NonNull Builder builder) {
         if (phase != Phase.MODIFY) return;
+        if (!PROCESSED_BUILDERS.add(builder)) return;
+
         init();
 
         for (MobCategory category : MobCategory.values()) {
@@ -146,11 +145,17 @@ public class SpawnChanges implements BiomeModifier {
         }
 
         if (biome.is(BiomeTags.IS_OVERWORLD)) {
-            for (EntityType<?> type : TWEAKED_ENTITIES) {
+            for (String typeId : TWEAKED_ENTITIES) {
+                EntityType<?> type = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(typeId));
+                if (type == null) continue;
+
                 MobCategory category = type.getCategory();
 
                 boolean alreadyExists = builder.getMobSpawnSettings().getSpawner(category).stream()
-                        .anyMatch(s -> s.type == type);
+                        .anyMatch(s -> {
+                            ResourceLocation sId = ForgeRegistries.ENTITY_TYPES.getKey(s.type);
+                            return sId != null && sId.toString().equals(typeId);
+                        });
 
                 if (!alreadyExists) {
                     int weight = (category == MobCategory.CREATURE) ? 10 : (category == MobCategory.MONSTER ? 12 : 6);

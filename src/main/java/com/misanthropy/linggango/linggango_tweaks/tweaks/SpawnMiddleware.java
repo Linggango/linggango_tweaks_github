@@ -99,6 +99,13 @@ public class SpawnMiddleware {
             Entity wildcard = newType.create(level.getLevel());
             if (wildcard instanceof Mob wildcardMob) {
                 wildcardMob.moveTo(original.getX(), original.getY(), original.getZ(), original.getYRot(), original.getXRot());
+                ResourceLocation newId = ForgeRegistries.ENTITY_TYPES.getKey(newType);
+                if (newId != null) {
+                    GLOBAL_SPAWN_COUNTS.put(newId, GLOBAL_SPAWN_COUNTS.getOrDefault(newId, 0) + 1);
+                    totalTrackedSpawns++;
+                    if (totalTrackedSpawns >= 200) decaySpawnCounts();
+                }
+
                 level.addFreshEntity(wildcardMob);
                 event.setSpawnCancelled(true);
                 event.setCanceled(true);
@@ -112,11 +119,12 @@ public class SpawnMiddleware {
         EntityType<?> starvingType = null;
         int lowestCount = Integer.MAX_VALUE;
 
-        for (EntityType<?> type : SpawnChanges.TWEAKED_ENTITIES) {
-            if (type.getCategory() == targetCategory) {
-                ResourceLocation typeId = ForgeRegistries.ENTITY_TYPES.getKey(type);
-                if (typeId != null) {
-                    int count = GLOBAL_SPAWN_COUNTS.getOrDefault(typeId, 0);
+        for (String typeId : SpawnChanges.TWEAKED_ENTITIES) {
+            EntityType<?> type = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(typeId));
+            if (type != null && type.getCategory() == targetCategory) {
+                ResourceLocation id = ForgeRegistries.ENTITY_TYPES.getKey(type);
+                if (id != null) {
+                    int count = GLOBAL_SPAWN_COUNTS.getOrDefault(id, 0);
                     if (count < lowestCount) {
                         lowestCount = count;
                         starvingType = type;
@@ -133,15 +141,18 @@ public class SpawnMiddleware {
         EntityType<?> starvingType = null;
         int lowestCount = Integer.MAX_VALUE;
 
-        for (EntityType<?> type : SpawnChanges.TWEAKED_ENTITIES) {
-            ResourceLocation typeId = ForgeRegistries.ENTITY_TYPES.getKey(type);
-            if (typeId != null) {
-                int count = GLOBAL_SPAWN_COUNTS.getOrDefault(typeId, 0);
-                if (count < lowestCount) {
-                    lowestCount = count;
-                    starvingType = type;
-                } else if (count == lowestCount && ThreadLocalRandom.current().nextBoolean()) {
-                    starvingType = type;
+        for (String typeId : SpawnChanges.TWEAKED_ENTITIES) {
+            EntityType<?> type = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(typeId));
+            if (type != null) {
+                ResourceLocation id = ForgeRegistries.ENTITY_TYPES.getKey(type);
+                if (id != null) {
+                    int count = GLOBAL_SPAWN_COUNTS.getOrDefault(id, 0);
+                    if (count < lowestCount) {
+                        lowestCount = count;
+                        starvingType = type;
+                    } else if (count == lowestCount && ThreadLocalRandom.current().nextBoolean()) {
+                        starvingType = type;
+                    }
                 }
             }
         }

@@ -15,9 +15,9 @@ public class TraitManagerMixin {
             method = "fill",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;setHealth(F)V"),
             remap = true)
-    private static void skipHealthReset(@NonNull LivingEntity le, float health) {
+    private static void skipHealthReset(@NonNull LivingEntity le, float p_21154_) {
         if (!ApostleL2Data.SKIP_HEALTH_RESET.contains(le.getUUID())) {
-            le.setHealth(health);
+            le.setHealth(p_21154_);
         }
     }
 }

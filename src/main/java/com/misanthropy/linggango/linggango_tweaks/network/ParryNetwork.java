@@ -47,9 +47,7 @@ public class ParryNetwork {
 
     public static class C2SParryPacket {
         public C2SParryPacket() {}
-
         public C2SParryPacket(FriendlyByteBuf buf) {}
-
         public void toBytes(FriendlyByteBuf buf) {}
 
         public void handle(@NonNull Supplier<NetworkEvent.Context> supplier) {
@@ -67,18 +65,9 @@ public class ParryNetwork {
 
     public static class S2CParryStartPacket {
         private final int entityId;
-
-        public S2CParryStartPacket(int entityId) {
-            this.entityId = entityId;
-        }
-
-        public S2CParryStartPacket(@NonNull FriendlyByteBuf buf) {
-            this.entityId = buf.readInt();
-        }
-
-        public void toBytes(@NonNull FriendlyByteBuf buf) {
-            buf.writeInt(this.entityId);
-        }
+        public S2CParryStartPacket(int entityId) { this.entityId = entityId; }
+        public S2CParryStartPacket(@NonNull FriendlyByteBuf buf) { this.entityId = buf.readInt(); }
+        public void toBytes(@NonNull FriendlyByteBuf buf) { buf.writeInt(this.entityId); }
 
         public void handle(@NonNull Supplier<NetworkEvent.Context> supplier) {
             NetworkEvent.Context context = supplier.get();
@@ -90,17 +79,11 @@ public class ParryNetwork {
     public static class S2CParrySuccessPacket {
         private final int entityId;
         private final int tier;
-
-        public S2CParrySuccessPacket(int entityId, int tier) {
-            this.entityId = entityId;
-            this.tier = tier;
-        }
-
+        public S2CParrySuccessPacket(int entityId, int tier) { this.entityId = entityId; this.tier = tier; }
         public S2CParrySuccessPacket(@NonNull FriendlyByteBuf buf) {
             this.entityId = buf.readInt();
             this.tier = buf.readInt();
         }
-
         public void toBytes(@NonNull FriendlyByteBuf buf) {
             buf.writeInt(this.entityId);
             buf.writeInt(this.tier);

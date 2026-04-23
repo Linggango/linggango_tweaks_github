@@ -1,6 +1,7 @@
 package com.misanthropy.linggango.linggango_tweaks;
 
 import com.misanthropy.linggango.linggango_tweaks.chaos.ChaosDifficultyAddon;
+import com.misanthropy.linggango.linggango_tweaks.client.LinggangoRichPresence;
 import com.misanthropy.linggango.linggango_tweaks.config.SpawnerClientConfig;
 import com.misanthropy.linggango.linggango_tweaks.config.TweaksConfig;
 import com.misanthropy.linggango.linggango_tweaks.enchant.LinggangoEnchantments;
@@ -31,6 +32,9 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
+import org.joml.Vector4d;
+
+import java.util.HashMap;
 
 @SuppressWarnings("unused")
 @Mod(LinggangoTweaks.MOD_ID)
@@ -44,6 +48,7 @@ public class LinggangoTweaks {
     public static final DeferredRegister<Codec<? extends IGlobalLootModifier>> LOOT_MODIFIERS = DeferredRegister.create(ForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, MOD_ID);
     public static final RegistryObject<Codec<BalancedLootRandomizerModifier>> BALANCED_RANDOMIZER = LOOT_MODIFIERS.register("balanced_loot_randomizer", () -> BalancedLootRandomizerModifier.CODEC);
     public static final ResourceLocation APOSTLE_CONTEXT = new ResourceLocation(MOD_ID, "apostle_context");
+    public static final HashMap<String, HashMap<String, Vector4d>> curves = new HashMap<>();
 
     public LinggangoTweaks() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
@@ -57,6 +62,7 @@ public class LinggangoTweaks {
         TweaksConfig.register();
         LanguageRelatedCrashFixes.fixLocale();
         JeiSortStuff.patchJeiSortOrder();
+        LinggangoRichPresence.init();
         SpawnChanges.init();
         LogSpamFilter.register();
         TweaksSkillNetwork.register();

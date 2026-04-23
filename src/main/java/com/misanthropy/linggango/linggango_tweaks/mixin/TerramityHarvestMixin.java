@@ -66,8 +66,6 @@ public abstract class TerramityHarvestMixin {
 
             int requiredLevel = switch (path) {
                 case "decayed_black_matter_ore", "bedrock_black_matter_ore" -> 4;
-                case "daemonium_ore", "deepslate_dimlite_ore", "gaianite_cluster_ore", "deepslate_iridium_ore",
-                     "nether_iridium_ore", "end_iridium_ore", "profaned_ore", "cosmic_ore" -> 3;
                 case "deepslate_iridescent_ore" -> 2;
                 case "igneo_ruby_ore", "nether_ruby_ore", "sapphire_ore", "deepslate_sapphire_ore", "topaz_ore",
                      "deepslate_topaz_ore", "end_onyx_ore" -> 1;

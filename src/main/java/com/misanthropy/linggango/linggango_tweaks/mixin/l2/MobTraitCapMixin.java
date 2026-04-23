@@ -41,9 +41,9 @@ public abstract class MobTraitCapMixin {
             method = "tick",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;setHealth(F)V"),
             remap = true)
-    private void skipTickHealthReset(@NonNull LivingEntity mob, float health) {
+    private void skipTickHealthReset(@NonNull LivingEntity mob, float p_21154_) {
         if (!ApostleL2Data.SKIP_TICK_HEALTH_RESET.remove(mob.getUUID())) {
-            mob.setHealth(health);
+            mob.setHealth(p_21154_);
         }
     }
 }

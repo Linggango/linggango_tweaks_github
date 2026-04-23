@@ -21,7 +21,7 @@ public class MowzieSpawnCrashFixMixin {
             cancellable = true,
             remap = false
     )
-    private static void linggango$safeSpawnCheck(EntityType<?> type, LevelAccessor world, MobSpawnType reason, BlockPos pos, RandomSource random, @NonNull CallbackInfoReturnable<Boolean> cir) {
+    private static void linggango$safeSpawnCheck(EntityType<?> type, LevelAccessor world, MobSpawnType reason, BlockPos spawnPos, RandomSource rand, @NonNull CallbackInfoReturnable<Boolean> cir) {
         if (!(world instanceof ServerLevel)) {
             cir.setReturnValue(false);
         }

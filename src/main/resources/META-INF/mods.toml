@@ -5,9 +5,9 @@ license = "${mod_license}"
 [[mods]]
 modId = "${mod_id}"
 version = "${mod_version}"
-displayName = "${mod_name}"
-authors = "${mod_authors}"
-description = '''${mod_description}'''
+displayName = "Linggango Tweaks"
+authors = "Misanthropy"
+description = '''Huge Amount Of Collections Specifically for Linggango Modpack!'''
 
 [[dependencies."${mod_id}"]]
 modId = "forge"
