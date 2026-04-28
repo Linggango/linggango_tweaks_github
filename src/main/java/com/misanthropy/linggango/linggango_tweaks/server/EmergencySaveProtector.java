@@ -8,42 +8,40 @@ import net.minecraftforge.fml.common.Mod;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 @Mod.EventBusSubscriber(modid = "linggango_tweaks")
 public class EmergencySaveProtector {
 
     private static final Logger LOGGER = LogManager.getLogger();
-    private static @Nullable MinecraftServer activeServer;
-    private static Thread shutdownHook;
+    private static final AtomicReference<MinecraftServer> SERVER_REF = new AtomicReference<>(null);
+    private static boolean done = false;
 
     @SubscribeEvent
     public static void onServerStart(@NonNull ServerStartedEvent event) {
-        activeServer = event.getServer();
+        SERVER_REF.set(event.getServer());
 
-        if (shutdownHook == null) {
-            shutdownHook = new Thread(() -> {
-                if (activeServer != null && activeServer.isRunning()) {
+        if (!done) {
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                MinecraftServer s = SERVER_REF.get();
+
+                if (s != null && s.isRunning()) {
                     LOGGER.info("Linggango Tweaks: Some mod is causing to shit on your save. Forcing world save...");
-
-                    activeServer.getPlayerList().saveAll();
-
-                    activeServer.saveAllChunks(true, true, true);
+                    try {
+                        s.getPlayerList().saveAll();
+                        s.saveAllChunks(false, true, false);
+                    } catch (Exception e) {
+                        LOGGER.error("Save failed: {}", e.getMessage());
+                    }
                 }
-            });
-            Runtime.getRuntime().addShutdownHook(shutdownHook);
+            }, "save-hook-thing"));
+            done = true;
         }
     }
 
     @SubscribeEvent
     public static void onServerStopping(ServerStoppingEvent event) {
-        if (activeServer != null) {
-            LOGGER.info("Linggango Tweaks: Server seems to be stopped normally. Ensuring final save...");
-
-            activeServer.getPlayerList().saveAll();
-
-            activeServer.saveAllChunks(true, true, true);
-            activeServer = null;
-        }
+        SERVER_REF.set(null);
     }
 }

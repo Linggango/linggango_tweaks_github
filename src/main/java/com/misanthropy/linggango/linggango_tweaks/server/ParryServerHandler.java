@@ -11,10 +11,13 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.AreaEffectCloud;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
@@ -33,184 +36,232 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Mod.EventBusSubscriber(modid = "linggango_tweaks")
 public class ParryServerHandler {
+
     public static final Map<UUID, Long> activeParries = new ConcurrentHashMap<>();
+
+    private static final long MS_PER_TICK = 50L;
+
+    private static MobEffect FRAGILITY;
+    private static MobEffect POSTURE_BREAK;
+    private static MobEffect VULNERABILITY;
+    private static EntityType<?> APOSTLE_TYPE;
+    private static volatile boolean initialized = false;
+
+    private static void initCaches() {
+        if (initialized) return;
+        FRAGILITY     = ForgeRegistries.MOB_EFFECTS.getValue(ResourceLocation.fromNamespaceAndPath("mowziesmobs", "fragility"));
+        POSTURE_BREAK = ForgeRegistries.MOB_EFFECTS.getValue(ResourceLocation.fromNamespaceAndPath("soulsweapons", "posture_break"));
+        VULNERABILITY = ForgeRegistries.MOB_EFFECTS.getValue(ResourceLocation.fromNamespaceAndPath("morerelics", "vulnerability"));
+        APOSTLE_TYPE  = ForgeRegistries.ENTITY_TYPES.getValue(ResourceLocation.fromNamespaceAndPath("goety", "apostle"));
+        initialized = true;
+    }
+
+    public static void startParry(@NonNull UUID playerId) {
+        activeParries.put(playerId, System.currentTimeMillis());
+    }
 
     @SubscribeEvent
     public static void onLivingAttack(@NonNull LivingAttackEvent event) {
-        if (event.getEntity() instanceof ServerPlayer player) {
+        initCaches();
 
-            if (event.getSource().getEntity() == null) {
-                return;
-            }
+        if (!(event.getEntity() instanceof ServerPlayer player)) {
+            return;
+        }
 
-            if (event.getSource().is(net.minecraft.tags.DamageTypeTags.BYPASSES_SHIELD) ||
-                    event.getSource().is(net.minecraft.tags.DamageTypeTags.BYPASSES_ARMOR) ||
-                    event.getSource().is(net.minecraft.tags.DamageTypeTags.IS_FIRE)) {
-                return;
-            }
+        DamageSource source = event.getSource();
+        if (source.getEntity() == null) {
+            return;
+        }
 
-            Entity attackerCheck = event.getSource().getEntity();
-            ResourceLocation attackerId = ForgeRegistries.ENTITY_TYPES.getKey(attackerCheck.getType());
-            if (attackerId != null && attackerId.toString().equals("goety:apostle")) {
-                return;
-            }
+        if (source.is(net.minecraft.tags.DamageTypeTags.BYPASSES_SHIELD) ||
+                source.is(net.minecraft.tags.DamageTypeTags.BYPASSES_ARMOR) ||
+                source.is(net.minecraft.tags.DamageTypeTags.IS_FIRE)) {
+            return;
+        }
 
-            Long startTime = activeParries.get(player.getUUID());
-            if (startTime != null) {
-                long elapsed = player.level().getGameTime() - startTime;
-                int startup = TweaksConfig.PARRY_STARTUP_TICKS.get();
-                int baseActive = TweaksConfig.PARRY_ACTIVE_WINDOW.get();
+        Entity attackerCheck = source.getEntity();
+        if (attackerCheck != null && attackerCheck.getType() == APOSTLE_TYPE) {
+            return;
+        }
 
-                int tickModifier = 0;
-                int perfectMod = 0;
-                int successMod = 0;
+        UUID playerId = player.getUUID();
+        Long startMs = activeParries.get(playerId);
+        if (startMs == null) {
+            return;
+        }
 
-                LinggangoEvents.DifficultyDef diff = LinggangoEvents.getCurrentDifficulty(player.level());
-                if (diff != null) {
-                    switch (diff.id) {
-                        case "cozy": tickModifier = 2; perfectMod = 1; successMod = 1; break;
-                        case "easy": tickModifier = 1; perfectMod = 1;
-                            break;
-                        case "normal":
-                            break;
-                        case "veteran": tickModifier = -1;
-                            successMod = -1; break;
-                        case "extreme": tickModifier = -2; perfectMod = -1; successMod = -1; break;
-                        case "torture": tickModifier = -3; perfectMod = -1; successMod = -2; break;
-                        case "chaos": tickModifier = -4; perfectMod = -2; successMod = -2; break;
-                    }
-                }
+        long now = System.currentTimeMillis();
+        long elapsed = now - startMs;
 
-                int active = Math.max(3, Math.min(9, baseActive + tickModifier));
+        int startupTicks  = TweaksConfig.PARRY_STARTUP_TICKS.get();
+        int baseActiveTicks = TweaksConfig.PARRY_ACTIVE_WINDOW.get();
+        long startupMs    = startupTicks * MS_PER_TICK;
+        long baseActiveMs = baseActiveTicks * MS_PER_TICK;
 
-                if (elapsed >= startup && elapsed < (startup + active)) {
-                    event.setCanceled(true);
+        long maxWindowMs = startupMs + baseActiveMs + (20 * MS_PER_TICK);
+        if (elapsed > maxWindowMs) {
+            activeParries.remove(playerId);
+            return;
+        }
 
-                    long activeElapsed = elapsed - startup;
-                    int perfectTicks = Math.max(1, TweaksConfig.PARRY_PERFECT_TICKS.get() + perfectMod);
-                    int successTicks = Math.max(1, TweaksConfig.PARRY_SUCCESS_TICKS.get() + successMod);
+        int latencyCompMs = Math.min(player.latency, 250);
 
-                    int tier = 1;
-                    if (activeElapsed < perfectTicks) {
-                        tier = 3;
-                    } else if (activeElapsed < perfectTicks + successTicks) {
-                        tier = 2;
-                    }
-
-                    Entity directEntity = event.getSource().getDirectEntity();
-                    Entity attacker = event.getSource().getEntity();
-
-                    float healAmt = TweaksConfig.PARRY_HEAL_AMOUNT.get().floatValue();
-                    if (healAmt > 0) {
-                        player.heal(healAmt);
-                    }
-
-                    if (directEntity instanceof Projectile projectile && TweaksConfig.PROJECTILE_DEFLECT_ENABLED.get()) {
-                        if (player.getRandom().nextFloat() < TweaksConfig.PROJECTILE_DEFLECT_CHANCE.get()) {
-                            Entity owner = projectile.getOwner();
-                            Vec3 currentVelocity = projectile.getDeltaMovement();
-                            double speed = currentVelocity.length();
-                            Vec3 newDirection;
-
-                            if (owner != null) {
-                                newDirection = owner.getEyePosition().subtract(projectile.position()).normalize();
-                            } else {
-                                newDirection = player.getLookAngle();
-                            }
-
-                            projectile.setDeltaMovement(newDirection.scale(speed * TweaksConfig.PROJECTILE_DEFLECT_SPEED.get()));
-                            projectile.setOwner(player);
-                            projectile.hasImpulse = true;
-                        } else {
-                            projectile.discard();
-                        }
-                    }
-
-                    if (attacker instanceof LivingEntity livingAttacker && attacker != player) {
-                        double kbStrength = tier == 3 ? 1.8 : 0.9;
-                        livingAttacker.knockback(kbStrength, player.getX() - livingAttacker.getX(), player.getZ() - livingAttacker.getZ());
-
-                        int slownessDuration = tier == 3 ? 80 : 30;
-                        int slownessAmp = tier == 3 ? 1 : 0;
-                        livingAttacker.addEffect(new MobEffectInstance(net.minecraft.world.effect.MobEffects.MOVEMENT_SLOWDOWN, slownessDuration, slownessAmp, false, true));
-
-                        int effectDuration = tier == 3 ? 100 : 40;
-
-                        MobEffect fragility = ForgeRegistries.MOB_EFFECTS.getValue(ResourceLocation.fromNamespaceAndPath("mowziesmobs", "fragility"));
-                        if (fragility != null) {
-                            livingAttacker.addEffect(new MobEffectInstance(fragility, effectDuration, 0, false, true));
-                        }
-
-                        MobEffect postureBreak = ForgeRegistries.MOB_EFFECTS.getValue(ResourceLocation.fromNamespaceAndPath("soulsweapons", "posture_break"));
-                        if (postureBreak != null) {
-                            livingAttacker.addEffect(new MobEffectInstance(postureBreak, effectDuration, 0, false, true));
-                        }
-
-                        if (tier == 3) {
-                            MobEffect vulnerability = ForgeRegistries.MOB_EFFECTS.getValue(ResourceLocation.fromNamespaceAndPath("morerelics", "vulnerability"));
-                            if (vulnerability != null) {
-                                livingAttacker.addEffect(new MobEffectInstance(vulnerability, 100, 0, false, true));
-                            }
-                        }
-
-                        float maxHp = livingAttacker.getMaxHealth();
-                        float damagePercent = tier == 3 ? 0.04f : 0.02f;
-                        livingAttacker.hurt(player.damageSources().playerAttack(player), maxHp * damagePercent);
-                    }
-
-                    if (tier != 3 && event.getAmount() > 150.0F) {
-                        Vec3 look = player.getLookAngle();
-                        player.knockback(1.5, look.x, look.z);
-
-                        AreaEffectCloud dustCloud = new AreaEffectCloud(player.level(), player.getX(), player.getY(), player.getZ());
-                        dustCloud.setOwner(player);
-                        dustCloud.setRadius(1.5F);
-                        dustCloud.setRadiusOnUse(0.0F);
-                        dustCloud.setWaitTime(0);
-                        dustCloud.setDuration(200);
-                        dustCloud.setParticle(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.DIRT.defaultBlockState()));
-                        player.level().addFreshEntity(dustCloud);
-                    }
-
-                    spawnParrySparkles(player, tier);
-
-                    ParryNetwork.CHANNEL.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> player), new ParryNetwork.S2CParrySuccessPacket(player.getId(), tier));
-                }
+        int tickMod = 0, perfectMod = 0, successMod = 0;
+        LinggangoEvents.DifficultyDef diff = LinggangoEvents.getCurrentDifficulty(player.level());
+        if (diff != null) {
+            switch (diff.id) {
+                case "cozy"     -> { tickMod = 2;  perfectMod = 1;  successMod = 1; }
+                case "easy"     -> { tickMod = 1;  perfectMod = 1; }
+                case "veteran"  -> { tickMod = -1; successMod = -1; }
+                case "extreme"  -> { tickMod = -2; perfectMod = -1; successMod = -1; }
+                case "torture"  -> { tickMod = -3; perfectMod = -1; successMod = -2; }
+                case "chaos"    -> { tickMod = -4; perfectMod = -2; successMod = -2; }
+                default -> { }
             }
         }
+
+        long activeMs = Math.max(3 * MS_PER_TICK,
+                Math.min(9 * MS_PER_TICK, baseActiveMs + (tickMod * MS_PER_TICK)));
+        long compensatedActiveMs = activeMs + latencyCompMs;
+
+        if (elapsed < startupMs || elapsed >= (startupMs + compensatedActiveMs)) {
+            return;
+        }
+
+        event.setCanceled(true);
+        activeParries.remove(playerId);
+
+        long activeElapsed = elapsed - startupMs;
+        long compensatedElapsed = Math.max(0, activeElapsed - (latencyCompMs / 2));
+
+        int perfectTicks  = Math.max(1, TweaksConfig.PARRY_PERFECT_TICKS.get() + perfectMod);
+        int successTicks  = Math.max(1, TweaksConfig.PARRY_SUCCESS_TICKS.get() + successMod);
+        long perfectMs    = perfectTicks * MS_PER_TICK;
+        long successMs    = successTicks * MS_PER_TICK;
+
+        int tier;
+        if (compensatedElapsed < perfectMs) {
+            tier = 3;
+
+        } else if (compensatedElapsed < perfectMs + successMs) {
+            tier = 2;
+
+        } else {
+            tier = 1;
+
+        }
+
+        Entity directEntity = source.getDirectEntity();
+        Entity attacker = source.getEntity();
+
+        float heal = TweaksConfig.PARRY_HEAL_AMOUNT.get().floatValue();
+        if (heal > 0.0f) {
+            player.heal(heal);
+        }
+
+        if (directEntity instanceof Projectile projectile && TweaksConfig.PROJECTILE_DEFLECT_ENABLED.get()) {
+            if (player.getRandom().nextFloat() < TweaksConfig.PROJECTILE_DEFLECT_CHANCE.get()) {
+                Entity owner = projectile.getOwner();
+                Vec3 vel = projectile.getDeltaMovement();
+                double speed = vel.length();
+                Vec3 newDir = (owner != null)
+                        ? owner.getEyePosition().subtract(projectile.position()).normalize()
+                        : player.getLookAngle();
+
+                projectile.setDeltaMovement(newDir.scale(speed * TweaksConfig.PROJECTILE_DEFLECT_SPEED.get()));
+                projectile.setOwner(player);
+                projectile.hasImpulse = true;
+            } else {
+                projectile.discard();
+            }
+        }
+
+        if (attacker instanceof LivingEntity livingAttacker && attacker != player) {
+            double kb = tier == 3 ? 1.8 : 0.9;
+            livingAttacker.knockback(kb,
+                    player.getX() - livingAttacker.getX(),
+                    player.getZ() - livingAttacker.getZ());
+
+            int slowDur = tier == 3 ? 80 : 30;
+            int slowAmp = tier == 3 ? 1 : 0;
+            livingAttacker.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, slowDur, slowAmp, false, true));
+
+            int effectDur = tier == 3 ? 100 : 40;
+
+            if (FRAGILITY != null) {
+                livingAttacker.addEffect(new MobEffectInstance(FRAGILITY, effectDur, 0, false, true));
+            }
+            if (POSTURE_BREAK != null) {
+                livingAttacker.addEffect(new MobEffectInstance(POSTURE_BREAK, effectDur, 0, false, true));
+            }
+            if (tier == 3 && VULNERABILITY != null) {
+                livingAttacker.addEffect(new MobEffectInstance(VULNERABILITY, 100, 0, false, true));
+            }
+
+            float dmg = livingAttacker.getMaxHealth() * (tier == 3 ? 0.04f : 0.02f);
+            livingAttacker.hurt(player.damageSources().playerAttack(player), dmg);
+        }
+
+        if (tier != 3 && event.getAmount() > 150.0F) {
+            Vec3 look = player.getLookAngle();
+            player.knockback(1.5, look.x, look.z);
+
+            AreaEffectCloud cloud = new AreaEffectCloud(player.level(), player.getX(), player.getY(), player.getZ());
+            cloud.setOwner(player);
+            cloud.setRadius(1.5F);
+            cloud.setRadiusOnUse(0.0F);
+            cloud.setWaitTime(0);
+            cloud.setDuration(200);
+            cloud.setParticle(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.DIRT.defaultBlockState()));
+            player.level().addFreshEntity(cloud);
+        }
+
+        spawnParrySparkles(player, tier);
+
+        ParryNetwork.CHANNEL.send(
+                PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> player),
+                new ParryNetwork.S2CParrySuccessPacket(player.getId(), tier));
     }
 
     private static void spawnParrySparkles(@NonNull Player player, int tier) {
-        if (player.level() instanceof ServerLevel serverLevel) {
-            Vec3 playerPos = player.position().add(0, player.getEyeHeight() - 0.2, 0);
-            Vec3 lookVec = player.getLookAngle();
-            Vec3 impactPos = playerPos.add(lookVec.scale(1.8));
-
-            RandomSource random = serverLevel.random;
-            int numLines = 1 + random.nextInt(2);
-            double baseSpeed = 0.02 + random.nextDouble() * 0.02;
-
-            for (int l = 0; l < numLines; l++) {
-                double angle = random.nextDouble() * Math.PI * 2.0;
-
-                double dx = Math.cos(angle);
-                double dz = Math.sin(angle);
-
-                double upwardAngle = Math.toRadians(45 + random.nextDouble() * 15);
-                double horizontalSpeed = baseSpeed * Math.cos(upwardAngle);
-                double verticalSpeed = baseSpeed * Math.sin(upwardAngle);
-
-                Vec3 velocity = new Vec3(
-                        dx * horizontalSpeed,
-                        verticalSpeed,
-                        dz * horizontalSpeed
-                );
-
-                serverLevel.sendParticles(ModParticles.PARRY_SPARKLE.get(), impactPos.x, impactPos.y, impactPos.z, 0, velocity.x, velocity.y, velocity.z, 1.0);
-            }
-
-            SimpleParticleType particleType = tier == 3 ? ModParticles.PERFECT_PARRY.get() : ModParticles.ANIMATED_PARRY.get();
-            serverLevel.sendParticles(particleType, impactPos.x, impactPos.y, impactPos.z, 1, 0, 0, 0, 0);
+        if (!(player.level() instanceof ServerLevel level)) {
+            return;
         }
+
+        double px = player.getX();
+        double py = player.getY() + player.getEyeHeight() - 0.2;
+        double pz = player.getZ();
+        Vec3 look = player.getLookAngle();
+
+        double ix = px + look.x * 1.8;
+        double iy = py + look.y * 1.8;
+        double iz = pz + look.z * 1.8;
+
+        RandomSource rand = level.random;
+        int lines = 1 + rand.nextInt(2);
+        double baseSpeed = 0.02 + rand.nextDouble() * 0.02;
+
+        for (int l = 0; l < lines; l++) {
+            double angle = rand.nextDouble() * Math.PI * 2.0;
+            double dx = Math.cos(angle);
+            double dz = Math.sin(angle);
+
+            double up = Math.toRadians(45 + rand.nextDouble() * 15);
+            double hSpeed = baseSpeed * Math.cos(up);
+            double vSpeed = baseSpeed * Math.sin(up);
+
+            level.sendParticles(
+                    ModParticles.PARRY_SPARKLE.get(),
+                    ix, iy, iz, 0,
+                    dx * hSpeed, vSpeed, dz * hSpeed,
+                    1.0
+            );
+        }
+
+        SimpleParticleType particle = tier == 3
+                ? ModParticles.PERFECT_PARRY.get()
+                : ModParticles.ANIMATED_PARRY.get();
+
+        level.sendParticles(particle, ix, iy, iz, 1, 0, 0, 0, 0);
     }
 }

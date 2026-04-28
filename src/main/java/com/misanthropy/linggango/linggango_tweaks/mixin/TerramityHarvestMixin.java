@@ -46,7 +46,6 @@ public abstract class TerramityHarvestMixin {
             boolean isPaxel = itemId != null && itemId.getPath().contains("paxel");
 
             if (!(item instanceof PickaxeItem) && !isPaxel) return;
-
             int toolLevel = 0;
             if (isPaxel) {
                 toolLevel = 4;

@@ -1,4 +1,4 @@
-package com.misanthropy.linggango.linggango_tweaks.network;
+package com.misanthropy.linggango.linggango_tweaks.network; // TODO: Cache player UUID lookups
 
 import com.misanthropy.linggango.linggango_tweaks.server.ParryServerHandler;
 import net.minecraft.network.FriendlyByteBuf;
@@ -18,7 +18,7 @@ import java.util.function.Supplier;
 public class ParryNetwork {
     private static final String PROTOCOL_VERSION = "2";
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
-            new ResourceLocation("linggango_tweaks", "main"),
+            ResourceLocation.fromNamespaceAndPath("linggango_tweaks", "main"),
             () -> PROTOCOL_VERSION,
             PROTOCOL_VERSION::equals,
             PROTOCOL_VERSION::equals
@@ -55,7 +55,13 @@ public class ParryNetwork {
             context.enqueueWork(() -> {
                 ServerPlayer player = context.getSender();
                 if (player != null) {
-                    ParryServerHandler.activeParries.put(player.getUUID(), player.level().getGameTime());
+                    long currentTime = player.level().getGameTime();
+                    Long lastParryTime = ParryServerHandler.activeParries.get(player.getUUID());
+                    if (lastParryTime != null && (currentTime - lastParryTime) < 20) {
+                        return;
+                    }
+
+                    ParryServerHandler.activeParries.put(player.getUUID(), currentTime);
                     CHANNEL.send(PacketDistributor.TRACKING_ENTITY.with(() -> player), new S2CParryStartPacket(player.getId()));
                 }
             });
