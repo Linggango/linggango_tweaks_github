@@ -17,29 +17,37 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.concurrent.ThreadLocalRandom;
-
 @Mixin(NaturalSpawner.class)
 public class SpawnChangesMixin {
 
-    @Inject(
-            method = "isSpawnPositionOk",
-            at = @At("HEAD"),
-            cancellable = true
-    )
-    private static void onCheckSpawnPosition(SpawnPlacements.Type p_47052_, @NonNull LevelReader p_47053_, @NonNull BlockPos p_47054_, @Nullable EntityType<?> p_47055_, @NonNull CallbackInfoReturnable<Boolean> cir) {
-        if (p_47055_ == null) return;
-        ResourceLocation id = ForgeRegistries.ENTITY_TYPES.getKey(p_47055_);
+    @Inject(method = "isSpawnPositionOk", at = @At("HEAD"), cancellable = true)
+    private static void onCheckSpawnPosition(
+            SpawnPlacements.Type placement,
+            @NonNull LevelReader level,
+            @NonNull BlockPos pos,
+            @Nullable EntityType<?> type,
+            @NonNull CallbackInfoReturnable<Boolean> cir
+    ) {
+        if (type == null) return;
 
-        if (id != null && SpawnChanges.TWEAKED_ENTITIES.contains(id.toString())) {
-            if (ThreadLocalRandom.current().nextFloat() > 0.25f) {
+        ResourceLocation id = ForgeRegistries.ENTITY_TYPES.getKey(type);
+        if (id == null || !SpawnChanges.TWEAKED_ENTITIES.contains(id.toString())) {
+            return;
+        }
+
+        boolean isWaterMob = type.getCategory() == MobCategory.WATER_CREATURE
+                || type.getCategory() == MobCategory.WATER_AMBIENT
+                || type.getCategory() == MobCategory.UNDERGROUND_WATER_CREATURE;
+
+        if (isWaterMob) {
+            if (!level.getFluidState(pos).is(FluidTags.WATER)
+                    && !level.getFluidState(pos.below()).is(FluidTags.WATER)) {
                 cir.setReturnValue(false);
-                return;
             }
-            if (p_47055_.getCategory() != MobCategory.WATER_CREATURE && p_47055_.getCategory() != MobCategory.WATER_AMBIENT) {
-                if (p_47053_.getFluidState(p_47054_).is(FluidTags.WATER) || p_47053_.getFluidState(p_47054_.below()).is(FluidTags.WATER)) {
-                    cir.setReturnValue(false);
-                }
+        } else {
+            if (level.getFluidState(pos).is(FluidTags.WATER)
+                    || level.getFluidState(pos.below()).is(FluidTags.WATER)) {
+                cir.setReturnValue(false);
             }
         }
     }

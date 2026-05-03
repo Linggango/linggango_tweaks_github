@@ -19,7 +19,7 @@ public abstract class ApostleTitleMixin {
     private int blank_mixin_mod$lastTitleNumber = -1;
 
     @Inject(
-            method = "allTitleApostle$titleNumber(F)I", //goety_revelation.ApostleMixin::allTitleApostle$titleNumber
+            method = "allTitleApostle$titleNumber(F)I",
             at = @At("RETURN"),
             remap = false)
     private void onTitleNumberReturn(float health, @NonNull CallbackInfoReturnable<Integer> cir) {
@@ -36,7 +36,6 @@ public abstract class ApostleTitleMixin {
 
         if (((MobTraitCapAccessor) cap).blank_mixin_mod$getStage() != MobTraitCap.Stage.POST_INIT) return;
 
-        cap.setConfigCache(null);
         ApostleL2Data.SKIP_HEALTH_RESET.add(self.getUUID());
         ApostleL2Data.SKIP_TICK_HEALTH_RESET.add(self.getUUID());
         try {

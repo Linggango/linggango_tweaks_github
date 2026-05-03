@@ -8,6 +8,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.thecelestialworkshop.celestisynth.common.attack.breezebreaker.*;
 
+@SuppressWarnings("all")
 @Mixin(value = {
         BreezebreakerGalestormAttack.class,
         BreezebreakerDualGalestormAttack.class,

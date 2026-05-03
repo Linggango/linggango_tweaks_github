@@ -1,5 +1,6 @@
 package com.misanthropy.linggango.linggango_tweaks.qol;
 
+import com.misanthropy.linggango.linggango_tweaks.LinggangoTweaks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.level.Level;
@@ -9,7 +10,6 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import com.misanthropy.linggango.linggango_tweaks.LinggangoTweaks;
 
 @Mod.EventBusSubscriber(modid = LinggangoTweaks.MOD_ID)
 public class BoatTweaks {

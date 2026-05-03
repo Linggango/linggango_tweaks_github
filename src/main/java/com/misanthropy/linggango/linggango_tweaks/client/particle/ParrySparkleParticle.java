@@ -34,13 +34,17 @@ public class ParrySparkleParticle extends TextureSheetParticle {
         this.hasPhysics = false;
     }
 
-    public static void spawnExplosion(int tier, @NonNull Vec3 pos) {
+    public static void spawnExplosion(int tier, @NonNull Vec3 pos, int comboStage) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null) return;
         RandomSource random = mc.level.random;
 
-        int numLines = (tier == 3 ? 5 : 2) + random.nextInt(tier == 3 ? 7 : 5);
-        double baseSpeed = (tier == 3 ? 0.35 : 0.25) + random.nextDouble() * 0.15;
+        float comboMultiplier = 1.0f + ((comboStage - 1) / 7.0f);
+
+        int baseLines = (tier == 3 ? 5 : 2) + random.nextInt(tier == 3 ? 7 : 5);
+        int numLines = (int)(baseLines * comboMultiplier);
+
+        double baseSpeed = ((tier == 3 ? 0.35 : 0.25) + random.nextDouble() * 0.15) * comboMultiplier;
 
         for (int l = 0; l < numLines; l++) {
             double angle = random.nextDouble() * Math.PI * 2.0;

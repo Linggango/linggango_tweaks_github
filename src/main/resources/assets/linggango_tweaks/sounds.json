@@ -8,5 +8,10 @@
     "sounds": [
       "linggango_tweaks:perfect_parry"
     ]
+  },
+  "perfect_hit": {
+    "sounds": [
+      "linggango_tweaks:perfect_hit"
+    ]
   }
-  }
+}

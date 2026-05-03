@@ -3,7 +3,7 @@ package com.misanthropy.linggango.linggango_tweaks.client;
 import com.misanthropy.linggango.difficulty_enhancement.LinggangoEvents;
 import com.misanthropy.linggango.linggango_tweaks.client.particle.ParrySparkleParticle;
 import com.misanthropy.linggango.linggango_tweaks.config.TweaksConfig;
-import com.misanthropy.linggango.linggango_tweaks.network.ParryNetwork;
+import com.misanthropy.linggango.linggango_tweaks.parry.ParryNetwork;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.bettercombat.client.animation.PlayerAttackAnimatable;
 import net.bettercombat.logic.AnimatedHand;
@@ -81,7 +81,7 @@ public class ParryEffects {
         }
     }
 
-    public static void triggerSuccessfulParry(int entityId, int tier) {
+    public static void triggerSuccessfulParry(int entityId, int tier, int comboStage) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null) return;
 
@@ -89,13 +89,13 @@ public class ParryEffects {
             int activeTier = tier == 1 ? 2 : tier;
 
             boolean isConsecutive = stateManager.getCurrentState() == ParryState.SUCCESS;
-            stateManager.registerSuccessfulParry();
+            stateManager.registerSuccessfulParry(comboStage);
 
             long now = System.currentTimeMillis();
             float volumeMultiplier = isConsecutive ? 1.6f : 1.0f;
 
             if (now - lastParrySoundTime > 300) {
-                soundManager.playParrySuccessSound(mc, mc.player, volumeMultiplier, activeTier);
+                soundManager.playParrySuccessSound(mc, mc.player, volumeMultiplier, activeTier, comboStage);
                 lastParrySoundTime = now;
             }
 
@@ -112,18 +112,18 @@ public class ParryEffects {
             Vec3 lookVec = mc.player.getLookAngle();
             Vec3 impactPos = playerPos.add(lookVec.scale(1.2));
 
-            ParrySparkleParticle.spawnExplosion(activeTier, impactPos);
+            ParrySparkleParticle.spawnExplosion(activeTier, impactPos, comboStage);
         } else {
             Entity entity = mc.level.getEntity(entityId);
             if (entity instanceof Player player) {
                 int activeTier = tier == 1 ? 2 : tier;
-                soundManager.playParrySuccessSound(mc, player, 1.0f, activeTier);
+                soundManager.playParrySuccessSound(mc, player, 1.0f, activeTier, comboStage);
 
                 Vec3 playerPos = player.position().add(0, player.getEyeHeight() - 0.2, 0);
                 Vec3 lookVec = player.getLookAngle();
                 Vec3 impactPos = playerPos.add(lookVec.scale(1.2));
 
-                ParrySparkleParticle.spawnExplosion(activeTier, impactPos);
+                ParrySparkleParticle.spawnExplosion(activeTier, impactPos, comboStage);
             }
         }
     }
@@ -188,6 +188,9 @@ public class ParryEffects {
         private int cooldownTicks = 0;
         private boolean useAlternateAnim = false;
 
+        private int currentComboStage = 0;
+        private int comboTimeoutTicks = 0;
+
         private int getDynamicActiveWindow() {
             int baseActive = TweaksConfig.PARRY_ACTIVE_WINDOW.get();
             Minecraft mc = Minecraft.getInstance();
@@ -227,10 +230,13 @@ public class ParryEffects {
             }
         }
 
-        public void registerSuccessfulParry() {
+        public void registerSuccessfulParry(int comboStage) {
             currentState = ParryState.SUCCESS;
             stateTicks = TweaksConfig.PARRY_RECOVERY.get();
             cooldownTicks = 0;
+
+            this.currentComboStage = comboStage;
+            this.comboTimeoutTicks = 200;
         }
 
         public boolean checkParryExpired() {
@@ -245,6 +251,10 @@ public class ParryEffects {
             currentState = ParryState.COOLDOWN;
             cooldownTicks = TweaksConfig.PARRY_COOLDOWN.get();
             stateTicks = 0;
+
+            currentComboStage = 0;
+            comboTimeoutTicks = 0;
+            ParryNetwork.CHANNEL.sendToServer(new ParryNetwork.C2SResetComboPacket());
 
             Minecraft mc = Minecraft.getInstance();
             if (mc.player instanceof PlayerAttackAnimatable animatable) {
@@ -274,11 +284,19 @@ public class ParryEffects {
                     currentState = ParryState.IDLE;
                 }
             }
+            if (comboTimeoutTicks > 0) {
+                comboTimeoutTicks--;
+                if (comboTimeoutTicks <= 0) {
+                    currentComboStage = 0;
+                    ParryNetwork.CHANNEL.sendToServer(new ParryNetwork.C2SResetComboPacket());
+                }
+            }
         }
 
         public @NonNull ParryState getCurrentState() { return currentState; }
         public int getStateTicks() { return stateTicks; }
         public int getCooldownTicks() { return cooldownTicks; }
+        public int getCurrentComboStage() { return currentComboStage; }
         public boolean isParryActive() { return currentState == ParryState.ACTIVE; }
         public boolean isInStartup() { return currentState == ParryState.STARTUP; }
         public float getParryWindowProgress() {
@@ -385,13 +403,15 @@ public class ParryEffects {
             playSound(mc, player, "create", "confirm_2", 1.0f, 1.0f);
         }
 
-        public void playParrySuccessSound(@NonNull Minecraft mc, @NonNull Player player, float volumeMultiplier, int tier) {
+        public void playParrySuccessSound(@NonNull Minecraft mc, @NonNull Player player, float volumeMultiplier, int tier, int comboStage) {
+            float pitchBoost = (comboStage - 1) * 0.1f;
+
             if (tier == 3) {
-                float pitch = 0.5f + player.getRandom().nextFloat() * 0.3f;
-                playSound(mc, player, "linggango_tweaks", "perfect_parry", 1.3f * volumeMultiplier, pitch);
+                float pitch = 0.5f + player.getRandom().nextFloat() * 0.3f + pitchBoost;
+                playSound(mc, player, "linggango_tweaks", "perfect_parry", 1.3f * volumeMultiplier, Math.min(2.0f, pitch));
             } else {
-                float pitch = 0.8f + player.getRandom().nextFloat() * 0.4f;
-                playSound(mc, player, "linggango_tweaks", "parry", 1.2f * volumeMultiplier, pitch);
+                float pitch = 0.8f + player.getRandom().nextFloat() * 0.4f + pitchBoost;
+                playSound(mc, player, "linggango_tweaks", "parry", 1.2f * volumeMultiplier, Math.min(2.0f, pitch));
             }
             playSound(mc, player, "create", "confirm_2", 0.7f * volumeMultiplier, 1.8f);
         }
@@ -416,6 +436,7 @@ public class ParryEffects {
             List<String> lines = new ArrayList<>();
             lines.add("=== PARRY DEBUG ===");
             lines.add("State: " + stateManager.getCurrentState());
+            lines.add("Combo Stage: " + stateManager.getCurrentComboStage());
             lines.add("Cooldown: " + stateManager.getCooldownTicks());
             lines.add("Shake: " + String.format("%.2f", cameraEffects.getShakeIntensity()));
 

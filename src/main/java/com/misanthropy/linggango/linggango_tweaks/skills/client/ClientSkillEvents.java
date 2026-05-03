@@ -4,6 +4,7 @@ import com.misanthropy.linggango.linggango_tweaks.LinggangoTweaks;
 import com.misanthropy.linggango.linggango_tweaks.skills.TweaksSkillNetwork;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
@@ -13,6 +14,7 @@ import net.minecraftforge.fml.common.Mod;
 import org.jspecify.annotations.NonNull;
 import org.lwjgl.glfw.GLFW;
 
+@SuppressWarnings("all")
 @Mod.EventBusSubscriber(modid = LinggangoTweaks.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ClientSkillEvents {
 
@@ -38,39 +40,44 @@ public class ClientSkillEvents {
     @SubscribeEvent
     public static void onClientTick(TickEvent.@NonNull ClientTickEvent event) {
         if (event.phase != TickEvent.Phase.END) return;
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.player == null) return;
 
-        if (cdRemaining > 0) {
-            cdRemaining--;
-            if (cdRemaining == 0) {
-                combatTimer = 200;
-            }
+        Minecraft mc = Minecraft.getInstance();
+        Player player = mc.player;
+        if (player == null) return;
+
+        if (cdRemaining > 0 && --cdRemaining == 0) {
+            combatTimer = 200;
         }
 
-        if (combatTimer > 0) combatTimer--;
+        if (combatTimer > 0) {
+            combatTimer--;
+        }
 
         while (SKILL_KEY.consumeClick()) {
             TweaksSkillNetwork.INSTANCE.sendToServer(new TweaksSkillNetwork.SkillUseC2SPacket());
             combatTimer = 200;
 
-            if (currentClassId.equals("miner")) {
-                mc.player.getPersistentData().putBoolean("lt_crawling", !mc.player.getPersistentData().getBoolean("lt_crawling"));
+            if ("miner".equals(currentClassId)) {
+                player.getPersistentData().putBoolean("lt_crawling",
+                        !player.getPersistentData().getBoolean("lt_crawling"));
             }
         }
     }
 
     @SubscribeEvent
     public static void onAttack(@NonNull AttackEntityEvent event) {
-        if (event.getEntity().level().isClientSide) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player != null && event.getEntity() == mc.player) {
             combatTimer = 200;
         }
     }
 
     @SubscribeEvent
     public static void onHurt(@NonNull LivingDamageEvent event) {
+        if (!event.getEntity().level().isClientSide()) return;
+
         Minecraft mc = Minecraft.getInstance();
-        if (mc.player != null && event.getEntity().getUUID().equals(mc.player.getUUID())) {
+        if (mc.player != null && event.getEntity() == mc.player) {
             combatTimer = 200;
         }
     }
