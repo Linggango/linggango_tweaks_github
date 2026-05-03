@@ -8,7 +8,7 @@ import z1gned.goetyrevelation.util.ApollyonAbilityHelper;
 
 import javax.annotation.Nullable;
 
-
+@SuppressWarnings("unused")
 @SerialClass
 public class ApostleCondition extends SpecialConfigCondition<ApostleEntityContext> {
 

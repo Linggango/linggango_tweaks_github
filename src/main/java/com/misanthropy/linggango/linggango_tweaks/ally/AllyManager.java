@@ -25,7 +25,7 @@ public class AllyManager {
             Alliance victimAlliance = ALLIANCES.get(victim.getUUID());
             Alliance attackerAlliance = ALLIANCES.get(attacker.getUUID());
 
-            if (victimAlliance != null && victimAlliance == attackerAlliance && victimAlliance.isFriendlyFire()) {
+            if (victimAlliance != null && victimAlliance == attackerAlliance && !victimAlliance.isFriendlyFire()) {
                 event.setCanceled(true);
             }
         }
@@ -39,7 +39,7 @@ public class AllyManager {
             Alliance victimAlliance = ALLIANCES.get(victim.getUUID());
             Alliance attackerAlliance = ALLIANCES.get(attacker.getUUID());
 
-            if (victimAlliance != null && victimAlliance == attackerAlliance && victimAlliance.isFriendlyFire()) {
+            if (victimAlliance != null && victimAlliance == attackerAlliance && !victimAlliance.isFriendlyFire()) {
                 if (event.getEffectInstance().getEffect().getCategory() == MobEffectCategory.HARMFUL) {
                     victim.removeEffect(event.getEffectInstance().getEffect());
                 }
@@ -65,7 +65,7 @@ public class AllyManager {
         }
 
         public boolean isFriendlyFire() {
-            return !friendlyFire;
+            return friendlyFire;
         }
 
         public void setFriendlyFire(boolean friendlyFire) {

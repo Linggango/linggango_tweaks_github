@@ -52,7 +52,7 @@ public final class TraceUtils {
                     }
                 }
 
-                if (!found) crashReportBuilder.append("None found");
+                if (!found) crashReportBuilder.append(" None found");
             } catch (Exception e) {
                 crashReportBuilder.append(" Failed to find Mixin metadata: ").append(e);
             }

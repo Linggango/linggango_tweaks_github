@@ -12,6 +12,7 @@
   "disable_mob_generation": false,
   "legacy_random_source": false,
   "noise": {
+<<<<<<< HEAD
     "height": 384,
     "min_y": -64,
     "size_horizontal": 1,
@@ -26,13 +27,34 @@
     "continents": "minecraft:overworld/noise_router/continents",
     "depth": "minecraft:overworld/noise_router/depth",
     "erosion": "minecraft:overworld/noise_router/erosion",
+=======
+    "height": 512,
+    "min_y": -64,
+    "size_horizontal": 4,
+    "size_vertical": 2
+  },
+  "noise_router": {
+    "barrier": {
+      "type": "minecraft:noise",
+      "noise": "minecraft:aquifer_barrier",
+      "xz_scale": 1,
+      "y_scale": 0.5
+    },
+    "continents": "minecraft:overworld/continents",
+    "depth": "minecraft:overworld/depth",
+    "erosion": "minecraft:overworld/erosion",
+>>>>>>> parent of 29d0554 (update)
     "final_density": {
       "type": "minecraft:min",
       "argument1": {
         "type": "minecraft:squeeze",
         "argument": {
           "type": "minecraft:mul",
+<<<<<<< HEAD
           "argument1": 0.68,
+=======
+          "argument1": 0.64,
+>>>>>>> parent of 29d0554 (update)
           "argument2": {
             "type": "minecraft:interpolated",
             "argument": {
@@ -44,10 +66,17 @@
                   "type": "minecraft:mul",
                   "argument1": {
                     "type": "minecraft:y_clamped_gradient",
+<<<<<<< HEAD
                     "from_y": -64,
                     "to_y": -40,
                     "from_value": 0,
                     "to_value": 1
+=======
+                    "from_value": 0,
+                    "from_y": -64,
+                    "to_value": 1,
+                    "to_y": -40
+>>>>>>> parent of 29d0554 (update)
                   },
                   "argument2": {
                     "type": "minecraft:add",
@@ -59,16 +88,24 @@
                         "type": "minecraft:mul",
                         "argument1": {
                           "type": "minecraft:y_clamped_gradient",
+<<<<<<< HEAD
                           "from_y": 240,
                           "to_y": 270,
                           "from_value": 1,
                           "to_value": 0
+=======
+                          "from_value": 1,
+                          "from_y": 240,
+                          "to_value": 0,
+                          "to_y": 256
+>>>>>>> parent of 29d0554 (update)
                         },
                         "argument2": {
                           "type": "minecraft:add",
                           "argument1": 0.078125,
                           "argument2": {
                             "type": "minecraft:range_choice",
+<<<<<<< HEAD
                             "input": {
                               "type": "minecraft:add",
                               "argument1": {
@@ -207,6 +244,14 @@
                                   "argument2": "minecraft:overworld/base_3d_noise"
                                 }
                               },
+=======
+                            "input": "minecraft:overworld/sloped_cheese",
+                            "max_exclusive": 1.5625,
+                            "min_inclusive": -1000000,
+                            "when_in_range": {
+                              "type": "minecraft:min",
+                              "argument1": "minecraft:overworld/sloped_cheese",
+>>>>>>> parent of 29d0554 (update)
                               "argument2": {
                                 "type": "minecraft:mul",
                                 "argument1": 5,
@@ -214,6 +259,7 @@
                               }
                             },
                             "when_out_of_range": {
+<<<<<<< HEAD
                               "type": "minecraft:clamp",
                               "input": {
                                 "type": "minecraft:add",
@@ -279,10 +325,30 @@
                                             "argument1": 1.35,
                                             "argument2": "minecraft:overworld/factor"
                                           }
+=======
+                              "type": "minecraft:max",
+                              "argument1": {
+                                "type": "minecraft:min",
+                                "argument1": {
+                                  "type": "minecraft:min",
+                                  "argument1": {
+                                    "type": "minecraft:add",
+                                    "argument1": {
+                                      "type": "minecraft:mul",
+                                      "argument1": 4,
+                                      "argument2": {
+                                        "type": "minecraft:square",
+                                        "argument": {
+                                          "type": "minecraft:noise",
+                                          "noise": "minecraft:cave_layer",
+                                          "xz_scale": 1,
+                                          "y_scale": 8
+>>>>>>> parent of 29d0554 (update)
                                         }
                                       }
                                     },
                                     "argument2": {
+<<<<<<< HEAD
                                       "type": "minecraft:mul",
                                       "argument1": 1.2,
                                       "argument2": "minecraft:overworld/base_3d_noise"
@@ -292,6 +358,56 @@
                               },
                               "min": 0,
                               "max": 0.5
+=======
+                                      "type": "minecraft:add",
+                                      "argument1": {
+                                        "type": "minecraft:clamp",
+                                        "input": {
+                                          "type": "minecraft:add",
+                                          "argument1": 0.27,
+                                          "argument2": {
+                                            "type": "minecraft:noise",
+                                            "noise": "minecraft:cave_cheese",
+                                            "xz_scale": 1,
+                                            "y_scale": 0.6666666666666666
+                                          }
+                                        },
+                                        "max": 1,
+                                        "min": -1
+                                      },
+                                      "argument2": {
+                                        "type": "minecraft:clamp",
+                                        "input": {
+                                          "type": "minecraft:add",
+                                          "argument1": 1.5,
+                                          "argument2": {
+                                            "type": "minecraft:mul",
+                                            "argument1": -0.64,
+                                            "argument2": "minecraft:overworld/sloped_cheese"
+                                          }
+                                        },
+                                        "max": 0.5,
+                                        "min": 0
+                                      }
+                                    }
+                                  },
+                                  "argument2": "minecraft:overworld/caves/entrances"
+                                },
+                                "argument2": {
+                                  "type": "minecraft:add",
+                                  "argument1": "minecraft:overworld/caves/spaghetti_2d",
+                                  "argument2": "minecraft:overworld/caves/spaghetti_roughness_function"
+                                }
+                              },
+                              "argument2": {
+                                "type": "minecraft:range_choice",
+                                "input": "minecraft:overworld/caves/pillars",
+                                "max_exclusive": 0.03,
+                                "min_inclusive": -1000000,
+                                "when_in_range": -1000000,
+                                "when_out_of_range": "minecraft:overworld/caves/pillars"
+                              }
+>>>>>>> parent of 29d0554 (update)
                             }
                           }
                         }
@@ -304,6 +420,7 @@
           }
         }
       },
+<<<<<<< HEAD
       "argument2": {
         "type": "minecraft:add",
         "argument1": "minecraft:overworld/caves/spaghetti_2d",
@@ -393,10 +510,182 @@
   },
   "ore_veins_enabled": true,
   "sea_level": 58,
+=======
+      "argument2": "minecraft:overworld/caves/noodle"
+    },
+    "fluid_level_floodedness": {
+      "type": "minecraft:noise",
+      "noise": "minecraft:aquifer_fluid_level_floodedness",
+      "xz_scale": 1,
+      "y_scale": 0.67
+    },
+    "fluid_level_spread": {
+      "type": "minecraft:noise",
+      "noise": "minecraft:aquifer_fluid_level_spread",
+      "xz_scale": 1,
+      "y_scale": 0.7142857142857143
+    },
+    "initial_density_without_jaggedness": {
+      "type": "minecraft:add",
+      "argument1": 0.1271886,
+      "argument2": {
+        "type": "minecraft:mul",
+        "argument1": {
+          "type": "minecraft:y_clamped_gradient",
+          "from_value": 0,
+          "from_y": -64,
+          "to_value": 1,
+          "to_y": -40
+        },
+        "argument2": {
+          "type": "minecraft:add",
+          "argument1": -0.1171875,
+          "argument2": {
+            "type": "minecraft:add",
+            "argument1": -0.077125,
+            "argument2": {
+              "type": "minecraft:mul",
+              "argument1": {
+                "type": "minecraft:y_clamped_gradient",
+                "from_value": 1,
+                "from_y": 240,
+                "to_value": 0,
+                "to_y": 256
+              },
+              "argument2": {
+                "type": "minecraft:add",
+                "argument1": 0.097125,
+                "argument2": {
+                  "type": "minecraft:clamp",
+                  "input": {
+                    "type": "minecraft:add",
+                    "argument1": -0.703125,
+                    "argument2": {
+                      "type": "minecraft:mul",
+                      "argument1": 4,
+                      "argument2": {
+                        "type": "minecraft:quarter_negative",
+                        "argument": {
+                          "type": "minecraft:mul",
+                          "argument1": "minecraft:overworld/depth",
+                          "argument2": {
+                            "type": "minecraft:cache_2d",
+                            "argument": "minecraft:overworld/factor"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "max": 64,
+                  "min": -64
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "lava": {
+      "type": "minecraft:noise",
+      "noise": "minecraft:aquifer_lava",
+      "xz_scale": 1,
+      "y_scale": 1
+    },
+    "ridges": "minecraft:overworld/ridges",
+    "temperature": {
+      "type": "minecraft:shifted_noise",
+      "noise": "minecraft:temperature",
+      "shift_x": "minecraft:shift_x",
+      "shift_y": 0,
+      "shift_z": "minecraft:shift_z",
+      "xz_scale": 0.25,
+      "y_scale": 0
+    },
+    "vegetation": {
+      "type": "minecraft:shifted_noise",
+      "noise": "minecraft:vegetation",
+      "shift_x": "minecraft:shift_x",
+      "shift_y": 0,
+      "shift_z": "minecraft:shift_z",
+      "xz_scale": 0.25,
+      "y_scale": 0
+    },
+    "vein_gap": {
+      "type": "minecraft:noise",
+      "noise": "minecraft:ore_gap",
+      "xz_scale": 1,
+      "y_scale": 1
+    },
+    "vein_ridged": {
+      "type": "minecraft:add",
+      "argument1": -0.07999999821186066,
+      "argument2": {
+        "type": "minecraft:max",
+        "argument1": {
+          "type": "minecraft:abs",
+          "argument": {
+            "type": "minecraft:interpolated",
+            "argument": {
+              "type": "minecraft:range_choice",
+              "input": "minecraft:y",
+              "max_exclusive": 51,
+              "min_inclusive": -60,
+              "when_in_range": {
+                "type": "minecraft:noise",
+                "noise": "minecraft:ore_vein_a",
+                "xz_scale": 4,
+                "y_scale": 4
+              },
+              "when_out_of_range": 0
+            }
+          }
+        },
+        "argument2": {
+          "type": "minecraft:abs",
+          "argument": {
+            "type": "minecraft:interpolated",
+            "argument": {
+              "type": "minecraft:range_choice",
+              "input": "minecraft:y",
+              "max_exclusive": 51,
+              "min_inclusive": -60,
+              "when_in_range": {
+                "type": "minecraft:noise",
+                "noise": "minecraft:ore_vein_b",
+                "xz_scale": 4,
+                "y_scale": 4
+              },
+              "when_out_of_range": 0
+            }
+          }
+        }
+      }
+    },
+    "vein_toggle": {
+      "type": "minecraft:interpolated",
+      "argument": {
+        "type": "minecraft:range_choice",
+        "input": "minecraft:y",
+        "max_exclusive": 51,
+        "min_inclusive": -60,
+        "when_in_range": {
+          "type": "minecraft:noise",
+          "noise": "minecraft:ore_veininess",
+          "xz_scale": 1.5,
+          "y_scale": 1.5
+        },
+        "when_out_of_range": 0
+      }
+    }
+  },
+  "ore_veins_enabled": true,
+  "sea_level": 63,
+>>>>>>> parent of 29d0554 (update)
   "spawn_target": [
     {
       "continentalness": [
         -0.11,
+<<<<<<< HEAD
         1.0
       ],
       "depth": 0.0,
@@ -415,12 +704,33 @@
       ],
       "weirdness": [
         -1.0,
+=======
+        1
+      ],
+      "depth": 0,
+      "erosion": [
+        -1,
+        1
+      ],
+      "humidity": [
+        -1,
+        1
+      ],
+      "offset": 0,
+      "temperature": [
+        -1,
+        1
+      ],
+      "weirdness": [
+        -1,
+>>>>>>> parent of 29d0554 (update)
         -0.16
       ]
     },
     {
       "continentalness": [
         -0.11,
+<<<<<<< HEAD
         1.0
       ],
       "depth": 0.0,
@@ -464,6 +774,27 @@
       "weirdness": [
         -0.3,
         0.3
+=======
+        1
+      ],
+      "depth": 0,
+      "erosion": [
+        -1,
+        1
+      ],
+      "humidity": [
+        -1,
+        1
+      ],
+      "offset": 0,
+      "temperature": [
+        -1,
+        1
+      ],
+      "weirdness": [
+        0.16,
+        1
+>>>>>>> parent of 29d0554 (update)
       ]
     }
   ],
@@ -576,6 +907,7 @@
                             }
                           },
                           {
+<<<<<<< HEAD
                             "type": "minecraft:condition",
                             "if_true": {
                               "type": "minecraft:y_above",
@@ -679,6 +1011,8 @@
                             }
                           },
                           {
+=======
+>>>>>>> parent of 29d0554 (update)
                             "type": "minecraft:sequence",
                             "sequence": [
                               {
@@ -768,8 +1102,12 @@
                     "if_true": {
                       "type": "minecraft:biome",
                       "biome_is": [
+<<<<<<< HEAD
                         "minecraft:mangrove_swamp",
                         "dreamwoods:northern_swamp"
+=======
+                        "minecraft:mangrove_swamp"
+>>>>>>> parent of 29d0554 (update)
                       ]
                     },
                     "then_run": {
@@ -918,9 +1256,12 @@
                                     "Name": "minecraft:terracotta"
                                   }
                                 }
+<<<<<<< HEAD
                               },
                               {
                                 "type": "minecraft:bandlands"
+=======
+>>>>>>> parent of 29d0554 (update)
                               }
                             ]
                           }
@@ -1255,6 +1596,7 @@
                           "if_true": {
                             "type": "minecraft:biome",
                             "biome_is": [
+<<<<<<< HEAD
                               "dreamwoods:thermal_springs",
                               "dreamwoods:calcite_plateau"
                             ]
@@ -1325,6 +1667,8 @@
                           "if_true": {
                             "type": "minecraft:biome",
                             "biome_is": [
+=======
+>>>>>>> parent of 29d0554 (update)
                               "minecraft:snowy_slopes"
                             ]
                           },
@@ -1480,6 +1824,7 @@
                           }
                         },
                         {
+<<<<<<< HEAD
                           "type": "minecraft:condition",
                           "if_true": {
                             "type": "minecraft:biome",
@@ -1515,6 +1860,8 @@
                           }
                         },
                         {
+=======
+>>>>>>> parent of 29d0554 (update)
                           "type": "minecraft:sequence",
                           "sequence": [
                             {
@@ -1557,8 +1904,12 @@
                               "if_true": {
                                 "type": "minecraft:biome",
                                 "biome_is": [
+<<<<<<< HEAD
                                   "minecraft:stony_shore",
                                   "dreamwoods:jungle_shore"
+=======
+                                  "minecraft:stony_shore"
+>>>>>>> parent of 29d0554 (update)
                                 ]
                               },
                               "then_run": {
@@ -1614,6 +1965,7 @@
                               "if_true": {
                                 "type": "minecraft:biome",
                                 "biome_is": [
+<<<<<<< HEAD
                                   "minecraft:river",
                                   "minecraft:frozen_river",
                                   "dreamwoods:jungle_river"
@@ -1656,6 +2008,8 @@
                               "if_true": {
                                 "type": "minecraft:biome",
                                 "biome_is": [
+=======
+>>>>>>> parent of 29d0554 (update)
                                   "minecraft:windswept_hills"
                                 ]
                               },
@@ -1680,6 +2034,7 @@
                               "if_true": {
                                 "type": "minecraft:biome",
                                 "biome_is": [
+<<<<<<< HEAD
                                   "dreamwoods:frozen_shore"
                                 ]
                               },
@@ -1696,6 +2051,11 @@
                                 "type": "minecraft:biome",
                                 "biome_is": [
                                   "dreamwoods:gravel_beach"
+=======
+                                  "minecraft:warm_ocean",
+                                  "minecraft:beach",
+                                  "minecraft:snowy_beach"
+>>>>>>> parent of 29d0554 (update)
                                 ]
                               },
                               "then_run": {
@@ -1713,14 +2073,22 @@
                                     "then_run": {
                                       "type": "minecraft:block",
                                       "result_state": {
+<<<<<<< HEAD
                                         "Name": "minecraft:gravel"
+=======
+                                        "Name": "minecraft:sandstone"
+>>>>>>> parent of 29d0554 (update)
                                       }
                                     }
                                   },
                                   {
                                     "type": "minecraft:block",
                                     "result_state": {
+<<<<<<< HEAD
                                       "Name": "minecraft:gravel"
+=======
+                                      "Name": "minecraft:sand"
+>>>>>>> parent of 29d0554 (update)
                                     }
                                   }
                                 ]
@@ -1731,6 +2099,7 @@
                               "if_true": {
                                 "type": "minecraft:biome",
                                 "biome_is": [
+<<<<<<< HEAD
                                   "dreamwoods:thermal_springs",
                                   "dreamwoods:calcite_plateau"
                                 ]
@@ -1775,6 +2144,9 @@
                                   "minecraft:beach",
                                   "minecraft:snowy_beach",
                                   "dreamwoods:azure_cove"
+=======
+                                  "minecraft:desert"
+>>>>>>> parent of 29d0554 (update)
                                 ]
                               },
                               "then_run": {
@@ -1819,6 +2191,7 @@
                                   "Name": "minecraft:stone"
                                 }
                               }
+<<<<<<< HEAD
                             },
                             {
                               "type": "minecraft:condition",
@@ -1834,6 +2207,8 @@
                                   "Name": "minecraft:smooth_sandstone"
                                 }
                               }
+=======
+>>>>>>> parent of 29d0554 (update)
                             }
                           ]
                         },
@@ -1852,9 +2227,15 @@
                                 "type": "minecraft:condition",
                                 "if_true": {
                                   "type": "minecraft:noise_threshold",
+<<<<<<< HEAD
                                   "max_threshold": 0,
                                   "min_threshold": -2,
                                   "noise": "dreamwoods:medium_noise"
+=======
+                                  "max_threshold": 1.7976931348623157e+308,
+                                  "min_threshold": 0.21212121212121213,
+                                  "noise": "minecraft:surface"
+>>>>>>> parent of 29d0554 (update)
                                 },
                                 "then_run": {
                                   "type": "minecraft:block",
@@ -1886,6 +2267,7 @@
                           "if_true": {
                             "type": "minecraft:biome",
                             "biome_is": [
+<<<<<<< HEAD
                               "dreamwoods:moor"
                             ]
                           },
@@ -2481,6 +2863,8 @@
                           "if_true": {
                             "type": "minecraft:biome",
                             "biome_is": [
+=======
+>>>>>>> parent of 29d0554 (update)
                               "minecraft:windswept_gravelly_hills"
                             ]
                           },
@@ -2611,6 +2995,10 @@
                           "if_true": {
                             "type": "minecraft:biome",
                             "biome_is": [
+<<<<<<< HEAD
+=======
+                              "minecraft:old_growth_pine_taiga",
+>>>>>>> parent of 29d0554 (update)
                               "minecraft:old_growth_spruce_taiga"
                             ]
                           },
@@ -2658,6 +3046,7 @@
                           "if_true": {
                             "type": "minecraft:biome",
                             "biome_is": [
+<<<<<<< HEAD
                               "dreamwoods:ruby_maple_forest"
                             ]
                           },
@@ -2717,6 +3106,8 @@
                           "if_true": {
                             "type": "minecraft:biome",
                             "biome_is": [
+=======
+>>>>>>> parent of 29d0554 (update)
                               "minecraft:ice_spikes"
                             ]
                           },
@@ -2745,6 +3136,7 @@
                             ]
                           },
                           "then_run": {
+<<<<<<< HEAD
                             "type": "minecraft:condition",
                             "if_true": {
                               "type": "minecraft:y_above",
@@ -3064,6 +3456,11 @@
                                   }
                                 }
                               }
+=======
+                            "type": "minecraft:block",
+                            "result_state": {
+                              "Name": "minecraft:mud"
+>>>>>>> parent of 29d0554 (update)
                             }
                           }
                         },
@@ -3076,6 +3473,7 @@
                             ]
                           },
                           "then_run": {
+<<<<<<< HEAD
                             "type": "minecraft:sequence",
                             "sequence": [
                               {
@@ -3219,6 +3617,13 @@
                                 "result_state": {
                                   "Name": "minecraft:mossy_cobblestone"
                                 }
+=======
+                            "type": "minecraft:block",
+                            "result_state": {
+                              "Name": "minecraft:mycelium",
+                              "Properties": {
+                                "snowy": "false"
+>>>>>>> parent of 29d0554 (update)
                               }
                             }
                           }
@@ -3457,6 +3862,7 @@
                           "if_true": {
                             "type": "minecraft:biome",
                             "biome_is": [
+<<<<<<< HEAD
                               "dreamwoods:frozen_shore"
                             ]
                           },
@@ -3530,6 +3936,8 @@
                           "if_true": {
                             "type": "minecraft:biome",
                             "biome_is": [
+=======
+>>>>>>> parent of 29d0554 (update)
                               "minecraft:jagged_peaks"
                             ]
                           },
@@ -3627,8 +4035,12 @@
                               "if_true": {
                                 "type": "minecraft:biome",
                                 "biome_is": [
+<<<<<<< HEAD
                                   "minecraft:stony_shore",
                                   "dreamwoods:jungle_shore"
+=======
+                                  "minecraft:stony_shore"
+>>>>>>> parent of 29d0554 (update)
                                 ]
                               },
                               "then_run": {
@@ -3684,6 +4096,7 @@
                               "if_true": {
                                 "type": "minecraft:biome",
                                 "biome_is": [
+<<<<<<< HEAD
                                   "minecraft:windswept_hills",
                                   "minecraft:windswept_forest",
                                   "minecraft:windswept_savanna",
@@ -3754,12 +4167,16 @@
                                   "minecraft:sunflower_plains",
                                   "minecraft:meadow",
                                   "minecraft:snowy_plains"
+=======
+                                  "minecraft:windswept_hills"
+>>>>>>> parent of 29d0554 (update)
                                 ]
                               },
                               "then_run": {
                                 "type": "minecraft:condition",
                                 "if_true": {
                                   "type": "minecraft:noise_threshold",
+<<<<<<< HEAD
                                   "noise": "minecraft:surface",
                                   "max_threshold": 1.7976931348623157e+308,
                                   "min_threshold": 0.21212121212121213
@@ -3860,6 +4277,11 @@
                                   },
                                   "surface_depth_multiplier": 0,
                                   "add_stone_depth": false
+=======
+                                  "max_threshold": 1.7976931348623157e+308,
+                                  "min_threshold": 0.12121212121212122,
+                                  "noise": "minecraft:surface"
+>>>>>>> parent of 29d0554 (update)
                                 },
                                 "then_run": {
                                   "type": "minecraft:block",
@@ -3876,9 +4298,13 @@
                                 "biome_is": [
                                   "minecraft:warm_ocean",
                                   "minecraft:beach",
+<<<<<<< HEAD
                                   "minecraft:snowy_beach",
                                   "dreamwoods:arid_plains",
                                   "dreamwoods:azure_cove"
+=======
+                                  "minecraft:snowy_beach"
+>>>>>>> parent of 29d0554 (update)
                                 ]
                               },
                               "then_run": {
@@ -3991,6 +4417,7 @@
                           "if_true": {
                             "type": "minecraft:biome",
                             "biome_is": [
+<<<<<<< HEAD
                               "minecraft:windswept_forest",
                               "dreamwoods:wooded_slopes"
                             ]
@@ -4016,6 +4443,8 @@
                           "if_true": {
                             "type": "minecraft:biome",
                             "biome_is": [
+=======
+>>>>>>> parent of 29d0554 (update)
                               "minecraft:windswept_gravelly_hills"
                             ]
                           },
@@ -4123,6 +4552,7 @@
                           "if_true": {
                             "type": "minecraft:biome",
                             "biome_is": [
+<<<<<<< HEAD
                               "minecraft:river",
                               "minecraft:frozen_river",
                               "dreamwoods:jungle_river"
@@ -4157,6 +4587,15 @@
                                   "Name": "minecraft:sand"
                                 }
                               }
+=======
+                              "minecraft:mangrove_swamp"
+                            ]
+                          },
+                          "then_run": {
+                            "type": "minecraft:block",
+                            "result_state": {
+                              "Name": "minecraft:mud"
+>>>>>>> parent of 29d0554 (update)
                             }
                           }
                         },
@@ -4176,6 +4615,7 @@
                       "biome_is": [
                         "minecraft:warm_ocean",
                         "minecraft:beach",
+<<<<<<< HEAD
                         "minecraft:snowy_beach",
                         "dreamwoods:azure_cove"
                       ]
@@ -4280,6 +4720,9 @@
                       "type": "minecraft:biome",
                       "biome_is": [
                         "dreamwoods:arid_plains"
+=======
+                        "minecraft:snowy_beach"
+>>>>>>> parent of 29d0554 (update)
                       ]
                     },
                     "then_run": {

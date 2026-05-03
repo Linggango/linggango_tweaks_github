@@ -5,6 +5,14 @@
   "compatibilityLevel": "JAVA_17",
   "refmap": "linggango_tweaks.refmap.json",
   "mixins": [
+<<<<<<< HEAD
+=======
+    "BadFeelingactivationProcedureMixin",
+    "CrashReportCategoryMixin",
+    "CrashReportMixin",
+    "EnchantmentHelperMixin",
+    "TerramityHarvestMixin",
+>>>>>>> parent of 29d0554 (update)
     "alexs.AlexsMobsThrottleMixin",
     "armageddon.MixinAngryEndermanEntity",
     "armageddon.MixinArionTyrantoftheEmeraldWrathRavagerEntityDiesProcedure",
@@ -13,6 +21,7 @@
     "armageddon.MixinBringerOfDoomP2EntityDiesProcedure",
     "armageddon.MixinEldoraththeAncientBuilderEntity",
     "armageddon.MixinElvenitePaladinEntity",
+    "armageddon.MixinFollowFlockLeaderGoal",
     "armageddon.MixinLittleMageGoblinEntity",
     "armageddon.MixinLittleSwordGoblinEntity",
     "armageddon.MixinNyxarisTheVeilOfOblivionEntity",
@@ -75,14 +84,27 @@
     "performance.ClientCollisionOptimizationMixin",
     "performance.StructureOptimizationAttempt",
     "projectile.ProjectileTweaks",
+<<<<<<< HEAD
     "revelationffix.RevelationfixFix",
+=======
+    "structure.FeatureOverlapMixin",
+>>>>>>> parent of 29d0554 (update)
     "structure.StructureManagerAccess",
+    "structure.StructureOverlapMixin",
     "structure.StructureSpreadLimitMixin",
     "structure.StructureSpreadRegistryMixin",
     "terramity.TerramityHarvestMixin",
     "tweaks.AnvilMenuMixin",
     "tweaks.BedMonsterBypassMixin",
+<<<<<<< HEAD
     "tweaks.BoatPlacementSoundMixin",
+=======
+    "tweaks.BedrockoidMixins$BiomeColorsMixin",
+    "tweaks.BedrockoidMixins$EmbeddiumForgeLightMixin",
+    "tweaks.BiomeSpamFixerMixin",
+    "tweaks.BoatPlacementSoundMixin",
+    "tweaks.ChestLootThinningMixin",
+>>>>>>> parent of 29d0554 (update)
     "tweaks.EnchantmentTableBlockMixin",
     "tweaks.FarmlandTrampleMixin",
     "tweaks.GameplayTweaksMixins$AnvilMenuMixin",
@@ -97,9 +119,14 @@
     "tweaks.LocateFixForSpreadStructuresMixin",
     "tweaks.MobLeashMixin",
     "tweaks.OffhandTickMixin",
+<<<<<<< HEAD
+=======
+    "tweaks.RenderDistanceCullingMixin$EmbeddiumCullingOptionsMixin",
+    "tweaks.RenderDistanceCullingMixin$EntityCullMixin",
+    "tweaks.RenderDistanceCullingMixin$SodiumCullMixin",
+>>>>>>> parent of 29d0554 (update)
     "tweaks.ResistanceNerfMixin",
     "tweaks.ResourcePackCompatWarningRemoverMixin",
-    "tweaks.RibbitHomeFixMixin",
     "tweaks.ScreenShakeFixMixin",
     "tweaks.SensingMixin",
     "tweaks.SlotMixin",
@@ -110,7 +137,6 @@
     "tweaks.SwordItemMixin",
     "tweaks.TagParserMixin",
     "tweaks.TemptDelayMixin",
-    "tweaks.TheCloudTweak",
     "tweaks.UndergroundBeaconMixin",
     "tweaks.UnknownCommandMixin",
     "tweaks.VillagerDeathSoundMixin"

@@ -1,4 +1,8 @@
+<<<<<<< HEAD:src/main/java/com/misanthropy/linggango/linggango_tweaks/parry/ParryNetwork.java
 package com.misanthropy.linggango.linggango_tweaks.parry;
+=======
+package com.misanthropy.linggango.linggango_tweaks.network;
+>>>>>>> parent of 29d0554 (update):src/main/java/com/misanthropy/linggango/linggango_tweaks/network/ParryNetwork.java
 
 import com.misanthropy.linggango.linggango_tweaks.server.ParryServerHandler;
 import net.minecraft.network.FriendlyByteBuf;
@@ -19,7 +23,7 @@ import java.util.function.Supplier;
 public class ParryNetwork {
     private static final String PROTOCOL_VERSION = "2";
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
-            ResourceLocation.fromNamespaceAndPath("linggango_tweaks", "main"),
+            new ResourceLocation("linggango_tweaks", "main"),
             () -> PROTOCOL_VERSION,
             PROTOCOL_VERSION::equals,
             PROTOCOL_VERSION::equals
@@ -62,6 +66,7 @@ public class ParryNetwork {
             context.enqueueWork(() -> {
                 ServerPlayer player = context.getSender();
                 if (player != null) {
+<<<<<<< HEAD:src/main/java/com/misanthropy/linggango/linggango_tweaks/parry/ParryNetwork.java
 
                     long currentMs = System.currentTimeMillis();
                     Long lastParryMs = ParryServerHandler.activeParries.get(player.getUUID());
@@ -71,6 +76,9 @@ public class ParryNetwork {
                     }
 
                     ParryServerHandler.activeParries.put(player.getUUID(), currentMs);
+=======
+                    ParryServerHandler.activeParries.put(player.getUUID(), player.level().getGameTime());
+>>>>>>> parent of 29d0554 (update):src/main/java/com/misanthropy/linggango/linggango_tweaks/network/ParryNetwork.java
                     CHANNEL.send(PacketDistributor.TRACKING_ENTITY.with(() -> player), new S2CParryStartPacket(player.getId()));
                 }
             });

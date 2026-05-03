@@ -3,17 +3,18 @@ package com.misanthropy.linggango.linggango_tweaks.tweaks;
 import com.misanthropy.linggango.linggango_tweaks.client.atmosphere.AtmosphereEditorScreen;
 import com.misanthropy.linggango.linggango_tweaks.config.AtmosphereConfigManager;
 import com.mojang.blaze3d.shaders.FogShape;
+import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.FogRenderer;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.material.FogType;
-import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ViewportEvent;
 import net.minecraftforge.event.TickEvent;
@@ -30,10 +31,12 @@ import java.util.Properties;
 
 @Mod.EventBusSubscriber(modid = "linggango_tweaks", value = Dist.CLIENT)
 public class DynamicFogHandler {
+
     public static double fogStartMultiplier = 0.15;
     public static boolean dynamicFogEnabled = true;
     public static boolean voidFogEnabled = true;
     public static double rainFogDensity = 0.05;
+<<<<<<< HEAD
     public static double biomeTintStrength = 0.72;
     public static double skyFogBlendStrength = 0.36;
     public static double chunkBorderFogSoftness = 0.14;
@@ -56,163 +59,126 @@ public class DynamicFogHandler {
     private static final float[] SAMPLE_WEIGHT = {4.0F, 2.0F, 2.0F, 2.0F, 2.0F, 1.0F, 1.0F, 1.0F, 1.0F};
     private static final ThreadLocal<BlockPos.MutableBlockPos> SAMPLE_CURSOR = ThreadLocal.withInitial(BlockPos.MutableBlockPos::new);
 
+=======
+>>>>>>> parent of 29d0554 (update)
     private static boolean loaded = false;
-    private static final AtmosphericNoise noiseGen = new AtmosphericNoise(89234L);
 
-    private static float currentNearPlane = -1.0F;
-    private static float currentFarPlane = -1.0F;
-    private static float currentR = -1.0F;
-    private static float currentG = -1.0F;
-    private static float currentB = -1.0F;
+    private static final AtmosphericNoiseGenerator noiseGen = new AtmosphericNoiseGenerator(89234L);
 
-    private static long lastSampleTick = Long.MIN_VALUE;
-    private static int lastSampleX = Integer.MIN_VALUE;
-    private static int lastSampleY = Integer.MIN_VALUE;
-    private static int lastSampleZ = Integer.MIN_VALUE;
-    private static float sampledBiomeR = 0.5F;
-    private static float sampledBiomeG = 0.6F;
-    private static float sampledBiomeB = 0.7F;
-    private static float sampledSkyR = 0.6F;
-    private static float sampledSkyG = 0.7F;
-    private static float sampledSkyB = 0.9F;
-    private static float sampledSkyOpenness = 1.0F;
-    private static float sampledSkyVisibility = 1.0F;
-    private static float sampledValleyMist = 0.0F;
+    private static float currentNearPlane = -1f;
+    private static float currentFarPlane = -1f;
+    private static float currentR = -1f;
+    private static float currentG = -1f;
+    private static float currentB = -1f;
 
     public static void load() {
         try {
-            Path path = FMLPaths.CONFIGDIR.get().resolve(CONFIG_FILE);
-            if (Files.exists(path)) {
+            Path configPath = FMLPaths.CONFIGDIR.get().resolve("linggango_fog.properties");
+            if (Files.exists(configPath)) {
                 Properties props = new Properties();
-                try (Reader reader = Files.newBufferedReader(path)) {
+                try (Reader reader = Files.newBufferedReader(configPath)) {
                     props.load(reader);
                 }
-
-                fogStartMultiplier = linggango_tweaks$parseDouble(props, KEY_FOG_START, 0.15D, 0.02D, 0.65D);
-                dynamicFogEnabled = Boolean.parseBoolean(props.getProperty(KEY_DYNAMIC_FOG, "true"));
-                voidFogEnabled = Boolean.parseBoolean(props.getProperty(KEY_VOID_FOG, "true"));
-                rainFogDensity = linggango_tweaks$parseDouble(props, KEY_RAIN_DENSITY, 0.05D, 0.01D, 0.50D);
-                biomeTintStrength = linggango_tweaks$parseDouble(props, KEY_BIOME_TINT, 0.72D, 0.0D, 1.0D);
-                skyFogBlendStrength = linggango_tweaks$parseDouble(props, KEY_SKY_BLEND, 0.36D, 0.0D, 1.0D);
-                chunkBorderFogSoftness = linggango_tweaks$parseDouble(props, KEY_CHUNK_SOFTNESS, 0.14D, 0.0D, 0.35D);
+                fogStartMultiplier = Double.parseDouble(props.getProperty("fogStartMultiplier", "0.15"));
+                dynamicFogEnabled = Boolean.parseBoolean(props.getProperty("dynamicFogEnabled", "true"));
+                voidFogEnabled = Boolean.parseBoolean(props.getProperty("voidFogEnabled", "true"));
+                rainFogDensity = Double.parseDouble(props.getProperty("rainFogDensity", "0.05"));
             }
         } catch (Exception ignored) {
         }
-
         loaded = true;
     }
 
     public static void save() {
         try {
-            Path path = FMLPaths.CONFIGDIR.get().resolve(CONFIG_FILE);
+            Path configPath = FMLPaths.CONFIGDIR.get().resolve("linggango_fog.properties");
             Properties props = new Properties();
-            props.setProperty(KEY_FOG_START, String.valueOf(fogStartMultiplier));
-            props.setProperty(KEY_DYNAMIC_FOG, String.valueOf(dynamicFogEnabled));
-            props.setProperty(KEY_VOID_FOG, String.valueOf(voidFogEnabled));
-            props.setProperty(KEY_RAIN_DENSITY, String.valueOf(rainFogDensity));
-            props.setProperty(KEY_BIOME_TINT, String.valueOf(biomeTintStrength));
-            props.setProperty(KEY_SKY_BLEND, String.valueOf(skyFogBlendStrength));
-            props.setProperty(KEY_CHUNK_SOFTNESS, String.valueOf(chunkBorderFogSoftness));
-
-            try (Writer writer = Files.newBufferedWriter(path)) {
+            props.setProperty("fogStartMultiplier", String.valueOf(fogStartMultiplier));
+            props.setProperty("dynamicFogEnabled", String.valueOf(dynamicFogEnabled));
+            props.setProperty("voidFogEnabled", String.valueOf(voidFogEnabled));
+            props.setProperty("rainFogDensity", String.valueOf(rainFogDensity));
+            try (Writer writer = Files.newBufferedWriter(configPath)) {
                 props.store(writer, "Linggango Dynamic Fog Settings");
             }
         } catch (Exception ignored) {
         }
     }
 
-    private static class AtmosphericNoise {
-        private final int[] p = new int[512];
+    private static class AtmosphericNoiseGenerator {
+        private final int[] permutation = new int[512];
 
-        private AtmosphericNoise(long seed) {
+        public AtmosphericNoiseGenerator(long seed) {
             RandomSource rand = RandomSource.create(seed);
             for (int i = 0; i < 256; i++) {
-                p[i] = i;
+                permutation[i] = i;
             }
-
             for (int i = 0; i < 256; i++) {
                 int j = rand.nextInt(256);
-                int tmp = p[i];
-                p[i] = p[j];
-                p[j] = tmp;
-                p[i + 256] = p[i];
+                int temp = permutation[i];
+                permutation[i] = permutation[j];
+                permutation[j] = temp;
+                permutation[i + 256] = permutation[i];
             }
         }
 
-        private float evaluate(float x) {
+        public float evaluate(float x) {
             int xi = (int) Math.floor(x) & 255;
             float xf = x - (float) Math.floor(x);
-            float u = xf * xf * (3.0F - 2.0F * xf);
-            return (Mth.lerp(u, linggango_tweaks$grad(p[p[xi]], xf), linggango_tweaks$grad(p[p[xi + 1]], xf - 1.0F)) + 1.0F) * 0.5F;
+            float u = xf * xf * (3.0f - 2.0f * xf);
+            int a = permutation[xi];
+            int b = permutation[xi + 1];
+            float res = Mth.lerp(u, gradient(permutation[a], xf), gradient(permutation[b], xf - 1.0f));
+            return (res + 1.0f) / 2.0f;
         }
 
-        private float linggango_tweaks$grad(int hash, float x) {
+        private float gradient(int hash, float x) {
             return (hash & 1) == 0 ? x : -x;
         }
     }
 
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
-        if (event.phase != TickEvent.Phase.END || event.player != Minecraft.getInstance().player) {
-            return;
-        }
+        if (event.phase != TickEvent.Phase.END) return;
+        if (event.player != Minecraft.getInstance().player) return;
+        if (!voidFogEnabled || !dynamicFogEnabled) return;
+        if (event.player.hasEffect(MobEffects.NIGHT_VISION)) return;
 
-        if (!voidFogEnabled || !dynamicFogEnabled || event.player.hasEffect(MobEffects.NIGHT_VISION)) {
-            return;
-        }
-
-        float voidStart = event.player.level().getMinBuildHeight() + 32.0F;
+        int minHeight = event.player.level().getMinBuildHeight();
+        float voidStart = minHeight + 32.0f;
         float playerY = (float) event.player.getY();
-        if (playerY >= voidStart || (event.player.tickCount & 1) != 0) {
-            return;
-        }
 
-        float depthFactor = Mth.clamp((voidStart - playerY) / 32.0F, 0.0F, 1.0F);
-        float smoothDepth = linggango_tweaks$smoothstep(depthFactor);
-        int particleChecks = 2 + Mth.floor(smoothDepth * 6.0F);
-        RandomSource rand = event.player.getRandom();
+        if (playerY < voidStart) {
+            float depthFactor = Mth.clamp((voidStart - playerY) / 32.0f, 0.0f, 1.0f);
+            float smoothDepth = depthFactor * depthFactor * (3.0f - 2.0f * depthFactor);
 
-        for (int i = 0; i < particleChecks; ++i) {
-            if (rand.nextFloat() < smoothDepth * 0.72F) {
-                double px = event.player.getX() + rand.nextInt(16) - rand.nextInt(16);
-                double py = event.player.getY() + rand.nextInt(14) - rand.nextInt(10);
-                double pz = event.player.getZ() + rand.nextInt(16) - rand.nextInt(16);
-                event.player.level().addParticle(ParticleTypes.ASH, px, py, pz, 0.0D, 0.0D, 0.0D);
+            RandomSource random = event.player.getRandom();
+            int particleCount = (int) (120.0f * smoothDepth);
+
+            for (int l = 0; l < particleCount; ++l) {
+                int x = event.player.blockPosition().getX() + random.nextInt(16) - random.nextInt(16);
+                int y = event.player.blockPosition().getY() + random.nextInt(16) - random.nextInt(16);
+                int z = event.player.blockPosition().getZ() + random.nextInt(16) - random.nextInt(16);
+
+                BlockPos pos = new BlockPos(x, y, z);
+                if (event.player.level().getBlockState(pos).isAir() && random.nextFloat() < smoothDepth) {
+                    event.player.level().addParticle(ParticleTypes.ASH, x + random.nextFloat(), y + random.nextFloat(), z + random.nextFloat(), 0.0D, 0.0D, 0.0D);
+                }
             }
         }
     }
 
     @SubscribeEvent
     public static void onRenderFog(ViewportEvent.@NonNull RenderFog event) {
-        if (!loaded) {
-            load();
-        }
-
-        if (!dynamicFogEnabled || event.getCamera().getFluidInCamera() != FogType.NONE) {
-            return;
-        }
-
-        if (event.getMode() != FogRenderer.FogMode.FOG_TERRAIN || event.isCanceled()) {
-            return;
-        }
+        if (!loaded) load();
+        if (!dynamicFogEnabled) return;
+        if (event.getCamera().getFluidInCamera() != FogType.NONE) return;
 
         Minecraft mc = Minecraft.getInstance();
-        if (mc.level == null || mc.player == null) {
-            linggango_tweaks$resetSmoothing();
-            return;
-        }
+        if (mc.level == null || mc.player == null) return;
 
-        var level = mc.level;
-
-        if (event.getCamera().getEntity() != mc.player || mc.player.hasEffect(MobEffects.NIGHT_VISION) || mc.player.hasEffect(MobEffects.BLINDNESS) || mc.player.hasEffect(MobEffects.DARKNESS) || mc.player.isSpectator()) {
-            return;
-        }
-
-        Vec3 cameraPos = event.getCamera().getPosition();
-        float partialTick = (float) event.getPartialTick();
-        linggango_tweaks$updateColorSampling(mc, cameraPos, partialTick);
-
+        Camera camera = event.getCamera();
         float originalEnd = event.getFarPlaneDistance();
+<<<<<<< HEAD
         float clearWeatherNear = originalEnd * Mth.clamp((float) fogStartMultiplier, 0.02F, 0.60F);
         float clearWeatherFar = originalEnd * 0.92F;
 
@@ -230,41 +196,57 @@ public class DynamicFogHandler {
         float skyVisibility = sampledSkyVisibility;
         float valleyMist = sampledValleyMist;
         float altitudeClear = 1.0F - valleyMist;
+=======
+>>>>>>> parent of 29d0554 (update)
 
-        clearWeatherNear = Mth.lerp(altitudeClear * 0.55F + skyVisibility * 0.20F, clearWeatherNear, originalEnd * 0.24F);
-        clearWeatherFar = Mth.lerp(altitudeClear * 0.70F + skyVisibility * 0.20F, clearWeatherFar, originalEnd * 0.985F);
+        float targetFar = originalEnd * 1.60f;
+        float targetNear = originalEnd * 0.05f;
 
-        clearWeatherNear = Mth.lerp(valleyMist * 0.55F, clearWeatherNear, originalEnd * 0.08F);
-        clearWeatherFar = Mth.lerp(valleyMist * 0.40F, clearWeatherFar, originalEnd * 0.78F);
+        float timeCycle = mc.level.getGameTime() / 24000.0f;
+        float rollingAtmosphere = noiseGen.evaluate(timeCycle * 2.5f);
 
-        float atmosphereNoise = noiseGen.evaluate((level.getGameTime() * 0.0024F) + (float) ((cameraPos.x + cameraPos.z) * 0.008));
-        clearWeatherNear *= Mth.lerp(atmosphereNoise, 0.97F, 1.03F);
-        clearWeatherFar *= Mth.lerp(atmosphereNoise, 0.985F, 1.015F);
+        targetNear = Mth.lerp(rollingAtmosphere, targetNear, originalEnd * 0.01f);
+        targetFar = Mth.lerp(rollingAtmosphere, targetFar, originalEnd * 1.35f);
 
-        float rainLevel = level.getRainLevel(partialTick);
-        if (rainLevel > 0.0F) {
-            float rainSmooth = linggango_tweaks$smoothstep(rainLevel);
-            float thunderLevel = level.getThunderLevel(partialTick);
-            float thunderSmooth = linggango_tweaks$smoothstep(thunderLevel);
+        float playerY = (float) camera.getPosition().y;
+        float minHeight = mc.level.getMinBuildHeight();
+        float altitudeFactor = Mth.clamp((playerY - minHeight) / 140.0f, 0.0f, 1.0f);
+        float valleyMist = 1.0f - (altitudeFactor * altitudeFactor * (3.0f - 2.0f * altitudeFactor));
 
-            float rainNear = originalEnd * (float) Mth.clamp(rainFogDensity, 0.01D, 0.50D);
-            float rainFar = originalEnd * Mth.lerp(thunderSmooth, 0.80F, 0.58F);
+        targetNear = Mth.lerp(valleyMist, targetNear, originalEnd * 0.02f);
 
-            rainNear = Mth.lerp(1.0F - skyVisibility * 0.45F, rainNear, originalEnd * 0.11F);
-            clearWeatherNear = Mth.lerp(rainSmooth, clearWeatherNear, rainNear);
-            clearWeatherFar = Mth.lerp(rainSmooth, clearWeatherFar, rainFar);
+        float rainLevel = mc.level.getRainLevel(1.0f);
+        float thunderLevel = mc.level.getThunderLevel(1.0f);
+
+        if (rainLevel > 0.0f) {
+            float rainNear = originalEnd * (float) rainFogDensity;
+            float rainFar = originalEnd * 0.85f;
+
+            if (thunderLevel > 0.0f) {
+                float thunderNear = originalEnd * 0.005f;
+                float thunderFar = originalEnd * 0.35f;
+
+                float thunderSmooth = thunderLevel * thunderLevel * (3.0f - 2.0f * thunderLevel);
+                rainNear = Mth.lerp(thunderSmooth, rainNear, thunderNear);
+                rainFar = Mth.lerp(thunderSmooth, rainFar, thunderFar);
+            }
+
+            float rainSmooth = rainLevel * rainLevel * (3.0f - 2.0f * rainLevel);
+            targetNear = Mth.lerp(rainSmooth, targetNear, rainNear);
+            targetFar = Mth.lerp(rainSmooth, targetFar, rainFar);
         }
 
-        if (voidFogEnabled) {
-            float voidStart = mc.level.getMinBuildHeight() + 32.0F;
-            float py = (float) cameraPos.y;
-            if (py < voidStart) {
-                float voidDepth = linggango_tweaks$smoothstep(Mth.clamp((voidStart - py) / 32.0F, 0.0F, 1.0F));
-                clearWeatherNear = Mth.lerp(voidDepth, clearWeatherNear, 0.0F);
-                clearWeatherFar = Mth.lerp(voidDepth, clearWeatherFar, 18.0F);
+        if (voidFogEnabled && !mc.player.hasEffect(MobEffects.NIGHT_VISION)) {
+            float voidStart = minHeight + 32.0f;
+            if (playerY < voidStart) {
+                float voidFactor = Mth.clamp((voidStart - playerY) / 32.0f, 0.0f, 1.0f);
+                float smoothVoid = voidFactor * voidFactor * (3.0f - 2.0f * voidFactor);
+                targetNear = Mth.lerp(smoothVoid, targetNear, 0.0f);
+                targetFar = Mth.lerp(smoothVoid, targetFar, 14.0f);
             }
         }
 
+<<<<<<< HEAD
         float edgeWeatherMask = 1.0F - rainLevel * 0.45F;
         float edgeBias = originalEnd * edgeSoftness * edgeWeatherMask;
         float edgeNearBias = edgeBias * 0.34F;
@@ -278,39 +260,45 @@ public class DynamicFogHandler {
 
         currentNearPlane = linggango_tweaks$smoothValue(currentNearPlane, targetNear, distLerp);
         currentFarPlane = linggango_tweaks$smoothValue(currentFarPlane, targetFar, distLerp);
+=======
+        if (currentNearPlane < 0f) {
+            currentNearPlane = targetNear;
+            currentFarPlane = targetFar;
+        } else {
+            currentNearPlane = Mth.lerp(0.03f, currentNearPlane, targetNear);
+            currentFarPlane = Mth.lerp(0.03f, currentFarPlane, targetFar);
+        }
+>>>>>>> parent of 29d0554 (update)
 
         event.setNearPlaneDistance(currentNearPlane);
         event.setFarPlaneDistance(currentFarPlane);
-        event.setFogShape(FogShape.CYLINDER);
+        event.setFogShape(FogShape.SPHERE);
         event.setCanceled(true);
     }
 
     @SubscribeEvent
     public static void onComputeFogColor(ViewportEvent.@NonNull ComputeFogColor event) {
-        if (!loaded) {
-            load();
-        }
-
-        if (!dynamicFogEnabled || event.getCamera().getFluidInCamera() != FogType.NONE) {
-            return;
-        }
+        if (!loaded) load();
+        if (!dynamicFogEnabled) return;
+        if (event.getCamera().getFluidInCamera() != FogType.NONE) return;
 
         Minecraft mc = Minecraft.getInstance();
-        if (mc.level == null) {
-            linggango_tweaks$resetSmoothing();
-            return;
-        }
+        if (mc.level == null || mc.player == null) return;
 
-        var level = mc.level;
+        Camera camera = event.getCamera();
+        BlockPos cameraPos = BlockPos.containing(camera.getPosition());
+        Holder<Biome> biomeHolder = mc.level.getBiome(cameraPos);
+        int biomeColor = biomeHolder.value().getFogColor();
 
-        if (mc.player != null && (mc.player.hasEffect(MobEffects.NIGHT_VISION) || mc.player.hasEffect(MobEffects.BLINDNESS) || mc.player.hasEffect(MobEffects.DARKNESS))) {
-            return;
-        }
+        float biomeR = (biomeColor >> 16 & 255) / 255.0f;
+        float biomeG = (biomeColor >> 8 & 255) / 255.0f;
+        float biomeB = (biomeColor & 255) / 255.0f;
 
-        Vec3 cameraPos = event.getCamera().getPosition();
-        float partialTick = (float) event.getPartialTick();
-        linggango_tweaks$updateColorSampling(mc, cameraPos, partialTick);
+        float engineR = event.getRed();
+        float engineG = event.getGreen();
+        float engineB = event.getBlue();
 
+<<<<<<< HEAD
         float r = event.getRed();
         float g = event.getGreen();
         float b = event.getBlue();
@@ -376,30 +364,69 @@ public class DynamicFogHandler {
             float rainR = Mth.lerp(0.40F, luminance * 0.78F, tSkyR * 0.60F);
             float rainG = Mth.lerp(0.42F, luminance * 0.82F, tSkyG * 0.66F);
             float rainB = Mth.lerp(0.46F, luminance * 0.90F, tSkyB * 0.78F);
+=======
+        float r = Mth.lerp(0.4f, engineR, biomeR);
+        float g = Mth.lerp(0.4f, engineG, biomeG);
+        float b = Mth.lerp(0.4f, engineB, biomeB);
 
-            rainR = Mth.lerp(thunderSmooth, rainR, rainR * 0.72F);
-            rainG = Mth.lerp(thunderSmooth, rainG, rainG * 0.74F);
-            rainB = Mth.lerp(thunderSmooth, rainB, rainB * 0.84F + 0.02F);
+        float timeOfDay = mc.level.getTimeOfDay((float) event.getPartialTick());
+        float cosAngle = Mth.cos(timeOfDay * ((float) Math.PI * 2f));
 
-            r = Mth.lerp(rainSmooth * 0.78F, r, rainR);
-            g = Mth.lerp(rainSmooth * 0.78F, g, rainG);
-            b = Mth.lerp(rainSmooth * 0.82F, b, rainB);
+        float sunsetGlow = Mth.clamp((0.2f - Math.abs(cosAngle)) * 5.0f, 0.0f, 1.0f);
+        float sunsetSmooth = sunsetGlow * sunsetGlow * (3.0f - 2.0f * sunsetGlow);
+        r += sunsetSmooth * 0.18f;
+        g += sunsetSmooth * 0.06f;
+
+        float nightFactor = Mth.clamp(-cosAngle * 1.5f, 0.0f, 1.0f);
+        float nightSmooth = nightFactor * nightFactor * (3.0f - 2.0f * nightFactor);
+
+        r = Mth.lerp(nightSmooth, r, r * 0.15f + 0.01f);
+        g = Mth.lerp(nightSmooth, g, g * 0.20f + 0.03f);
+        b = Mth.lerp(nightSmooth, b, b * 0.35f + 0.09f);
+
+        float rainLevel = mc.level.getRainLevel((float) event.getPartialTick());
+        float thunderLevel = mc.level.getThunderLevel((float) event.getPartialTick());
+
+        if (rainLevel > 0.0f) {
+            float daylight = Mth.clamp(cosAngle + 0.5f, 0.08f, 1.0f);
+            float luminance = 0.299f * r + 0.587f * g + 0.114f * b;
+>>>>>>> parent of 29d0554 (update)
+
+            float rainR = luminance * 0.75f * daylight;
+            float rainG = luminance * 0.82f * daylight;
+            float rainB = luminance * 0.90f * daylight;
+
+            if (thunderLevel > 0.0f) {
+                float thunderLuminance = luminance * 0.25f * daylight;
+                float thunderSmooth = thunderLevel * thunderLevel * (3.0f - 2.0f * thunderLevel);
+
+                rainR = Mth.lerp(thunderSmooth, rainR, thunderLuminance);
+                rainG = Mth.lerp(thunderSmooth, rainG, thunderLuminance);
+                rainB = Mth.lerp(thunderSmooth, rainB, thunderLuminance * 1.15f);
+            }
+
+            float rainSmooth = rainLevel * rainLevel * (3.0f - 2.0f * rainLevel);
+            r = Mth.lerp(rainSmooth, r, rainR);
+            g = Mth.lerp(rainSmooth, g, rainG);
+            b = Mth.lerp(rainSmooth, b, rainB);
         }
 
         if (voidFogEnabled) {
-            float py = (float) cameraPos.y;
-            float voidStart = mc.level.getMinBuildHeight() + 32.0F;
-            if (py < voidStart) {
-                float voidDepth = linggango_tweaks$smoothstep(Mth.clamp((voidStart - py) / 32.0F, 0.0F, 1.0F));
-                float voidR = sampledBiomeR * 0.16F + 0.015F;
-                float voidG = sampledBiomeG * 0.18F + 0.018F;
-                float voidB = sampledBiomeB * 0.24F + 0.026F;
-                r = Mth.lerp(voidDepth, r, voidR);
-                g = Mth.lerp(voidDepth, g, voidG);
-                b = Mth.lerp(voidDepth, b, voidB);
+            float playerY = (float) camera.getPosition().y;
+            float minHeight = mc.level.getMinBuildHeight();
+            float voidStart = minHeight + 32.0f;
+
+            if (playerY < voidStart) {
+                float depthFactor = Mth.clamp((voidStart - playerY) / 32.0f, 0.0f, 1.0f);
+                float darken = 1.0f - (depthFactor * depthFactor * (3.0f - 2.0f * depthFactor));
+                darken = Math.max(darken, 0.02f);
+                r *= darken;
+                g *= darken;
+                b *= darken;
             }
         }
 
+<<<<<<< HEAD
         r = Mth.clamp(r, 0.0F, 1.0F);
         g = Mth.clamp(g, 0.0F, 1.0F);
         b = Mth.clamp(b, 0.0F, 1.0F);
@@ -410,11 +437,23 @@ public class DynamicFogHandler {
         currentR = linggango_tweaks$smoothValue(currentR, r, colorLerp);
         currentG = linggango_tweaks$smoothValue(currentG, g, colorLerp);
         currentB = linggango_tweaks$smoothValue(currentB, b, colorLerp);
+=======
+        if (currentR < 0f) {
+            currentR = r;
+            currentG = g;
+            currentB = b;
+        } else {
+            currentR = Mth.lerp(0.04f, currentR, r);
+            currentG = Mth.lerp(0.04f, currentG, g);
+            currentB = Mth.lerp(0.04f, currentB, b);
+        }
+>>>>>>> parent of 29d0554 (update)
 
         event.setRed(currentR);
         event.setGreen(currentG);
         event.setBlue(currentB);
     }
+<<<<<<< HEAD
 
     private static void linggango_tweaks$updateColorSampling(@NonNull Minecraft mc, @NonNull Vec3 cameraPos, float partialTick) {
         if (mc.level == null) {
@@ -524,4 +563,6 @@ public class DynamicFogHandler {
         currentB = -1.0F;
         lastSampleTick = Long.MIN_VALUE;
     }
+=======
+>>>>>>> parent of 29d0554 (update)
 }
