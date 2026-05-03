@@ -40,13 +40,14 @@ public class StructureEnabler {
             @NonNull CallbackInfoReturnable<StructureStart> cir
     ) {
         Holder<Biome> biome = biomeSource.getNoiseBiome(
-                chunkPos.getBlockX(8) >> 2,
+                chunkPos.getMiddleBlockX() >> 2,
                 chunkGenerator.getSeaLevel() >> 2,
-                chunkPos.getBlockZ(8) >> 2,
+                chunkPos.getMiddleBlockZ() >> 2,
                 randomState.sampler()
         );
 
         Optional<String> biomeNamespace = biome.unwrapKey().map(key -> key.location().getNamespace());
+
         if (biomeNamespace.isPresent() && biomeNamespace.get().equals("dreamwoods")) {
             ResourceLocation structureId = registryAccess.registryOrThrow(Registries.STRUCTURE).getKey((Structure) (Object) this);
             if (structureId != null && !structureId.getNamespace().equals("dreamwoods")) {

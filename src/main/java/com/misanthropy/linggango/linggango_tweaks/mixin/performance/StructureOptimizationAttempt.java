@@ -19,14 +19,16 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
-@Mixin(StructureTemplateManager.class) public abstract class StructureOptimizationAttempt {
+@Mixin(StructureTemplateManager.class)
+public abstract class StructureOptimizationAttempt {
 
     @Shadow(aliases = {"f_230345_", "templates", "structureRepository"})
     @Final private Map<ResourceLocation, Optional<StructureTemplate>> f_230345_;
 
     @Unique private final ConcurrentLinkedDeque<ResourceLocation> linggango$accessOrder = new ConcurrentLinkedDeque<>();
 
-    @Inject(method = "get", at = @At("RETURN"))private void linggango$limitCache(ResourceLocation id, @NonNull CallbackInfoReturnable<Optional<StructureTemplate>> cir) {
+    @Inject(method = "get", at = @At("RETURN"))
+    private void linggango$limitCache(ResourceLocation id, @NonNull CallbackInfoReturnable<Optional<StructureTemplate>> cir) {
         if (TweaksConfig.limitStructureCache.get() && cir.getReturnValue().isPresent()) {
             linggango$accessOrder.remove(id);
             linggango$accessOrder.addLast(id);
@@ -39,6 +41,8 @@ import java.util.concurrent.ConcurrentLinkedDeque;
         }
     }
 
-    @Inject(method = "onResourceManagerReload", at = @At("HEAD")) private void linggango$clearCache(ResourceManager resourceManager, CallbackInfo ci) {linggango$accessOrder.clear();
+    @Inject(method = "onResourceManagerReload", at = @At("HEAD"))
+    private void linggango$clearCache(ResourceManager resourceManager, CallbackInfo ci) {
+        linggango$accessOrder.clear();
     }
 }

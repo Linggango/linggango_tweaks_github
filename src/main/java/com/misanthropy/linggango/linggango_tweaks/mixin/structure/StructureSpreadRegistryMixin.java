@@ -61,7 +61,7 @@ public class StructureSpreadRegistryMixin {
                         placement.addProperty("separation", separation);
 
                         if (TweaksConfig.ID_BASED_SALT.get()) {
-                            int salt = Math.abs(structureId.hashCode()) % Integer.MAX_VALUE;
+                            int salt = (structureId.hashCode() * 31) & 0x7FFFFFFF;
                             placement.addProperty("salt", salt);
                         }
                     }
