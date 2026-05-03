@@ -14,6 +14,7 @@ import net.minecraftforge.fml.common.Mod;
 import org.jspecify.annotations.NonNull;
 import org.lwjgl.glfw.GLFW;
 
+@SuppressWarnings("all")
 @Mod.EventBusSubscriber(modid = LinggangoTweaks.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ClientSkillEvents {
 

@@ -1,8 +1,7 @@
-package com.misanthropy.linggango.linggango_tweaks.mixin.tweaks; // Source: https://github.com/juancarloscp52/BedrockIfy
+package com.misanthropy.linggango.linggango_tweaks.mixin.tweaks;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.AbstractContainerEventHandler;
@@ -11,6 +10,7 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.Player;
@@ -22,7 +22,10 @@ import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.*;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Constant;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -73,36 +76,70 @@ public class BedrockoidMixins {
 
     @Mixin(ItemInHandRenderer.class)
     public static class HandMixin {
-        @Inject(method = "applyItemArmTransform", at = @At("HEAD"), cancellable = true)
-        private void addIdleBreathing(PoseStack poseStack, HumanoidArm arm, float equipProgress, CallbackInfo ci) {
+
+        @Unique
+        private void linggango_tweaks$applyBreathing(PoseStack poseStack, HumanoidArm arm, boolean isHandEmpty, float partialTicks) {
             Minecraft mc = Minecraft.getInstance();
             Player player = mc.player;
-            float time = player == null ? 0.0F : player.tickCount + mc.getDeltaFrameTime();
-            int direction = arm == HumanoidArm.RIGHT ? 1 : -1;
-            double breath = (direction == 1 ? Mth.sin(time * 0.1F) : Mth.cos(time * 0.1F)) * 0.01D;
-            poseStack.translate(direction * 0.56f, -0.52f + equipProgress * -0.6f + breath, -0.72f);
-            ci.cancel();
-        }
-    }
+            if (player == null) return;
 
-    @Mixin(Gui.class)
-    public static class HudMixin {
-        @Unique
-        private float bedrockoid$popTimeLeft = 0.0f;
+            float healthRatio = player.getHealth() / player.getMaxHealth();
 
-        @Inject(method = "renderSlot", at = @At("HEAD"))
-        private void capturePopTime(GuiGraphics guiGraphics, int x, int y, float partialTick, Player player, ItemStack stack, int seed, CallbackInfo ci) {
-            bedrockoid$popTimeLeft = stack.getPopTime() - partialTick;
-        }
+            float speedMult;
+            float ampMult;
+            float shakeIntensity;
 
-        @Redirect(method = "renderSlot", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;pose()Lcom/mojang/blaze3d/vertex/PoseStack;"))
-        private PoseStack applyBobbingScale(GuiGraphics instance) {
-            PoseStack poseStack = instance.pose();
-            if (bedrockoid$popTimeLeft > 0.0f) {
-                float animation = 1.0f + bedrockoid$popTimeLeft / 12.5f;
-                poseStack.scale(animation, animation, 1.0f);
+            if (healthRatio >= 0.8f) {
+                speedMult = 1.0f;
+                ampMult = 1.0f;
+                shakeIntensity = 0.0f;
+            } else if (healthRatio >= 0.5f) {
+                speedMult = 1.1f;
+                ampMult = 1.0f;
+                shakeIntensity = 0.0f;
+            } else if (healthRatio >= 0.2f) {
+                speedMult = 1.3f;
+                ampMult = 1.2f;
+                shakeIntensity = 0.005f;
+            } else {
+                speedMult = 1.6f;
+                ampMult = 1.5f;
+                shakeIntensity = 0.015f;
             }
-            return poseStack;
+
+            if (isHandEmpty) {
+                ampMult *= 0.5f;
+                shakeIntensity *= 0.4f;
+                speedMult *= 0.6f;
+            } else {
+                speedMult *= 1.2f;
+            }
+
+            float time = player.tickCount + partialTicks;
+            int direction = arm == HumanoidArm.RIGHT ? 1 : -1;
+            float baseSpeed = 0.1f * speedMult;
+            float baseAmp = 0.01f * ampMult;
+
+            double breathY = (direction == 1 ? Mth.sin(time * baseSpeed) : Mth.cos(time * baseSpeed)) * baseAmp;
+            double shakeX = Mth.sin(time * baseSpeed * 4.0f) * (shakeIntensity * 0.35f);
+            double shakeZ = Mth.cos(time * baseSpeed * 3.5f) * (shakeIntensity * 0.6f);
+
+            poseStack.translate(shakeX, breathY, shakeZ);
+        }
+
+        @Inject(method = "applyItemArmTransform", at = @At("TAIL"))
+        private void addItemBreathing(PoseStack poseStack, HumanoidArm arm, float equipProgress, CallbackInfo ci) {
+            Minecraft mc = Minecraft.getInstance();
+            if (mc.player == null) return;
+
+            ItemStack heldItem = arm == HumanoidArm.RIGHT ? mc.player.getMainHandItem() : mc.player.getOffhandItem();
+            linggango_tweaks$applyBreathing(poseStack, arm, heldItem.isEmpty(), mc.getDeltaFrameTime());
+        }
+
+        @Inject(method = "renderPlayerArm", at = @At("HEAD"))
+        private void addEmptyHandBreathing(PoseStack poseStack, MultiBufferSource buffer, int combinedLight, float equipProgress, float swingProgress, HumanoidArm arm, CallbackInfo ci) {
+            Minecraft mc = Minecraft.getInstance();
+            linggango_tweaks$applyBreathing(poseStack, arm, true, mc.getDeltaFrameTime());
         }
     }
 

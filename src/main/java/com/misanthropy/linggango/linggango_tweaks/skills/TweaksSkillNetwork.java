@@ -12,7 +12,7 @@ import org.jspecify.annotations.NonNull;
 
 import java.util.function.Supplier;
 
-@SuppressWarnings("unused")
+@SuppressWarnings("all")
 public class TweaksSkillNetwork {
     private static final String PROTOCOL_VERSION = "1";
     public static final SimpleChannel INSTANCE = NetworkRegistry.newSimpleChannel(

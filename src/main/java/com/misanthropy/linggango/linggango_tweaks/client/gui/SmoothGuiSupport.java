@@ -11,6 +11,7 @@ import org.jspecify.annotations.Nullable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
+@SuppressWarnings("all")
 public final class SmoothGuiSupport {
     private static final float LINGGANGO_TWEAKS_MAX_DT = 0.1F;
 

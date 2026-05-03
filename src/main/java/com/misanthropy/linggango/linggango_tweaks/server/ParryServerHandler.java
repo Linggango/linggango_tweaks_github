@@ -2,7 +2,7 @@ package com.misanthropy.linggango.linggango_tweaks.server;
 
 import com.misanthropy.linggango.difficulty_enhancement.LinggangoEvents;
 import com.misanthropy.linggango.linggango_tweaks.config.TweaksConfig;
-import com.misanthropy.linggango.linggango_tweaks.network.ParryNetwork;
+import com.misanthropy.linggango.linggango_tweaks.parry.ParryNetwork;
 import com.misanthropy.linggango.linggango_tweaks.registry.ModParticles;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
@@ -34,22 +34,33 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+@SuppressWarnings("unused")
 @Mod.EventBusSubscriber(modid = "linggango_tweaks")
 public class ParryServerHandler {
 
     public static final Map<UUID, Long> activeParries = new ConcurrentHashMap<>();
+    public static final Map<UUID, ParryCombo> comboTracker = new ConcurrentHashMap<>();
 
     private static final long MS_PER_TICK = 50L;
+    private static final long COMBO_TIMEOUT_MS = 10000L;
 
-    private static MobEffect FRAGILITY;
     private static MobEffect POSTURE_BREAK;
     private static MobEffect VULNERABILITY;
     private static EntityType<?> APOSTLE_TYPE;
     private static volatile boolean initialized = false;
 
+    public static class ParryCombo {
+        public int stage;
+        public long lastParryMs;
+        public ParryCombo(int stage, long lastParryMs) {
+            this.stage = stage;
+            this.lastParryMs = lastParryMs;
+        }
+    }
+
     private static void initCaches() {
         if (initialized) return;
-        FRAGILITY     = ForgeRegistries.MOB_EFFECTS.getValue(ResourceLocation.fromNamespaceAndPath("mowziesmobs", "fragility"));
+        MobEffect FRAGILITY = ForgeRegistries.MOB_EFFECTS.getValue(ResourceLocation.fromNamespaceAndPath("mowziesmobs", "fragility"));
         POSTURE_BREAK = ForgeRegistries.MOB_EFFECTS.getValue(ResourceLocation.fromNamespaceAndPath("soulsweapons", "posture_break"));
         VULNERABILITY = ForgeRegistries.MOB_EFFECTS.getValue(ResourceLocation.fromNamespaceAndPath("morerelics", "vulnerability"));
         APOSTLE_TYPE  = ForgeRegistries.ENTITY_TYPES.getValue(ResourceLocation.fromNamespaceAndPath("goety", "apostle"));
@@ -142,14 +153,19 @@ public class ParryServerHandler {
         int tier;
         if (compensatedElapsed < perfectMs) {
             tier = 3;
-
         } else if (compensatedElapsed < perfectMs + successMs) {
             tier = 2;
-
         } else {
             tier = 1;
-
         }
+
+        ParryCombo combo = comboTracker.computeIfAbsent(playerId, k -> new ParryCombo(0, 0));
+        if (now - combo.lastParryMs <= COMBO_TIMEOUT_MS) {
+            combo.stage = Math.min(8, combo.stage + 1);
+        } else {
+            combo.stage = 1;
+        }
+        combo.lastParryMs = now;
 
         Entity directEntity = source.getDirectEntity();
         Entity attacker = source.getEntity();
@@ -182,24 +198,26 @@ public class ParryServerHandler {
                     player.getX() - livingAttacker.getX(),
                     player.getZ() - livingAttacker.getZ());
 
-            int slowDur = tier == 3 ? 80 : 30;
-            int slowAmp = tier == 3 ? 1 : 0;
-            livingAttacker.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, slowDur, slowAmp, false, true));
+            livingAttacker.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 100, 0, false, true));
 
-            int effectDur = tier == 3 ? 100 : 40;
-
-            if (FRAGILITY != null) {
-                livingAttacker.addEffect(new MobEffectInstance(FRAGILITY, effectDur, 0, false, true));
+            if (VULNERABILITY != null) {
+                livingAttacker.addEffect(new MobEffectInstance(VULNERABILITY, 60, 0, false, true));
             }
             if (POSTURE_BREAK != null) {
-                livingAttacker.addEffect(new MobEffectInstance(POSTURE_BREAK, effectDur, 0, false, true));
-            }
-            if (tier == 3 && VULNERABILITY != null) {
-                livingAttacker.addEffect(new MobEffectInstance(VULNERABILITY, 100, 0, false, true));
+                livingAttacker.addEffect(new MobEffectInstance(POSTURE_BREAK, 60, 0, false, true));
             }
 
-            float dmg = livingAttacker.getMaxHealth() * (tier == 3 ? 0.04f : 0.02f);
-            livingAttacker.hurt(player.damageSources().playerAttack(player), dmg);
+            float calculatedDamage;
+            if (combo.stage >= 8) {
+                calculatedDamage = livingAttacker.getMaxHealth() * 0.03f;
+            } else {
+                float[] flatDamages = {2f, 4f, 6f, 6f, 6f, 6f, 7f};
+                calculatedDamage = flatDamages[combo.stage - 1];
+            }
+
+            if (tier == 3) calculatedDamage *= 1.3f;
+
+            livingAttacker.hurt(player.damageSources().playerAttack(player), calculatedDamage);
         }
 
         if (tier != 3 && event.getAmount() > 150.0F) {
@@ -216,14 +234,14 @@ public class ParryServerHandler {
             player.level().addFreshEntity(cloud);
         }
 
-        spawnParrySparkles(player, tier);
+        spawnParrySparkles(player, tier, combo.stage);
 
         ParryNetwork.CHANNEL.send(
                 PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> player),
-                new ParryNetwork.S2CParrySuccessPacket(player.getId(), tier));
+                new ParryNetwork.S2CParrySuccessPacket(player.getId(), tier, combo.stage));
     }
 
-    private static void spawnParrySparkles(@NonNull Player player, int tier) {
+    private static void spawnParrySparkles(@NonNull Player player, int tier, int comboStage) {
         if (!(player.level() instanceof ServerLevel level)) {
             return;
         }
@@ -237,9 +255,11 @@ public class ParryServerHandler {
         double iy = py + look.y * 1.8;
         double iz = pz + look.z * 1.8;
 
+        float comboMultiplier = 1.0f + ((comboStage - 1) / 7.0f);
+
         RandomSource rand = level.random;
-        int lines = 1 + rand.nextInt(2);
-        double baseSpeed = 0.02 + rand.nextDouble() * 0.02;
+        int lines = (int) ((1 + rand.nextInt(2)) * comboMultiplier);
+        double baseSpeed = (0.02 + rand.nextDouble() * 0.02) * comboMultiplier;
 
         for (int l = 0; l < lines; l++) {
             double angle = rand.nextDouble() * Math.PI * 2.0;

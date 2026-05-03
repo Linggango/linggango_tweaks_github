@@ -55,7 +55,6 @@ public class TweaksConfig {
     public static final ForgeConfigSpec.DoubleValue PROJECTILE_DEFLECT_SPEED;
     public static final ForgeConfigSpec.DoubleValue PARRY_HEAL_AMOUNT;
 
-
     public static final ForgeConfigSpec.BooleanValue ENABLE_DYNAMIC_BALANCING;
     public static final ForgeConfigSpec.DoubleValue GLOBAL_MOB_MULTIPLIER;
     public static final ForgeConfigSpec.DoubleValue TERRA_ENTITY_OVERWORLD_MULTIPLIER;
@@ -67,15 +66,15 @@ public class TweaksConfig {
     public static final ForgeConfigSpec.IntValue MAX_SAME_TYPE_PER_CHUNK;
     public static final ForgeConfigSpec.ConfigValue<List<? extends String>> BOSS_MOB_BLACKLIST;
 
-    public static final ForgeConfigSpec.ConfigValue<String> BIOME_FALLBACK_NAMESPACE;
-    public static final ForgeConfigSpec.ConfigValue<List<? extends String>> BIOME_REDUCTIONS;
-
     public static final ForgeConfigSpec.BooleanValue ENABLE_BEDROCK_CULLING;
     public static final ForgeConfigSpec.BooleanValue CULL_TOP_BEDROCK;
     public static final ForgeConfigSpec.BooleanValue CULL_BOTTOM_BEDROCK;
 
+    public static final ForgeConfigSpec.DoubleValue PERFECT_HIT_CHANCE;
+    public static final ForgeConfigSpec.DoubleValue PERFECT_HIT_DAMAGE_MULT;
+    public static final ForgeConfigSpec.DoubleValue PERFECT_HIT_KNOCKBACK_MULT;
+
     private static final Map<String, Double> parsedCustomSpreads = new HashMap<>();
-    public static final Map<String, Float> parsedBiomeReductions = new HashMap<>();
 
     static {
         ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
@@ -150,24 +149,19 @@ public class TweaksConfig {
         );
         BUILDER.pop();
 
-        BUILDER.push("biome_tweaks");
-        BIOME_FALLBACK_NAMESPACE = BUILDER.define("biome_fallback_namespace", "dreamwoods:");
-        BIOME_REDUCTIONS = BUILDER.defineListAllowEmpty(List.of("biome_reductions"),
-                () -> List.of(
-                        "dreamwoods:grassy_shore|1.0",
-                        "dreamwoods:prairie|1.0",
-                        "dreamwoods:lush_grassland|0.85",
-                        "dreamwoods:alpine_fields|0.85",
-                        "dreamwoods:lush_meadow|0.95"
-                ),
-                o -> o instanceof String && ((String) o).contains("|")
-        );
-        BUILDER.pop();
-
         BUILDER.push("bedrock_culling");
         ENABLE_BEDROCK_CULLING = BUILDER.define("enable_bedrock_culling", true);
         CULL_TOP_BEDROCK = BUILDER.define("cull_top_bedrock", true);
         CULL_BOTTOM_BEDROCK = BUILDER.define("cull_bottom_bedrock", true);
+        BUILDER.pop();
+
+        BUILDER.push("perfect_hit_system");
+        PERFECT_HIT_CHANCE = BUILDER.comment("Chance for a jump/falling crit to become a Perfect Hit (0.0 to 1.0)")
+                .defineInRange("perfect_hit_chance", 0.05, 0.0, 1.0);
+        PERFECT_HIT_DAMAGE_MULT = BUILDER.comment("Additional damage multiplier on top of the standard critical hit")
+                .defineInRange("perfect_hit_damage_mult", 1.5, 1.0, 10.0);
+        PERFECT_HIT_KNOCKBACK_MULT = BUILDER.comment("Knockback multiplier for the perfect hit")
+                .defineInRange("perfect_hit_knockback_mult", 4.0, 1.0, 20.0);
         BUILDER.pop();
 
         COMMON_SPEC = BUILDER.build();
@@ -186,16 +180,6 @@ public class TweaksConfig {
                 if (parts.length == 2) {
                     try {
                         parsedCustomSpreads.put(parts[0].trim(), Double.parseDouble(parts[1].trim()));
-                    } catch (NumberFormatException ignored) {}
-                }
-            }
-
-            parsedBiomeReductions.clear();
-            for (String entry : BIOME_REDUCTIONS.get()) {
-                String[] parts = entry.split("\\|");
-                if (parts.length == 2) {
-                    try {
-                        parsedBiomeReductions.put(parts[0].trim(), Float.parseFloat(parts[1].trim()));
                     } catch (NumberFormatException ignored) {}
                 }
             }

@@ -1,10 +1,14 @@
 package com.misanthropy.linggango.linggango_tweaks.tweaks;
 
+import com.misanthropy.linggango.linggango_tweaks.client.atmosphere.AtmosphereEditorScreen;
+import com.misanthropy.linggango.linggango_tweaks.config.AtmosphereConfigManager;
 import com.mojang.blaze3d.shaders.FogShape;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.FogRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffects;
@@ -46,6 +50,7 @@ public class DynamicFogHandler {
     private static final int COLOR_SAMPLE_INTERVAL_TICKS = 5;
     private static final int COLOR_SAMPLE_REUSE_DISTANCE_SQR = 16;
     private static final int COLOR_SAMPLE_RADIUS = 6;
+    private static final int SKY_OPENNESS_SAMPLE_HEIGHT = 6;
     private static final int[] SAMPLE_X = {0, COLOR_SAMPLE_RADIUS, -COLOR_SAMPLE_RADIUS, 0, 0, COLOR_SAMPLE_RADIUS, COLOR_SAMPLE_RADIUS, -COLOR_SAMPLE_RADIUS, -COLOR_SAMPLE_RADIUS};
     private static final int[] SAMPLE_Z = {0, 0, 0, COLOR_SAMPLE_RADIUS, -COLOR_SAMPLE_RADIUS, COLOR_SAMPLE_RADIUS, -COLOR_SAMPLE_RADIUS, COLOR_SAMPLE_RADIUS, -COLOR_SAMPLE_RADIUS};
     private static final float[] SAMPLE_WEIGHT = {4.0F, 2.0F, 2.0F, 2.0F, 2.0F, 1.0F, 1.0F, 1.0F, 1.0F};
@@ -208,12 +213,23 @@ public class DynamicFogHandler {
         linggango_tweaks$updateColorSampling(mc, cameraPos, partialTick);
 
         float originalEnd = event.getFarPlaneDistance();
+        float clearWeatherNear = originalEnd * Mth.clamp((float) fogStartMultiplier, 0.02F, 0.60F);
+        float clearWeatherFar = originalEnd * 0.92F;
+
+        ResourceLocation centerBiomeLoc = level.getBiome(BlockPos.containing(cameraPos)).unwrapKey().map(ResourceKey::location).orElse(null);
+        AtmosphereConfigManager.AtmosphereSettings centerSettings = centerBiomeLoc != null ? AtmosphereConfigManager.ATMOSPHERES.get(centerBiomeLoc.toString()) : null;
+
+        if (centerSettings != null) {
+            clearWeatherNear = centerSettings.fogStart;
+            clearWeatherFar = centerSettings.fogEnd;
+            originalEnd = centerSettings.fogEnd;
+
+        }
+
         float edgeSoftness = (float) Mth.clamp(chunkBorderFogSoftness, 0.0D, 0.35D);
         float skyVisibility = sampledSkyVisibility;
         float valleyMist = sampledValleyMist;
         float altitudeClear = 1.0F - valleyMist;
-        float clearWeatherNear = originalEnd * Mth.clamp((float) fogStartMultiplier, 0.02F, 0.60F);
-        float clearWeatherFar = originalEnd * 0.92F;
 
         clearWeatherNear = Mth.lerp(altitudeClear * 0.55F + skyVisibility * 0.20F, clearWeatherNear, originalEnd * 0.24F);
         clearWeatherFar = Mth.lerp(altitudeClear * 0.70F + skyVisibility * 0.20F, clearWeatherFar, originalEnd * 0.985F);
@@ -257,8 +273,11 @@ public class DynamicFogHandler {
         float targetFar = Mth.clamp(clearWeatherFar + edgeBias, originalEnd * 0.55F, farPlaneCap);
         float targetNear = Mth.clamp(clearWeatherNear + edgeNearBias, 0.0F, targetFar - 0.5F);
 
-        currentNearPlane = linggango_tweaks$smoothValue(currentNearPlane, targetNear, 0.085F);
-        currentFarPlane = linggango_tweaks$smoothValue(currentFarPlane, targetFar, 0.070F);
+        boolean isEditing = mc.screen instanceof AtmosphereEditorScreen;
+        float distLerp = isEditing ? 1.0F : 0.015F;
+
+        currentNearPlane = linggango_tweaks$smoothValue(currentNearPlane, targetNear, distLerp);
+        currentFarPlane = linggango_tweaks$smoothValue(currentFarPlane, targetFar, distLerp);
 
         event.setNearPlaneDistance(currentNearPlane);
         event.setFarPlaneDistance(currentFarPlane);
@@ -295,6 +314,22 @@ public class DynamicFogHandler {
         float r = event.getRed();
         float g = event.getGreen();
         float b = event.getBlue();
+
+        float vanillaLuma = Math.max(0.001F, linggango_tweaks$luminance(r, g, b));
+        float biomeLuma = Math.max(0.001F, linggango_tweaks$luminance(sampledBiomeR, sampledBiomeG, sampledBiomeB));
+        float skyLuma = Math.max(0.001F, linggango_tweaks$luminance(sampledSkyR, sampledSkyG, sampledSkyB));
+
+        float biomeRatio = vanillaLuma / biomeLuma;
+        float skyRatio = vanillaLuma / skyLuma;
+
+        float tBiomeR = Math.min(1.0F, sampledBiomeR * biomeRatio);
+        float tBiomeG = Math.min(1.0F, sampledBiomeG * biomeRatio);
+        float tBiomeB = Math.min(1.0F, sampledBiomeB * biomeRatio);
+
+        float tSkyR = Math.min(1.0F, sampledSkyR * skyRatio);
+        float tSkyG = Math.min(1.0F, sampledSkyG * skyRatio);
+        float tSkyB = Math.min(1.0F, sampledSkyB * skyRatio);
+
         float rain = level.getRainLevel(partialTick);
         float thunder = level.getThunderLevel(partialTick);
         float timeOfDay = level.getTimeOfDay(partialTick);
@@ -303,31 +338,31 @@ public class DynamicFogHandler {
         float nightFactor = linggango_tweaks$smoothstep(Mth.clamp((-sunCurve * 0.70F) + 0.12F, 0.0F, 1.0F));
 
         float biomeBlend = (float) biomeTintStrength;
-        float skyBlend = (float) skyFogBlendStrength * Mth.lerp(sampledSkyVisibility, 0.10F, 1.0F);
+        float skyBlend = (float) skyFogBlendStrength * sampledSkyVisibility;
         float valleyBlend = sampledValleyMist * 0.18F;
 
-        r = Mth.lerp(Mth.clamp(biomeBlend + valleyBlend, 0.0F, 1.0F), r, sampledBiomeR);
-        g = Mth.lerp(Mth.clamp(biomeBlend + valleyBlend, 0.0F, 1.0F), g, sampledBiomeG);
-        b = Mth.lerp(Mth.clamp(biomeBlend + valleyBlend, 0.0F, 1.0F), b, sampledBiomeB);
+        r = Mth.lerp(Mth.clamp(biomeBlend + valleyBlend, 0.0F, 1.0F), r, tBiomeR);
+        g = Mth.lerp(Mth.clamp(biomeBlend + valleyBlend, 0.0F, 1.0F), g, tBiomeG);
+        b = Mth.lerp(Mth.clamp(biomeBlend + valleyBlend, 0.0F, 1.0F), b, tBiomeB);
 
-        r = Mth.lerp(skyBlend, r, sampledSkyR);
-        g = Mth.lerp(skyBlend, g, sampledSkyG);
-        b = Mth.lerp(skyBlend, b, sampledSkyB);
+        r = Mth.lerp(skyBlend, r, tSkyR);
+        g = Mth.lerp(skyBlend, g, tSkyG);
+        b = Mth.lerp(skyBlend, b, tSkyB);
 
         if (dawnDusk > 0.0F && rain < 0.7F) {
             float warmBlend = dawnDusk * sampledSkyVisibility * (1.0F - rain) * 0.22F;
-            float warmR = Mth.clamp(sampledSkyR * 1.06F + 0.05F, 0.0F, 1.0F);
-            float warmG = Mth.clamp(sampledSkyG * 0.98F + 0.02F, 0.0F, 1.0F);
-            float warmB = Mth.clamp(sampledSkyB * 0.88F, 0.0F, 1.0F);
+            float warmR = Math.min(1.0F, (sampledSkyR * 1.06F + 0.05F) * skyRatio);
+            float warmG = Math.min(1.0F, (sampledSkyG * 0.98F + 0.02F) * skyRatio);
+            float warmB = Math.min(1.0F, (sampledSkyB * 0.88F) * skyRatio);
             r = Mth.lerp(warmBlend, r, warmR);
             g = Mth.lerp(warmBlend * 0.85F, g, warmG);
             b = Mth.lerp(warmBlend * 0.55F, b, warmB);
         }
 
         if (nightFactor > 0.0F) {
-            float coolR = sampledBiomeR * 0.45F + 0.04F;
-            float coolG = sampledBiomeG * 0.52F + 0.05F;
-            float coolB = sampledBiomeB * 0.75F + 0.10F;
+            float coolR = Math.min(1.0F, (sampledBiomeR * 0.45F + 0.04F) * biomeRatio);
+            float coolG = Math.min(1.0F, (sampledBiomeG * 0.52F + 0.05F) * biomeRatio);
+            float coolB = Math.min(1.0F, (sampledBiomeB * 0.75F + 0.10F) * biomeRatio);
             float nightBlend = 0.28F * nightFactor;
             r = Mth.lerp(nightBlend, r, coolR);
             g = Mth.lerp(nightBlend, g, coolG);
@@ -338,9 +373,9 @@ public class DynamicFogHandler {
             float rainSmooth = linggango_tweaks$smoothstep(rain);
             float thunderSmooth = linggango_tweaks$smoothstep(thunder);
             float luminance = linggango_tweaks$luminance(r, g, b);
-            float rainR = Mth.lerp(0.40F, luminance * 0.78F, sampledSkyR * 0.60F);
-            float rainG = Mth.lerp(0.42F, luminance * 0.82F, sampledSkyG * 0.66F);
-            float rainB = Mth.lerp(0.46F, luminance * 0.90F, sampledSkyB * 0.78F);
+            float rainR = Mth.lerp(0.40F, luminance * 0.78F, tSkyR * 0.60F);
+            float rainG = Mth.lerp(0.42F, luminance * 0.82F, tSkyG * 0.66F);
+            float rainB = Mth.lerp(0.46F, luminance * 0.90F, tSkyB * 0.78F);
 
             rainR = Mth.lerp(thunderSmooth, rainR, rainR * 0.72F);
             rainG = Mth.lerp(thunderSmooth, rainG, rainG * 0.74F);
@@ -369,9 +404,12 @@ public class DynamicFogHandler {
         g = Mth.clamp(g, 0.0F, 1.0F);
         b = Mth.clamp(b, 0.0F, 1.0F);
 
-        currentR = linggango_tweaks$smoothValue(currentR, r, 0.090F);
-        currentG = linggango_tweaks$smoothValue(currentG, g, 0.090F);
-        currentB = linggango_tweaks$smoothValue(currentB, b, 0.090F);
+        boolean isEditing = mc.screen instanceof AtmosphereEditorScreen;
+        float colorLerp = isEditing ? 1.0F : 0.015F;
+
+        currentR = linggango_tweaks$smoothValue(currentR, r, colorLerp);
+        currentG = linggango_tweaks$smoothValue(currentG, g, colorLerp);
+        currentB = linggango_tweaks$smoothValue(currentB, b, colorLerp);
 
         event.setRed(currentR);
         event.setGreen(currentG);
@@ -387,6 +425,7 @@ public class DynamicFogHandler {
         int sampleX = Mth.floor(cameraPos.x);
         int sampleY = Mth.floor(cameraPos.y);
         int sampleZ = Mth.floor(cameraPos.z);
+        int skySampleY = sampleY + SKY_OPENNESS_SAMPLE_HEIGHT;
         long gameTime = level.getGameTime();
 
         int dx = sampleX - lastSampleX;
@@ -406,12 +445,26 @@ public class DynamicFogHandler {
         float skyOpenness = 0.0F;
 
         for (int i = 0; i < SAMPLE_X.length; i++) {
-            cursor.set(sampleX + SAMPLE_X[i], sampleY, sampleZ + SAMPLE_Z[i]);
-            int fogColor = level.getBiome(cursor).value().getFogColor();
+            int sampleOffsetX = sampleX + SAMPLE_X[i];
+            int sampleOffsetZ = sampleZ + SAMPLE_Z[i];
+            cursor.set(sampleOffsetX, sampleY, sampleOffsetZ);
+
+            var biomeHolder = level.getBiome(cursor);
+            int fogColor = biomeHolder.value().getFogColor();
+
+            ResourceLocation biomeLoc = biomeHolder.unwrapKey().map(ResourceKey::location).orElse(null);
+            AtmosphereConfigManager.AtmosphereSettings settings = biomeLoc != null ? AtmosphereConfigManager.ATMOSPHERES.get(biomeLoc.toString()) : null;
+
+            if (settings != null) {
+                fogColor = settings.fogHex;
+            }
+
             float weight = SAMPLE_WEIGHT[i];
             biomeR += ((fogColor >> 16) & 255) / 255.0F * weight;
             biomeG += ((fogColor >> 8) & 255) / 255.0F * weight;
             biomeB += (fogColor & 255) / 255.0F * weight;
+
+            cursor.set(sampleOffsetX, skySampleY, sampleOffsetZ);
             skyOpenness += (level.canSeeSky(cursor) ? 1.0F : 0.0F) * weight;
             totalWeight += weight;
         }
@@ -430,7 +483,7 @@ public class DynamicFogHandler {
 
         float seaLevelClear = Mth.clamp(((float) cameraPos.y - level.getSeaLevel() + 12.0F) / 96.0F, 0.0F, 1.0F);
         seaLevelClear = linggango_tweaks$smoothstep(seaLevelClear);
-        sampledSkyVisibility = Mth.clamp(sampledSkyOpenness * (0.88F + seaLevelClear * 0.12F), 0.0F, 1.0F);
+        sampledSkyVisibility = Mth.clamp(sampledSkyOpenness * sampledSkyOpenness * (0.88F + seaLevelClear * 0.12F), 0.0F, 1.0F);
         sampledValleyMist = 1.0F - seaLevelClear;
 
         lastSampleTick = gameTime;

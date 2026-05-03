@@ -137,7 +137,7 @@ public class ChaosDifficultyAddon {
         if (event.getEntity() instanceof ServerPlayer player) {
             ResourceLocation advId = event.getAdvancement().getId();
 
-            if (advId != null && advId.toString().equals("armageddon_mod:the_shadow_keeper")) {
+            if (advId.toString().equals("armageddon_mod:the_shadow_keeper")) {
                 GlobalProgressionHandler.unlockChaos();
                 String currentDiffId = LinggangoEvents.getCurrentDifficulty(player.level()).id;
                 LinggangoEvents.INSTANCE.send(

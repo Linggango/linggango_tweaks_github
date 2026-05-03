@@ -449,8 +449,6 @@ public class SmoothGuiMixins {
                     guiGraphics.disableScissor();
                     linggango_tweaks$scissorActive = false;
                 }
-            } else {
-                return;
             }
         }
 
