@@ -12,8 +12,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.MobSpawnEvent;
+import net.minecraftforge.event.entity.player.AdvancementEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
@@ -28,10 +28,9 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
-@Mod.EventBusSubscriber(modid = LinggangoTweaks.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@Mod.EventBusSubscriber(modid = LinggangoTweaks.MOD_ID)
 public class ChaosDifficultyAddon {
 
-    private static final String NYXARIS_ID = "armageddon_mod:nyxaris_the_veil_of_oblivion";
     private static @Nullable List<EntityType<?>> cachedChaosPool = null;
 
     public static void registerChaos() {
@@ -134,7 +133,6 @@ public class ChaosDifficultyAddon {
     }
 
     @SubscribeEvent
-<<<<<<< HEAD
     public static void onAdvancementEarned(AdvancementEvent.AdvancementEarnEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
             ResourceLocation advId = event.getAdvancement().getId();
@@ -151,16 +149,6 @@ public class ChaosDifficultyAddon {
                         Component.literal("Nyxaris has fallen... Chaos Difficulty has been unlocked for you!")
                                 .withStyle(ChatFormatting.DARK_RED, ChatFormatting.BOLD, ChatFormatting.OBFUSCATED)
                 );
-=======
-    public static void onBossDeath(@NonNull LivingDeathEvent event) {
-        LivingEntity victim = event.getEntity();
-        if (victim.level().isClientSide()) return;
-        ResourceLocation id = ForgeRegistries.ENTITY_TYPES.getKey(victim.getType());
-        if (id != null && id.toString().equals(NYXARIS_ID)) {
-            if (victim.level() instanceof ServerLevel serverLevel) {
-                LinggangoEvents.unlockChaos(serverLevel);
-                serverLevel.players().forEach(player -> player.sendSystemMessage(Component.literal("Nyxaris has fallen... Chaos Difficulty has been unlocked!").withStyle(ChatFormatting.DARK_RED, ChatFormatting.BOLD, ChatFormatting.OBFUSCATED)));
->>>>>>> parent of 29d0554 (update)
             }
         }
     }
