@@ -60,6 +60,9 @@ public class TweaksConfig {
     public static final ForgeConfigSpec.ConfigValue<String> BIOME_FALLBACK_NAMESPACE;
     public static final ForgeConfigSpec.ConfigValue<List<? extends String>> BIOME_REDUCTIONS;
 
+    public static ForgeConfigSpec.BooleanValue APOSTLE_DAMAGE_CAP_FIX;
+    public static ForgeConfigSpec.BooleanValue APOSTLE_TITLE_NUMBER_LOG;
+
     public static final ForgeConfigSpec.BooleanValue ONLY_OVERLAP;
     public static final ForgeConfigSpec.DoubleValue CHECK_RADIUS;
     public static final ForgeConfigSpec.IntValue MAX_NEARBY;
@@ -184,6 +187,15 @@ public class TweaksConfig {
                 "cataclysm_dimension:cataclysm_souls_anvil"
         ), o -> o instanceof String);
         DEBUG_OVERLAP = BUILDER.define("debug_overlap", false);
+        BUILDER.pop();
+
+        BUILDER.push("goety");
+        APOSTLE_DAMAGE_CAP_FIX = BUILDER
+                .comment("Re-enforce Apostle's damage cap after all LivingDamageEvent handlers run. Prevents items/traits from dealing more damage than the configured cap.")
+                .define("apostle_damage_cap_fix", true);
+        APOSTLE_TITLE_NUMBER_LOG = BUILDER
+                .comment("A debug statement for printing changes in Apostle title numbers.")
+                .define("apostle_title_number_log", false);
         BUILDER.pop();
 
         COMMON_SPEC = BUILDER.build();

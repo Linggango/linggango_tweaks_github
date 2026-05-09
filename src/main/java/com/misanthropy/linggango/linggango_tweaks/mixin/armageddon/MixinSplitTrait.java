@@ -24,7 +24,7 @@ public class MixinSplitTrait {
     }
     @Redirect(
         method = "add",
-        at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;m_7967_(Lnet/minecraft/world/entity/Entity;)Z"),
+        at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;m_7967_(Lnet/minecraft/world/entity/Entity;)Z"), //addFreshEntity
         remap = false
     )
     private boolean tagAndAdd(@NonNull Level level, @NonNull Entity entity) {

@@ -13,11 +13,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class MasterDataMixin {
     @Inject(method = "tick", at = @At("HEAD"))
     private void injectTickHead(MobTraitCap cap, Mob mob, CallbackInfoReturnable<Boolean> cir) {
-        ApostleL2Data.CURRENT_APOSTLE = mob;
+        ApostleL2Data.pushApostleContext(mob);
     }
 
     @Inject(method = "tick", at = @At("RETURN"))
     private void injectTickReturn(MobTraitCap cap, Mob mob, CallbackInfoReturnable<Boolean> cir) {
-        ApostleL2Data.CURRENT_APOSTLE = null;
+        ApostleL2Data.popApostleContext();
     }
 }
