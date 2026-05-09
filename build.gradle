@@ -158,7 +158,7 @@ dependencies {
     compileOnly fg.deobf("curse.maven:ftb-teams-forge-404468:7499810")
     compileOnly fg.deobf("curse.maven:architectury-api-419699:5137938")
     implementation fg.deobf("curse.maven:curios-309927:6418456")
-    runtimeOnly fg.deobf("curse.maven:geckolib-388172:7553267")
+    implementation fg.deobf("curse.maven:geckolib-388172:7553267")
     compileOnly fg.deobf("curse.maven:embeddium-908741:5681725")
     compileOnly fg.deobf("curse.maven:celestisynth-872712:7686018")
     implementation fg.deobf("curse.maven:class-enhancement-1460324:7801433")
@@ -184,7 +184,7 @@ dependencies {
     compileOnly fg.deobf("curse.maven:farmers-delight-398521:8007609")
     implementation fg.deobf("curse.maven:l2-complements-758349:7606338")
     compileOnly fg.deobf("curse.maven:attributes-fix-280510:7612291")
-    runtimeOnly fg.deobf("curse.maven:caelus-308989:5281700")
+    implementation fg.deobf("curse.maven:caelus-308989:5281700")
     implementation fg.deobf("curse.maven:citadel-331936:7476570")
     compileOnly fg.deobf("curse.maven:placebo-283644:6274231")
     implementation fg.deobf("curse.maven:ending-library-1471165:8026953")
@@ -195,6 +195,10 @@ shadowJar {
     configurations = [project.configurations.shadow]
     mergeServiceFiles()
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+tasks.matching { it.name == 'reobfJarJar' }.configureEach {
+    dependsOn tasks.named('shadowJar')
 }
 
 tasks.named('processResources', ProcessResources).configure {
@@ -213,6 +217,7 @@ tasks.named('processResources', ProcessResources).configure {
 
 tasks.named('jar', Jar).configure {
     dependsOn tasks.named('shadowJar')
+    dependsOn tasks.named('jarJar')
     from({ zipTree(tasks.named('shadowJar').get().archiveFile.get().asFile) }) {
         exclude 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA'
     }
