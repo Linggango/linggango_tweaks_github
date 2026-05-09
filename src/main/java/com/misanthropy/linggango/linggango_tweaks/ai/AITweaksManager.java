@@ -7,57 +7,53 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.PanicGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.goal.RandomSwimmingGoal;
+import net.minecraft.world.entity.ai.goal.WrappedGoal;
 import net.minecraft.world.entity.animal.AbstractFish;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 import org.jspecify.annotations.NonNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Field;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 @Mod.EventBusSubscriber(modid = LinggangoTweaks.MOD_ID)
 public class AITweaksManager {
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(AITweaksManager.class);
     public static void onCommonSetup(final @NonNull FMLCommonSetupEvent event) {
         event.enqueueWork(FastTrig::init);
     }
 
     @SubscribeEvent
     public static void onEntityJoin(@NonNull EntityJoinLevelEvent event) {
-        if (!(event.getEntity() instanceof Mob mob)) return;
-        if (event.getLevel().isClientSide) return;
+        if (event.getLevel().isClientSide || !(event.getEntity() instanceof Mob mob)) return;
         if (mob.getLookControl().getClass() == LookControl.class) {
-            FastLookControl fastControl = new FastLookControl(mob);
             try {
-                Field lookControlField = Mob.class.getDeclaredField("lookControl");
-                lookControlField.setAccessible(true);
-                lookControlField.set(mob, fastControl);
+                ObfuscationReflectionHelper.setPrivateValue(Mob.class, mob, new FastLookControl(mob), "lookControl");
             } catch (Exception e) {
-                try {
-                    Field srgField = Mob.class.getDeclaredField("f_21365_");
-                    srgField.setAccessible(true);
-                    srgField.set(mob, fastControl);
-                } catch (Exception ignored) {}
+                LOGGER.error("Failed to inject FastLookControl for entity: {}", mob.getType(), e);
             }
         }
-        Set<Goal> goalsToRemove = new HashSet<>();
 
-        mob.goalSelector.getAvailableGoals().forEach(wrappedGoal -> {
-            Goal goal = wrappedGoal.getGoal();
-            if (goal instanceof RandomLookAroundGoal) {
-                goalsToRemove.add(goal);
-            }
-            if (mob instanceof AbstractFish) {
-                if (goal instanceof RandomSwimmingGoal || goal instanceof PanicGoal) {
-                    goalsToRemove.add(goal);
-                }
-            }
-        });
-        for (Goal g : goalsToRemove) {
-            mob.goalSelector.removeGoal(g);
+        boolean isFish = mob instanceof AbstractFish;
+        List<Goal> goalsToRemove = mob.goalSelector.getAvailableGoals().stream()
+                .map(WrappedGoal::getGoal)
+                .filter(goal -> shouldRemoveGoal(goal, isFish))
+                .toList();
+
+        goalsToRemove.forEach(mob.goalSelector::removeGoal);
+    }
+
+    private static boolean shouldRemoveGoal(Goal goal, boolean isFish) {
+        if (goal instanceof RandomLookAroundGoal) return true;
+
+        if (isFish) {
+            return goal instanceof RandomSwimmingGoal || goal instanceof PanicGoal;
         }
+
+        return false;
     }
 }

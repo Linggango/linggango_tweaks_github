@@ -1,4 +1,4 @@
-package com.misanthropy.linggango.linggango_tweaks.mixin.tweaks; // Mozilla Public License
+package com.misanthropy.linggango.linggango_tweaks.mixin.tweaks; // Mozilla Public  License
 
 import com.misanthropy.linggango.linggango_tweaks.skills.SkillManager;
 import net.minecraft.world.InteractionHand;

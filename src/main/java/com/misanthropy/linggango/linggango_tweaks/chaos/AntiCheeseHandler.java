@@ -8,18 +8,19 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.jspecify.annotations.NonNull;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Mod.EventBusSubscriber(modid = "linggango_tweaks")
 public class AntiCheeseHandler {
 
-    private static final Map<UUID, PlayerPositionData> TRACKER = new HashMap<>();
+    private static final Map<UUID, PlayerPositionData> TRACKER = new ConcurrentHashMap<>();
     private static final int CHECK_INTERVAL = 20;
     private static final double STATIONARY_THRESHOLD = 1.5;
     private static final int WARNING_TIME = 30;
@@ -33,6 +34,7 @@ public class AntiCheeseHandler {
 
         ServerPlayer player = (ServerPlayer) event.player;
         if (player.isCreative() || player.isSpectator()) return;
+
         if (player.tickCount % CHECK_INTERVAL == 0) {
             UUID uuid = player.getUUID();
             Vec3 currentPos = player.position();
@@ -51,6 +53,11 @@ public class AntiCheeseHandler {
 
             applyDesperationLogic(player, data);
         }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerLogOut(PlayerEvent.PlayerLoggedOutEvent event) {
+        TRACKER.remove(event.getEntity().getUUID());
     }
 
     private static void applyDesperationLogic(@NonNull ServerPlayer player, @NonNull PlayerPositionData data) {

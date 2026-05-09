@@ -5,7 +5,6 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.server.ServerLifecycleHooks;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Map;
@@ -15,37 +14,32 @@ import java.util.concurrent.ConcurrentHashMap;
 @Mod.EventBusSubscriber(modid = "linggango_tweaks")
 public class RespawnSyncFix {
 
-    private static final Map<UUID, Integer> playersToSync = new ConcurrentHashMap<>();
+    private static final Map<UUID, Integer> queue = new ConcurrentHashMap<>();
 
     @SubscribeEvent
     public static void onPlayerRespawn(PlayerEvent.@NonNull PlayerRespawnEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
-            playersToSync.put(player.getUUID(), 40);
+            queue.put(player.getUUID(), 40);
         }
     }
 
     @SubscribeEvent
     public static void onServerTick(TickEvent.@NonNull ServerTickEvent event) {
-        if (event.phase != TickEvent.Phase.END) return;
-        if (playersToSync.isEmpty()) return;
+        if (event.phase != TickEvent.Phase.END || queue.isEmpty()) return;
 
-        net.minecraft.server.MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-        if (server == null) return;
+        var iterator = queue.entrySet().iterator();
+        while (iterator.hasNext()) {
+            var entry = iterator.next();
+            int timeLeft = entry.getValue() - 1;
 
-        for (Map.Entry<UUID, Integer> entry : playersToSync.entrySet()) {
-            UUID uuid = entry.getKey();
-            int ticksLeft = entry.getValue() - 1;
-
-            if (ticksLeft <= 0) {
-                playersToSync.remove(uuid);
-
-                ServerPlayer player = server.getPlayerList().getPlayer(uuid);
+            if (timeLeft <= 0) {
+                iterator.remove();
+                ServerPlayer player = event.getServer().getPlayerList().getPlayer(entry.getKey());
                 if (player != null) {
-                    net.minecraft.server.level.ServerLevel level = player.serverLevel();
-                    player.teleportTo(level, player.getX(), player.getY(), player.getZ(), player.getYRot(), player.getXRot());
+                    player.teleportTo(player.serverLevel(), player.getX(), player.getY(), player.getZ(), player.getYRot(), player.getXRot());
                 }
             } else {
-                playersToSync.put(uuid, ticksLeft);
+                queue.put(entry.getKey(), timeLeft);
             }
         }
     }

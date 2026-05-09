@@ -6,7 +6,7 @@ import org.jspecify.annotations.Nullable;
 
 public class ItemSplitFix {
     public static void fixBug(@Nullable ItemStack stack) {
-        if (stack != null && !stack.isEmpty()) {
+        if (stack != null) {
             CompoundTag tag = stack.getTag();
             if (tag != null && tag.isEmpty()) {
                 stack.setTag(null);

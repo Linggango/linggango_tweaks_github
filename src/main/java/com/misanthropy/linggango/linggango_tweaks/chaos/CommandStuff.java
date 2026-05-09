@@ -12,7 +12,7 @@ import org.jspecify.annotations.NonNull;
 
 
 @Mod.EventBusSubscriber(modid = LinggangoTweaks.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
-public class CommandStuff {
+public class    CommandStuff {
 
     @SubscribeEvent
     public static void onRegisterCommands(@NonNull RegisterCommandsEvent event) {

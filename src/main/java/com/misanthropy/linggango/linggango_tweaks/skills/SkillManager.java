@@ -10,6 +10,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
@@ -36,132 +37,150 @@ import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Mod.EventBusSubscriber(modid = LinggangoTweaks.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class SkillManager {
 
-    private static final UUID VAMP_DAY_ID = UUID.fromString("11a3b8d9-6f1c-4b3a-92e2-5c8e7e120f2a");
+    private static final UUID VAMP_DAY_ID   = UUID.fromString("11a3b8d9-6f1c-4b3a-92e2-5c8e7e120f2a");
     private static final UUID SMAGE_BUFF_ID = UUID.fromString("22a3b8d9-6f1c-4b3a-92e2-5c8e7e120f2b");
-    private static final UUID MONK_STEP_ID = UUID.fromString("33a3b8d9-6f1c-4b3a-92e2-5c8e7e120f2c");
+    private static final UUID MONK_STEP_ID  = UUID.fromString("33a3b8d9-6f1c-4b3a-92e2-5c8e7e120f2c");
     private static final UUID NMAGE_MANA_ID = UUID.fromString("44a3b8d9-6f1c-4b3a-92e2-5c8e7e120f2d");
-    private static final UUID NMAGE_SHRED_ID = UUID.fromString("55a3b8d9-6f1c-4b3a-92e2-5c8e7e120f2e");
+    private static final UUID NMAGE_SHRED_ID= UUID.fromString("55a3b8d9-6f1c-4b3a-92e2-5c8e7e120f2e");
+
+    private static final Map<String, ResourceLocation> RL_CACHE = new ConcurrentHashMap<>();
+    private static final Map<ResourceLocation, SoundEvent> SOUND_CACHE = new ConcurrentHashMap<>();
+    private static final Map<String, Attribute> ATTR_CACHE = new ConcurrentHashMap<>();
+
+    private static final ResourceLocation EARTHQUAKE_RL = new ResourceLocation("irons_spellbooks:earthquake");
+    private static AbstractSpell cachedEarthquakeSpell = null;
+
+    private static ResourceLocation rl(String s) {
+        return RL_CACHE.computeIfAbsent(s, ResourceLocation::new);
+    }
+
+    private static SoundEvent getSound(String id) {
+        return SOUND_CACHE.computeIfAbsent(rl(id), loc -> {
+            SoundEvent evt = ForgeRegistries.SOUND_EVENTS.getValue(loc);
+            return evt != null ? evt : SoundEvent.createVariableRangeEvent(loc);
+        });
+    }
+
+    private static Attribute getAttr(String name) {
+        return ATTR_CACHE.computeIfAbsent(name, n -> ForgeRegistries.ATTRIBUTES.getValue(rl(n)));
+    }
+
+    private static AbstractSpell getEarthquake() {
+        if (cachedEarthquakeSpell == null) {
+            cachedEarthquakeSpell = SpellRegistry.getSpell(EARTHQUAKE_RL);
+        }
+        return cachedEarthquakeSpell;
+    }
 
     public static void playCustomSound(@NonNull Player player, @NonNull String soundId, float vol, float pitch) {
-        ResourceLocation loc = new ResourceLocation(soundId);
-        SoundEvent sound = ForgeRegistries.SOUND_EVENTS.getValue(loc);
-        if (sound == null) {
-            sound = SoundEvent.createVariableRangeEvent(loc);
-        }
-        player.level().playSound(null, player.getX(), player.getY(), player.getZ(), sound, SoundSource.PLAYERS, vol, pitch);
+        player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
+                getSound(soundId), SoundSource.PLAYERS, vol, pitch);
     }
 
     public static String getPlayerClass(@NonNull Player player) {
         if (player.level().isClientSide) {
             return com.misanthropy.linggango.linggango_tweaks.skills.client.ClientSkillEvents.currentClassId;
-        } else {
-            String c = ClassEnhancement.ClassSavedData.get((net.minecraft.server.level.ServerLevel) player.level()).playerClasses.get(player.getUUID());
-            return c != null ? c : "none";
         }
+        String c = ClassEnhancement.ClassSavedData.get((ServerLevel) player.level())
+                .playerClasses.get(player.getUUID());
+        return c != null ? c : "none";
     }
 
     public static void useActiveSkill(@NonNull ServerPlayer player) {
         String classId = getPlayerClass(player);
         CompoundTag data = player.getPersistentData();
+        long gameTime = player.level().getGameTime();
 
         long cdEnd = data.getLong("lt_cd_" + classId);
-        if (player.level().getGameTime() < cdEnd) return;
+        if (gameTime < cdEnd) return;
 
         boolean synced = false;
 
         switch (classId) {
-            case "machinist":
+            case "machinist" -> {
                 ItemStack hand = player.getMainHandItem();
                 if (hand.isDamageableItem()) {
                     int repairAmt = (int) (hand.getMaxDamage() * 0.20f);
                     hand.setDamageValue(Math.max(0, hand.getDamageValue() - repairAmt));
                     setCooldown(player, classId, 12000);
-
                     data.putInt("lt_repair_ticks", 3);
                     synced = true;
                 }
-                break;
-
-            case "north_mage":
+            }
+            case "north_mage" -> {
                 data.putBoolean("lt_nmage_active", true);
                 addAttribute(player, "irons_spellbooks:max_mana", NMAGE_MANA_ID, 0.20, AttributeModifier.Operation.MULTIPLY_BASE);
                 addAttribute(player, "ars_nouveau:ars_nouveau.perk.max_mana", NMAGE_MANA_ID, 0.20, AttributeModifier.Operation.MULTIPLY_BASE);
-                data.putLong("lt_nmage_end", player.level().getGameTime() + 200);
-
+                data.putLong("lt_nmage_end", gameTime + 200);
                 playCustomSound(player, "minecraft:block.enchantment_table.use", 1.0F, 1.0F);
                 synced = true;
-                break;
-
-            case "south_mage":
+            }
+            case "south_mage" -> {
                 boolean smageActive = data.getBoolean("lt_smage_active");
                 if (smageActive) {
                     data.putBoolean("lt_smage_active", false);
                     removeAttribute(player, "irons_spellbooks:spell_power", SMAGE_BUFF_ID);
                     setCooldown(player, classId, 6000);
-
                 } else {
                     data.putBoolean("lt_smage_active", true);
                     playCustomSound(player, "brutality:blood_magic_missile", 1.0F, 1.0F);
                     addAttribute(player, "irons_spellbooks:spell_power", SMAGE_BUFF_ID, 1.0, AttributeModifier.Operation.MULTIPLY_BASE);
                 }
                 synced = true;
-                break;
-
-            case "vampire":
-                boolean vampActive = data.getBoolean("lt_vamp_active");
-                data.putBoolean("lt_vamp_active", !vampActive);
+            }
+            case "vampire" -> {
+                data.putBoolean("lt_vamp_active", !data.getBoolean("lt_vamp_active"));
                 synced = true;
-                break;
-
-            case "miner":
-                boolean crawling = data.getBoolean("lt_crawling");
-                data.putBoolean("lt_crawling", !crawling);
+            }
+            case "miner" -> {
+                data.putBoolean("lt_crawling", !data.getBoolean("lt_crawling"));
                 synced = true;
-                break;
-
-            case "gambler":
+            }
+            case "gambler" -> {
                 if (data.getInt("lt_gambler_roll_timer") > 0) return;
                 data.putInt("lt_gambler_roll_timer", 40);
                 synced = true;
-                break;
-
-            case "gunner":
-                boolean gunnerActive = data.getBoolean("lt_gunner_active");
-                if (!gunnerActive) {
+            }
+            case "gunner" -> {
+                if (!data.getBoolean("lt_gunner_active")) {
                     data.putBoolean("lt_gunner_active", true);
-                    data.putLong("lt_gunner_timeout", player.level().getGameTime() + 100);
+                    data.putLong("lt_gunner_timeout", gameTime + 100);
                     playCustomSound(player, "minecraft:entity.tnt.primed", 1.0F, 1.0F);
                     synced = true;
                 }
-                break;
+            }
         }
 
         if (synced) syncToClient(player, classId);
     }
 
     public static void setCooldown(@NonNull ServerPlayer player, String classId, int ticks) {
-        player.getPersistentData().putLong("lt_cd_" + classId, player.level().getGameTime() + ticks);
-        player.getPersistentData().putInt("lt_maxcd_" + classId, ticks);
+        long end = player.level().getGameTime() + ticks;
+        CompoundTag data = player.getPersistentData();
+        data.putLong("lt_cd_" + classId, end);
+        data.putInt("lt_maxcd_" + classId, ticks);
     }
 
     public static void syncToClient(@NonNull ServerPlayer player, @NonNull String classId) {
         CompoundTag data = player.getPersistentData();
-        long end = data.getLong("lt_cd_" + classId);
-        int remaining = (int) Math.max(0, end - player.level().getGameTime());
+        long gameTime = player.level().getGameTime();
+        int remaining = (int) Math.max(0, data.getLong("lt_cd_" + classId) - gameTime);
         int max = data.getInt("lt_maxcd_" + classId);
 
         boolean isActive = switch (classId) {
             case "south_mage" -> data.getBoolean("lt_smage_active");
             case "north_mage" -> data.getBoolean("lt_nmage_active");
-            case "vampire" -> data.getBoolean("lt_vamp_active");
-            case "miner" -> data.getBoolean("lt_crawling");
-            case "gambler" -> data.getInt("lt_gambler_roll_timer") > 0;
-            case "gunner" -> data.getBoolean("lt_gunner_active");
+            case "vampire"    -> data.getBoolean("lt_vamp_active");
+            case "miner"      -> data.getBoolean("lt_crawling");
+            case "gambler"    -> data.getInt("lt_gambler_roll_timer") > 0;
+            case "gunner"     -> data.getBoolean("lt_gunner_active");
             default -> false;
         };
 
@@ -172,23 +191,20 @@ public class SkillManager {
     @SubscribeEvent
     public static void onLivingDeath(@NonNull LivingDeathEvent event) {
         if (event.getEntity().level().isClientSide) return;
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+        if (!"berserker".equals(getPlayerClass(player))) return;
 
-        if (event.getEntity() instanceof ServerPlayer player && "berserker".equals(getPlayerClass(player))) {
-            long cdEnd = player.getPersistentData().getLong("lt_cd_berserk_revive");
-            if (player.level().getGameTime() >= cdEnd) {
-                event.setCanceled(true);
+        long gameTime = player.level().getGameTime();
+        if (gameTime < player.getPersistentData().getLong("lt_cd_berserk_revive")) return;
 
-                player.setHealth(1.0F);
+        event.setCanceled(true);
+        player.setHealth(1.0F);
+        player.getPersistentData().putLong("lt_cd_berserk_revive", gameTime + 12000);
+        playCustomSound(player, "brutality:big_explosion", 1.0F, 1.0F);
 
-                player.getPersistentData().putLong("lt_cd_berserk_revive", player.level().getGameTime() + 12000);
-
-                playCustomSound(player, "brutality:big_explosion", 1.0F, 1.0F);
-
-                AbstractSpell spell = SpellRegistry.getSpell(new ResourceLocation("irons_spellbooks:earthquake"));
-                if (spell != null && !spell.getSpellId().equals("irons_spellbooks:none")) {
-                    spell.onCast(player.level(), 1, player, CastSource.NONE, MagicData.getPlayerMagicData(player));
-                }
-            }
+        AbstractSpell spell = getEarthquake();
+        if (spell != null && !spell.getSpellId().equals("irons_spellbooks:none")) {
+            spell.onCast(player.level(), 1, player, CastSource.NONE, MagicData.getPlayerMagicData(player));
         }
     }
 
@@ -196,20 +212,34 @@ public class SkillManager {
     public static void onLivingDamage(@NonNull LivingDamageEvent event) {
         if (event.getEntity().level().isClientSide) return;
 
-        if (event.getEntity() instanceof ServerPlayer damagedPlayer) {
-            damagedPlayer.getPersistentData().putLong("lt_last_damage_time", damagedPlayer.level().getGameTime());
-        }
+        LivingEntity victim = event.getEntity();
+        net.minecraft.world.entity.Entity attackerEnt = event.getSource().getEntity();
 
-        if (event.getEntity() instanceof ServerPlayer player && "gambler".equals(getPlayerClass(player))) {
-            float rand = player.level().random.nextFloat();
-            if (rand < 0.01f) {
-                event.setAmount(Float.MAX_VALUE);
-            } else if (rand < 0.11f) {
-                event.setAmount(event.getAmount() * 3.0f);
+        boolean victimIsPlayer = victim instanceof ServerPlayer;
+        boolean attackerIsPlayer = attackerEnt instanceof ServerPlayer;
+
+        if (!victimIsPlayer && !attackerIsPlayer) return;
+
+        long gameTime = victim.level().getGameTime();
+
+        if (victimIsPlayer) {
+            ServerPlayer damaged = (ServerPlayer) victim;
+            damaged.getPersistentData().putLong("lt_last_damage_time", gameTime);
+
+            if ("gambler".equals(getPlayerClass(damaged))) {
+                float rand = damaged.level().random.nextFloat();
+                if (rand < 0.01f) {
+                    event.setAmount(Float.MAX_VALUE);
+                } else if (rand < 0.11f) {
+                    event.setAmount(event.getAmount() * 3.0f);
+                }
             }
         }
 
-        if (event.getSource().getEntity() instanceof ServerPlayer player && "gambler".equals(getPlayerClass(player))) {
+        if (attackerIsPlayer) {
+            ServerPlayer player = (ServerPlayer) attackerEnt;
+            if (!"gambler".equals(getPlayerClass(player))) return;
+
             float rand = player.level().random.nextFloat();
             if (rand < 0.10f) {
                 event.setAmount(event.getAmount() * 3.0f);
@@ -217,9 +247,12 @@ public class SkillManager {
             }
             if (player.level().random.nextFloat() < 0.05f) {
                 LivingEntity target = event.getEntity();
-                MobEffect[] badEffects = {MobEffects.POISON, MobEffects.WITHER, MobEffects.WEAKNESS, MobEffects.MOVEMENT_SLOWDOWN, MobEffects.BLINDNESS};
-                MobEffect randomEffect = badEffects[player.level().random.nextInt(badEffects.length)];
-                target.addEffect(new MobEffectInstance(randomEffect, 100, 0));
+                MobEffect[] badEffects = {
+                        MobEffects.POISON, MobEffects.WITHER, MobEffects.WEAKNESS,
+                        MobEffects.MOVEMENT_SLOWDOWN, MobEffects.BLINDNESS
+                };
+                MobEffect chosen = badEffects[player.level().random.nextInt(badEffects.length)];
+                target.addEffect(new MobEffectInstance(chosen, 100, 0));
             }
         }
     }
@@ -227,60 +260,72 @@ public class SkillManager {
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.@NonNull PlayerTickEvent event) {
         if (event.phase != TickEvent.Phase.END) return;
+
         Player p = event.player;
         CompoundTag data = p.getPersistentData();
         String c = getPlayerClass(p);
+        long gameTime = p.level().getGameTime();
+        boolean isServer = !p.level().isClientSide;
 
-        if (!p.level().isClientSide && p.tickCount % 40 == 0) {
+        if (isServer && p.tickCount % 40 == 0) {
             syncToClient((ServerPlayer) p, c);
         }
 
-        if (c.equals("miner") && data.getBoolean("lt_crawling")) {
+        if ("miner".equals(c) && data.getBoolean("lt_crawling")) {
             p.setPose(Pose.SWIMMING);
         }
 
         if (p.level().isClientSide) return;
 
-        if (c.equals("gambler")) {
+        if ("gambler".equals(c)) {
             int rollTimer = data.getInt("lt_gambler_roll_timer");
             if (rollTimer > 0) {
                 rollTimer--;
                 data.putInt("lt_gambler_roll_timer", rollTimer);
 
                 if (rollTimer % 4 == 0) {
-                    playCustomSound(p, "minecraft:ui.button.click", 0.5F, 1.5F + (p.level().random.nextFloat() * 0.5F));
+                    playCustomSound(p, "minecraft:ui.button.click", 0.5F,
+                            1.5F + (p.level().random.nextFloat() * 0.5F));
                 }
 
                 if (rollTimer == 0) {
                     float failChance = p.level().random.nextFloat();
-
                     if (failChance < 0.10f) {
                         playCustomSound(p, "alexsmobs:sculk_boomer_fart", 1.0f, 1.0f);
-                        p.displayClientMessage(Component.literal("You failed to roll anything!").withStyle(ChatFormatting.RED), true);
+                        p.displayClientMessage(Component.literal("You failed to roll anything!")
+                                .withStyle(ChatFormatting.RED), true);
                     } else {
                         int roll = p.level().random.nextInt(6);
-                        if (roll == 0) {
-                            ItemStack gHand = p.getMainHandItem();
-                            if (gHand.isDamageableItem()) {
-                                gHand.setDamageValue(Math.max(0, gHand.getDamageValue() - (int)(gHand.getMaxDamage() * 0.25f)));
+                        switch (roll) {
+                            case 0 -> {
+                                ItemStack gHand = p.getMainHandItem();
+                                if (gHand.isDamageableItem()) {
+                                    gHand.setDamageValue(Math.max(0, gHand.getDamageValue()
+                                            - (int) (gHand.getMaxDamage() * 0.25f)));
+                                }
+                                playCustomSound(p, "immersive_aircraft:repair", 1.0f, 1.0f);
                             }
-                            playCustomSound(p, "immersive_aircraft:repair", 1.0f, 1.0f);
-                        } else if (roll == 1) {
-                            p.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 600, 1));
-                            playCustomSound(p, "cataclysm:leviathan_roar", 1.0f, 1.0f);
-                        } else if (roll == 2) {
-                            p.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 600, 1));
-                            playCustomSound(p, "dungeonnowloading:fairkeeper_boros_armor_break", 1.0f, 1.0f);
-                        } else if (roll == 3) {
-                            p.addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, 600, 0));
-                            playCustomSound(p, "combatroll:roll_cooldown_ready", 1.0f, 1.0f);
-                        } else if (roll == 4) {
-                            p.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 600, 2));
-                            p.addEffect(new MobEffectInstance(MobEffects.JUMP, 600, 1));
-                            playCustomSound(p, "goety:wind_blast", 1.0f, 1.0f);
-                        } else if (roll == 5) {
-                            p.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 400, 2));
-                            playCustomSound(p, "goety:wight_teleport_scream", 1.0f, 1.0f);
+                            case 1 -> {
+                                p.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 600, 1));
+                                playCustomSound(p, "cataclysm:leviathan_roar", 1.0f, 1.0f);
+                            }
+                            case 2 -> {
+                                p.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 600, 1));
+                                playCustomSound(p, "dungeonnowloading:fairkeeper_boros_armor_break", 1.0f, 1.0f);
+                            }
+                            case 3 -> {
+                                p.addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, 600, 0));
+                                playCustomSound(p, "combatroll:roll_cooldown_ready", 1.0f, 1.0f);
+                            }
+                            case 4 -> {
+                                p.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 600, 2));
+                                p.addEffect(new MobEffectInstance(MobEffects.JUMP, 600, 1));
+                                playCustomSound(p, "goety:wind_blast", 1.0f, 1.0f);
+                            }
+                            case 5 -> {
+                                p.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 400, 2));
+                                playCustomSound(p, "goety:wight_teleport_scream", 1.0f, 1.0f);
+                            }
                         }
                     }
                     setCooldown((ServerPlayer) p, c, 3600);
@@ -305,24 +350,25 @@ public class SkillManager {
                     if (!effects.isEmpty()) {
                         MobEffectInstance inst = effects.get(p.level().random.nextInt(effects.size()));
                         if (inst.getAmplifier() < 4) {
-                            p.addEffect(new MobEffectInstance(inst.getEffect(), inst.getDuration(), inst.getAmplifier() + 1, inst.isAmbient(), inst.isVisible(), inst.showIcon()));
+                            p.addEffect(new MobEffectInstance(inst.getEffect(), inst.getDuration(),
+                                    inst.getAmplifier() + 1, inst.isAmbient(), inst.isVisible(), inst.showIcon()));
                         }
                     }
                 }
             }
         }
 
-        if (c.equals("machinist")) {
+        if ("machinist".equals(c)) {
             int repairTicks = data.getInt("lt_repair_ticks");
             if (repairTicks > 0 && p.tickCount % 4 == 0) {
-                playCustomSound(p, "immersive_aircraft:repair", 1.0F, 1.0F + (3 - repairTicks) * 0.15F);
+                playCustomSound(p, "immersive_aircraft:repair", 1.0F,
+                        1.0F + (3 - repairTicks) * 0.15F);
                 data.putInt("lt_repair_ticks", repairTicks - 1);
             }
         }
 
-        if (c.equals("north_mage") && data.getBoolean("lt_nmage_active")) {
-            long buffEnd = data.getLong("lt_nmage_end");
-            if (p.level().getGameTime() >= buffEnd) {
+        if ("north_mage".equals(c) && data.getBoolean("lt_nmage_active")) {
+            if (gameTime >= data.getLong("lt_nmage_end")) {
                 data.putBoolean("lt_nmage_active", false);
                 removeAttribute(p, "irons_spellbooks:max_mana", NMAGE_MANA_ID);
                 removeAttribute(p, "ars_nouveau:ars_nouveau.perk.max_mana", NMAGE_MANA_ID);
@@ -331,22 +377,21 @@ public class SkillManager {
             }
         }
 
-        if (c.equals("gunner") && data.getBoolean("lt_gunner_active")) {
-            long timeout = data.getLong("lt_gunner_timeout");
-            if (p.level().getGameTime() >= timeout) {
+        if ("gunner".equals(c) && data.getBoolean("lt_gunner_active")) {
+            if (gameTime >= data.getLong("lt_gunner_timeout")) {
                 data.putBoolean("lt_gunner_active", false);
                 setCooldown((ServerPlayer) p, c, 600);
                 syncToClient((ServerPlayer) p, c);
             }
         }
 
-        if (c.equals("north_mage")) {
+        if ("north_mage".equals(c)) {
             addAttribute(p, "puffish_attributes:armor_shred", NMAGE_SHRED_ID, 1.0, AttributeModifier.Operation.ADDITION);
         } else {
             removeAttribute(p, "puffish_attributes:armor_shred", NMAGE_SHRED_ID);
         }
 
-        if (c.equals("ranger")) {
+        if ("ranger".equals(c)) {
             boolean sneaking = p.isCrouching();
             if (sneaking && !data.getBoolean("lt_path_sneak")) {
                 playCustomSound(p, "combatroll:roll_cooldown_ready", 0.7F, 1.0F);
@@ -356,11 +401,11 @@ public class SkillManager {
             }
         }
 
-        if (c.equals("tank") || c.equals("tanker")) {
+        if ("tank".equals(c) || "tanker".equals(c)) {
             long cdEnd = data.getLong("lt_cd_tank");
             boolean isStill = p.isCrouching() && p.getDeltaMovement().horizontalDistanceSqr() < 0.005;
 
-            if (isStill && p.level().getGameTime() >= cdEnd) {
+            if (isStill && gameTime >= cdEnd) {
                 if (!data.getBoolean("lt_was_tanking")) {
                     playCustomSound(p, "dungeonnowloading:fairkeeper_boros_armor_break", 1.0F, 1.0F);
                     data.putBoolean("lt_was_tanking", true);
@@ -368,17 +413,16 @@ public class SkillManager {
                 p.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 10, 0, false, false, true));
             } else if (!isStill && data.getBoolean("lt_was_tanking")) {
                 data.putBoolean("lt_was_tanking", false);
-                setCooldown((ServerPlayer)p, "tank", 200);
-                syncToClient((ServerPlayer)p, c);
+                setCooldown((ServerPlayer) p, "tank", 200);
+                syncToClient((ServerPlayer) p, c);
             }
         }
 
-        if (c.equals("monk")) {
+        if ("monk".equals(c)) {
             int ticks = data.getInt("lt_monk_ticks");
             if (p.isSprinting()) {
                 if (ticks < 60) {
-                    ticks++;
-                    if (ticks == 60) {
+                    if (++ticks == 60) {
                         playCustomSound(p, "goety:wind_blast", 0.6F, 1.2F);
                     }
                 }
@@ -396,8 +440,8 @@ public class SkillManager {
             }
 
             if (p.tickCount % 40 == 0) {
-                long lastDamageTime = data.getLong("lt_last_damage_time");
-                if (p.level().getGameTime() - lastDamageTime >= 200 && p.getHealth() < p.getMaxHealth()) {
+                long lastDmg = data.getLong("lt_last_damage_time");
+                if (gameTime - lastDmg >= 200 && p.getHealth() < p.getMaxHealth()) {
                     p.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 60, 0, false, false, true));
                 }
             }
@@ -405,14 +449,13 @@ public class SkillManager {
             removeAttribute(p, "forge:step_height_addition", MONK_STEP_ID);
         }
 
-        if (c.equals("vampire")) {
+        if ("vampire".equals(c)) {
             boolean isDay = p.level().isDay() && p.level().canSeeSky(p.blockPosition());
             boolean wasDay = data.getBoolean("lt_was_day");
 
             if (isDay != wasDay) {
                 data.putBoolean("lt_was_day", isDay);
-                if (isDay) playCustomSound(p, "goety:frozen_zombie_death", 1.0F, 1.0F);
-                else playCustomSound(p, "goety:wight_teleport_scream", 1.0F, 1.0F);
+                playCustomSound(p, isDay ? "goety:frozen_zombie_death" : "goety:wight_teleport_scream", 1.0F, 1.0F);
             }
 
             if (isDay) {
@@ -429,19 +472,16 @@ public class SkillManager {
             removeAttribute(p, "minecraft:generic.max_health", VAMP_DAY_ID);
         }
 
-        if (c.equals("berserker")) {
-            long currentTime = p.level().getGameTime();
-            long rageCooldown = data.getLong("lt_rage_cooldown");
+        if ("berserker".equals(c)) {
             long rageEnd = data.getLong("lt_rage_end");
+            long rageCd = data.getLong("lt_rage_cooldown");
+            boolean isRaging = gameTime < rageEnd;
+            float health = p.getHealth();
 
-            boolean isRaging = currentTime < rageEnd;
-
-            if (p.getHealth() <= 6.0f && !isRaging && currentTime >= rageCooldown) {
+            if (health <= 6.0f && !isRaging && gameTime >= rageCd) {
                 isRaging = true;
-                data.putLong("lt_rage_end", currentTime + 1200);
-
-                data.putLong("lt_rage_cooldown", currentTime + 4800);
-
+                data.putLong("lt_rage_end", gameTime + 1200);
+                data.putLong("lt_rage_cooldown", gameTime + 4800);
                 playCustomSound(p, "cataclysm:leviathan_roar", 1.0F, 1.0F);
             }
 
@@ -451,14 +491,12 @@ public class SkillManager {
                 p.addEffect(new MobEffectInstance(MobEffects.DIG_SPEED, 30, 1, false, false, true));
             }
 
-            if (p.getHealth() <= 6.0f && p.isAlive()) {
+            if (health <= 6.0f) {
                 int hbTimer = data.getInt("lt_heartbeat_timer");
                 if (hbTimer <= 0) {
-                    float hp = Math.max(1.0f, Math.min(p.getHealth(), 6.0f));
-
+                    float hp = Math.max(1.0f, Math.min(health, 6.0f));
                     float pitch = 1.5f - ((hp - 1.0f) / 5.0f) * 0.7f;
                     int nextInterval = (int) (10.0f + ((hp - 1.0f) / 5.0f) * 50.0f);
-
                     playCustomSound(p, "armageddon_mod:heartbeat", 1.0F, pitch);
                     data.putInt("lt_heartbeat_timer", nextInterval);
                 } else {
@@ -469,7 +507,7 @@ public class SkillManager {
             }
         }
 
-        if (c.equals("south_mage") && data.getBoolean("lt_smage_active")) {
+        if ("south_mage".equals(c) && data.getBoolean("lt_smage_active")) {
             if (p.tickCount % 20 == 0) {
                 playCustomSound(p, "celestisynth:heartbeat", 1.0F, 1.0F);
                 p.hurt(p.damageSources().magic(), 2.0f);
@@ -479,24 +517,25 @@ public class SkillManager {
 
     @SubscribeEvent
     public static void onVisibility(LivingEvent.@NonNull LivingVisibilityEvent event) {
-        if (event.getEntity() instanceof Player p && p.isCrouching()) {
-            if ("ranger".equals(getPlayerClass(p))) {
-                event.modifyVisibility(0.75);
-            }
+        if (event.getEntity() instanceof Player p && p.isCrouching()
+                && "ranger".equals(getPlayerClass(p))) {
+            event.modifyVisibility(0.75);
         }
     }
 
     @SubscribeEvent
     public static void onSetTarget(@NonNull LivingChangeTargetEvent event) {
-        if (event.getNewTarget() instanceof Player p && "scum".equals(getPlayerClass(p))) {
-            if (p.level().random.nextFloat() < 0.5f) {
-                event.setNewTarget(null);
-            }
+        if (event.getNewTarget() instanceof Player p
+                && "scum".equals(getPlayerClass(p))
+                && p.level().random.nextFloat() < 0.5f) {
+            event.setNewTarget(null);
         }
     }
 
-    private static void addAttribute(@NonNull Player p, @NonNull String regName, @NonNull UUID id, double val, AttributeModifier.@NonNull Operation op) {
-        Attribute attr = ForgeRegistries.ATTRIBUTES.getValue(new ResourceLocation(regName));
+    private static void addAttribute(@NonNull Player p, @NonNull String regName,
+                                     @NonNull UUID id, double val,
+                                     AttributeModifier.@NonNull Operation op) {
+        Attribute attr = getAttr(regName);
         if (attr == null) return;
         AttributeInstance inst = p.getAttribute(attr);
         if (inst != null && inst.getModifier(id) == null) {
@@ -505,7 +544,7 @@ public class SkillManager {
     }
 
     private static void removeAttribute(@NonNull Player p, @NonNull String regName, @NonNull UUID id) {
-        Attribute attr = ForgeRegistries.ATTRIBUTES.getValue(new ResourceLocation(regName));
+        Attribute attr = getAttr(regName);
         if (attr == null) return;
         AttributeInstance inst = p.getAttribute(attr);
         if (inst != null) inst.removeModifier(id);

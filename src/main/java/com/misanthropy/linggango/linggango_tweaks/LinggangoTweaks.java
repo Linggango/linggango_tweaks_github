@@ -1,16 +1,20 @@
 package com.misanthropy.linggango.linggango_tweaks;
 
+import com.misanthropy.linggango.linggango_tweaks.ai.AITweaksManager;
 import com.misanthropy.linggango.linggango_tweaks.chaos.ChaosDifficultyAddon;
 import com.misanthropy.linggango.linggango_tweaks.client.LinggangoRichPresence;
+import com.misanthropy.linggango.linggango_tweaks.config.AtmosphereConfigManager;
 import com.misanthropy.linggango.linggango_tweaks.config.SpawnerClientConfig;
 import com.misanthropy.linggango.linggango_tweaks.config.TweaksConfig;
 import com.misanthropy.linggango.linggango_tweaks.enchant.LinggangoEnchantments;
 import com.misanthropy.linggango.linggango_tweaks.fixes.LanguageRelatedCrashFixes;
 import com.misanthropy.linggango.linggango_tweaks.loot.BalancedLootRandomizerModifier;
-import com.misanthropy.linggango.linggango_tweaks.network.ParryNetwork;
+import com.misanthropy.linggango.linggango_tweaks.network.NetworkHandler;
+import com.misanthropy.linggango.linggango_tweaks.parry.ParryNetwork;
 import com.misanthropy.linggango.linggango_tweaks.qol.LogSpamFilter;
 import com.misanthropy.linggango.linggango_tweaks.registry.LinggangoAttributes;
 import com.misanthropy.linggango.linggango_tweaks.registry.ModParticles;
+import com.misanthropy.linggango.linggango_tweaks.registry.SoundRegistry;
 import com.misanthropy.linggango.linggango_tweaks.skills.TweaksSkillNetwork;
 import com.misanthropy.linggango.linggango_tweaks.structures.CleanWaterProcessor;
 import com.misanthropy.linggango.linggango_tweaks.tweaks.JeiSortStuff;
@@ -28,6 +32,7 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -59,10 +64,12 @@ public class LinggangoTweaks {
         PLACEMENTS.register(modEventBus);
         LinggangoAttributes.ATTRIBUTES.register(modEventBus);
         ModParticles.register(modEventBus);
+        SoundRegistry.register(modEventBus);
         TweaksConfig.register();
         LanguageRelatedCrashFixes.fixLocale();
         JeiSortStuff.patchJeiSortOrder();
         LinggangoRichPresence.init();
+        AtmosphereConfigManager.load();
         SpawnChanges.init();
         LogSpamFilter.register();
         TweaksSkillNetwork.register();
@@ -71,5 +78,11 @@ public class LinggangoTweaks {
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(LeashAllat.class);
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, SpawnerClientConfig.SPEC, "linggango-client.toml");
+        modEventBus.addListener(this::commonSetup);
+        modEventBus.addListener(AITweaksManager::onCommonSetup);
+    }
+
+    private void commonSetup(final FMLCommonSetupEvent event) {
+        event.enqueueWork(NetworkHandler::register);
     }
 }

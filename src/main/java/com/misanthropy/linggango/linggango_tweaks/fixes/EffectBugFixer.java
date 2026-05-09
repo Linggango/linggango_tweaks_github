@@ -1,47 +1,23 @@
 package com.misanthropy.linggango.linggango_tweaks.fixes;
 
 import com.misanthropy.linggango.linggango_tweaks.LinggangoTweaks;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraftforge.event.TickEvent;
+import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.event.entity.living.MobEffectEvent;
+import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.server.ServerLifecycleHooks;
-import org.jspecify.annotations.NonNull;
 
-
-@Mod.EventBusSubscriber(modid  = LinggangoTweaks.MOD_ID)
+@Mod.EventBusSubscriber(modid = LinggangoTweaks.MOD_ID)
 public class EffectBugFixer {
 
     private static final int MAX_SAFE_DURATION = 19200;
-    private static int tickTimer = 0;
 
     @SubscribeEvent
-    public static void onServerTick(TickEvent.@NonNull ServerTickEvent event) {
-        if (event.phase != TickEvent.Phase.END) return;
-
-        tickTimer++;
-
-        if (tickTimer >= 1200) {
-            tickTimer = 0;
-
-            MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-            if (server == null) return;
-
-            for (ServerPlayer player : server.getPlayerList().getPlayers()) {
-                java.util.List<net.minecraft.world.effect.MobEffect> effectsToRemove = new java.util.ArrayList<>();
-
-                for (MobEffectInstance instance : player.getActiveEffects()) {
-                    int duration = instance.getDuration();
-                    if (duration > MAX_SAFE_DURATION || duration == -1) {
-                        effectsToRemove.add(instance.getEffect());
-                    }
-                }
-
-                for (net.minecraft.world.effect.MobEffect effect : effectsToRemove) {
-                    player.removeEffect(effect);
-                }
+    public static void onEffectApplicable(MobEffectEvent.Applicable event) {
+        if (event.getEntity() instanceof Player) {
+            int duration = event.getEffectInstance().getDuration();
+            if (duration > MAX_SAFE_DURATION || duration == -1) {
+                event.setResult(Event.Result.DENY);
             }
         }
     }
