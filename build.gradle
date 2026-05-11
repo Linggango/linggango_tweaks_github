@@ -139,13 +139,12 @@ dependencies {
     compileOnly fg.deobf(files("libs/irons_spellbooks-1.20.1-3.15.4.jar"))
     compileOnly fg.deobf(files("libs/species-3.5.jar"))
     compileOnly fg.deobf(files("libs/covenant_of_the_seven-2.2.6-hotfix.jar"))
-    compileOnly fg.deobf(files("libs/photon-forge-1.20.1-1.1.17.jar"))
 
     implementation fg.deobf("curse.maven:difficulty-enhancement-1456194:7953458")
     compileOnly fg.deobf("curse.maven:mowzies-mobs-250498:7815705")
     compileOnly fg.deobf("curse.maven:enigmatic-legacy-336184:5600004")
     compileOnly fg.deobf("curse.maven:to-tweaks-irons-spells-1046916:7424522")
-    compileOnly fg.deobf("curse.maven:brutality-a-terramity-addon-1298802:7224161")
+    compileOnly fg.deobf("curse.maven:brutality-a-terramity-addon-1298802:7224161") // requires photon
     compileOnly fg.deobf("curse.maven:ribbits-622967:7354928")
     compileOnly fg.deobf("curse.maven:artifacts-312353:7903806")
     compileOnly fg.deobf("curse.maven:modernfix-790626:7911677")
@@ -188,6 +187,9 @@ dependencies {
     implementation fg.deobf("curse.maven:citadel-331936:7476570")
     compileOnly fg.deobf("curse.maven:placebo-283644:6274231")
     implementation fg.deobf("curse.maven:ending-library-1471165:8026953")
+    runtimeOnly fg.deobf("curse.maven:dreamwoods-1219645:7685925")
+    runtimeOnly fg.deobf("curse.maven:deeper-darker-659011:5906086")
+    compileOnly fg.deobf("curse.maven:photon-871522:7501597") //impossible to run in IDEA due to architectury
 }
 
 shadowJar {

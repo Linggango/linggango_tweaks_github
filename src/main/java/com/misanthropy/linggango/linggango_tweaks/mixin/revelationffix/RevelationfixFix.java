@@ -23,7 +23,7 @@ public abstract class RevelationfixFix extends Enchantment {
      * @reason Replaces hardcoded path with a safer one. Because fuck hardcoded stuff
      */
     @Overwrite
-    public void m_7677_(LivingEntity attacker, Entity target, int level) {
+    public void m_7677_(LivingEntity attacker, Entity target, int level) { //doPostAttack
         if (target == null) return;
         String entityName = target.getType().toString();
         boolean isImmortal = entityName.equals("entity.eeeabsmobs.immortal") || entityName.contains("immortal");
