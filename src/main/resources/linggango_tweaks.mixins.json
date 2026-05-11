@@ -59,6 +59,7 @@
     "enigmatic.EnigmaticFix",
     "enigmatic_legacy.CursedRingMixin",
     "enigmatic_legacy.HiddenRecipeMixin",
+    "goety.ApostleMixin",
     "goety.GoetyBlockFinderPatchMixin",
     "goety.GoetyCustomerAiPatchMixin",
     "l2.ApostleTitleMixin",
