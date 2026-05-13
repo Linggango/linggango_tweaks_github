@@ -1,6 +1,7 @@
 package com.misanthropy.linggango.linggango_tweaks.tweaks;
 
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.ArmorItem;
@@ -47,9 +48,11 @@ public class SynergiesArmorTweaks {
             if (event.getSlotType() == armorItem.getEquipmentSlot()) {
                 ResourceLocation id = ForgeRegistries.ITEMS.getKey(armorItem);
 
-                if (id != null) {
+                if (id != null && id.getNamespace().equals("elemental_synergies")) {
+
                     double bonusArmor = 4.0;
                     double bonusToughness = 2.0;
+
                     if (SPECIAL_BUFF_ARMOR.contains(id.toString())) {
                         bonusArmor = 6.0;
                         bonusToughness = 3.0;
@@ -57,8 +60,27 @@ public class SynergiesArmorTweaks {
 
                     UUID armorUUID = UUID.nameUUIDFromBytes(("linggango_armor_buff_" + event.getSlotType().getName()).getBytes());
                     UUID toughnessUUID = UUID.nameUUIDFromBytes(("linggango_toughness_buff_" + event.getSlotType().getName()).getBytes());
+
                     event.addModifier(Attributes.ARMOR, new AttributeModifier(armorUUID, "Linggango Armor Buff", bonusArmor, AttributeModifier.Operation.ADDITION));
                     event.addModifier(Attributes.ARMOR_TOUGHNESS, new AttributeModifier(toughnessUUID, "Linggango Toughness Buff", bonusToughness, AttributeModifier.Operation.ADDITION));
+
+                    ForgeRegistries.ATTRIBUTES.getEntries().forEach(entry -> {
+                        ResourceLocation attrId = entry.getKey().location();
+
+                        if (attrId.getNamespace().equals("irons_spellbooks")) {
+                            Attribute attribute = entry.getValue();
+                            String path = attrId.getPath();
+
+                            if (path.contains("spell_power")) {
+                                UUID spellUUID = UUID.nameUUIDFromBytes(("linggango_spell_buff_" + path + "_" + event.getSlotType().getName()).getBytes());
+
+                                event.addModifier(attribute, new AttributeModifier(spellUUID, "Linggango " + path + " Buff", 0.85, AttributeModifier.Operation.MULTIPLY_BASE));
+                            } else if (path.equals("max_mana")) {
+                                UUID manaUUID = UUID.nameUUIDFromBytes(("linggango_mana_buff_" + event.getSlotType().getName()).getBytes());
+                                event.addModifier(attribute, new AttributeModifier(manaUUID, "Linggango Max Mana Buff", 100.0, AttributeModifier.Operation.ADDITION));
+                            }
+                        }
+                    });
                 }
             }
         }

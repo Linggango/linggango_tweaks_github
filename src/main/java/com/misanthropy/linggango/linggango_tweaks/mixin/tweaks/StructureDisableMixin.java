@@ -44,7 +44,8 @@ public class StructureDisableMixin {
             if (path.equals("create_structures_arise:darkcastle") ||
                     path.equals("create_structures_arise:obsidiantemple") ||
                     path.equals("structures:castle_war") ||
-                    path.equals("terramity:suspicious_shrine")) {
+                    path.equals("terramity:suspicious_shrine") ||
+                path.equals("goety_revelation:church")) {
                 cir.setReturnValue(StructureStart.INVALID_START);
             }
         }

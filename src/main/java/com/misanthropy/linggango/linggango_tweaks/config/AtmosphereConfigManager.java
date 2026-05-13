@@ -12,7 +12,6 @@ import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
-// filthy .json system
 public class AtmosphereConfigManager {
 
     public static class AtmosphereSettings {

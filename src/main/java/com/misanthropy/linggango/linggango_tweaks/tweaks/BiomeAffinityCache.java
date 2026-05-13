@@ -22,6 +22,10 @@ public class BiomeAffinityCache {
         return biome.unwrapKey().map(natives::contains).orElse(false);
     }
 
+    public static boolean hasAnyNaturalSpawns(EntityType<?> type) {
+        return NATIVE_BIOMES.containsKey(type);
+    }
+
     public static void clear() {
         NATIVE_BIOMES.clear();
     }

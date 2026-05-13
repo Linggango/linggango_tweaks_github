@@ -48,6 +48,13 @@ public class BrutalityWeaponTweaks {
     }
 
     private static @Nullable AttributeModifier getBrutalityModifier(@NonNull String path, double baseDamage) {
+        if (path.equals("onyx_phasesaber") ||
+                path.equals("ruby_phasesaber") ||
+                path.equals("sapphire_phasesaber") ||
+                path.equals("topaz_phasesaber")) {
+            return null;
+        }
+
         double bonus = 0;
 
         if (path.equals("royal_guardian_sword")) {

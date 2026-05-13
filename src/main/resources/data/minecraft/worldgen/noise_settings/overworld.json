@@ -12,7 +12,7 @@
   "disable_mob_generation": false,
   "legacy_random_source": false,
   "noise": {
-    "height": 384,
+    "height": 512,
     "min_y": -64,
     "size_horizontal": 1,
     "size_vertical": 1
@@ -24,7 +24,6 @@
       "argument2": "minecraft:overworld/noise_router/barrier"
     },
     "continents": "minecraft:overworld/noise_router/continents",
-    "depth": "minecraft:overworld/noise_router/depth",
     "erosion": "minecraft:overworld/noise_router/erosion",
     "final_density": {
       "type": "minecraft:min",

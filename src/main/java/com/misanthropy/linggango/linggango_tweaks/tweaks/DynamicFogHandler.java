@@ -12,6 +12,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.FogType;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
@@ -59,6 +60,7 @@ public class DynamicFogHandler {
     private static boolean loaded = false;
     private static final AtmosphericNoise noiseGen = new AtmosphericNoise(89234L);
 
+    private static ResourceKey<Level> lastLevel = null;
     private static float currentNearPlane = -1.0F;
     private static float currentFarPlane = -1.0F;
     private static float currentR = -1.0F;
@@ -199,10 +201,15 @@ public class DynamicFogHandler {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null || mc.player == null) {
             linggango_tweaks$resetSmoothing();
+            lastLevel = null;
             return;
         }
 
         var level = mc.level;
+        if (lastLevel != level.dimension()) {
+            linggango_tweaks$resetSmoothing();
+            lastLevel = level.dimension();
+        }
 
         if (event.getCamera().getEntity() != mc.player || mc.player.hasEffect(MobEffects.NIGHT_VISION) || mc.player.hasEffect(MobEffects.BLINDNESS) || mc.player.hasEffect(MobEffects.DARKNESS) || mc.player.isSpectator()) {
             return;
@@ -223,7 +230,6 @@ public class DynamicFogHandler {
             clearWeatherNear = centerSettings.fogStart;
             clearWeatherFar = centerSettings.fogEnd;
             originalEnd = centerSettings.fogEnd;
-
         }
 
         float edgeSoftness = (float) Mth.clamp(chunkBorderFogSoftness, 0.0D, 0.35D);
@@ -269,10 +275,10 @@ public class DynamicFogHandler {
         float edgeBias = originalEnd * edgeSoftness * edgeWeatherMask;
         float edgeNearBias = edgeBias * 0.34F;
         float farPlaneCap = originalEnd + edgeBias;
-
-        float targetFar = Mth.clamp(clearWeatherFar + edgeBias, originalEnd * 0.55F, farPlaneCap);
-        float targetNear = Mth.clamp(clearWeatherNear + edgeNearBias, 0.0F, targetFar - 0.5F);
-
+        float absoluteMinFar = Math.max(32.0F, originalEnd * 0.15F);
+        float targetFar = Mth.clamp(clearWeatherFar + edgeBias, absoluteMinFar, farPlaneCap);
+        float minGap = Math.max(16.0F, targetFar * 0.35F);
+        float targetNear = Mth.clamp(clearWeatherNear + edgeNearBias, 0.0F, targetFar - minGap);
         boolean isEditing = mc.screen instanceof AtmosphereEditorScreen;
         float distLerp = isEditing ? 1.0F : 0.015F;
 
@@ -298,10 +304,16 @@ public class DynamicFogHandler {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null) {
             linggango_tweaks$resetSmoothing();
+            lastLevel = null;
             return;
         }
 
         var level = mc.level;
+
+        if (lastLevel != level.dimension()) {
+            linggango_tweaks$resetSmoothing();
+            lastLevel = level.dimension();
+        }
 
         if (mc.player != null && (mc.player.hasEffect(MobEffects.NIGHT_VISION) || mc.player.hasEffect(MobEffects.BLINDNESS) || mc.player.hasEffect(MobEffects.DARKNESS))) {
             return;
@@ -315,9 +327,9 @@ public class DynamicFogHandler {
         float g = event.getGreen();
         float b = event.getBlue();
 
-        float vanillaLuma = Math.max(0.001F, linggango_tweaks$luminance(r, g, b));
-        float biomeLuma = Math.max(0.001F, linggango_tweaks$luminance(sampledBiomeR, sampledBiomeG, sampledBiomeB));
-        float skyLuma = Math.max(0.001F, linggango_tweaks$luminance(sampledSkyR, sampledSkyG, sampledSkyB));
+        float vanillaLuma = Math.max(0.05F, linggango_tweaks$luminance(r, g, b));
+        float biomeLuma = Math.max(0.05F, linggango_tweaks$luminance(sampledBiomeR, sampledBiomeG, sampledBiomeB));
+        float skyLuma = Math.max(0.05F, linggango_tweaks$luminance(sampledSkyR, sampledSkyG, sampledSkyB));
 
         float biomeRatio = vanillaLuma / biomeLuma;
         float skyRatio = vanillaLuma / skyLuma;
@@ -431,7 +443,7 @@ public class DynamicFogHandler {
         int dx = sampleX - lastSampleX;
         int dy = sampleY - lastSampleY;
         int dz = sampleZ - lastSampleZ;
-        boolean shouldReuse = gameTime - lastSampleTick < COLOR_SAMPLE_INTERVAL_TICKS
+        boolean shouldReuse = Math.abs(gameTime - lastSampleTick) < COLOR_SAMPLE_INTERVAL_TICKS
                 && dx * dx + dy * dy + dz * dz <= COLOR_SAMPLE_REUSE_DISTANCE_SQR;
         if (shouldReuse) {
             return;

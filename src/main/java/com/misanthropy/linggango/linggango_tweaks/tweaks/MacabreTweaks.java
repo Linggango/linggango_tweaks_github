@@ -25,7 +25,6 @@ public class MacabreTweaks {
             Map.entry("macabre:valamon_gut_whip", 25.0),
             Map.entry("macabre:spearplunder", 10.0),
             Map.entry("macabre:shorgan", 3.0),
-
             // dont ask why ts here
             Map.entry("monsterexpansion:horn_of_the_shattercry", 6.0),
             Map.entry("monsterexpansion:duskrend", 10.0),

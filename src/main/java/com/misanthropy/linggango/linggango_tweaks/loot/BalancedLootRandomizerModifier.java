@@ -205,7 +205,6 @@ public class BalancedLootRandomizerModifier extends LootModifier {
             Entity entity = context.getParamOrNull(LootContextParams.THIS_ENTITY);
 
             if (entity instanceof ServerPlayer player) {
-                // Loop backwards to find the highest unlocked stage
                 for (int i = STAGES.length - 1; i >= 1; i--) {
                     Advancement adv = Objects.requireNonNull(player.getServer()).getAdvancements().getAdvancement(STAGES[i].advId);
                     if (adv != null && player.getAdvancements().getOrStartProgress(adv).isDone()) {

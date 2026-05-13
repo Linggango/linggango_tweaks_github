@@ -18,5 +18,6 @@ public class NetworkHandler {
     public static void register() {
         int id = 0;
         CHANNEL.registerMessage(id++, PerfectHitPacket.class, PerfectHitPacket::encode, PerfectHitPacket::new, PerfectHitPacket::handle);
+        CHANNEL.registerMessage(id++, PlayCustomCreditsPacket.class, PlayCustomCreditsPacket::encode, PlayCustomCreditsPacket::new, PlayCustomCreditsPacket::handle);
     }
 }

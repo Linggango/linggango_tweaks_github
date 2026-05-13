@@ -2,9 +2,6 @@ package com.misanthropy.linggango.linggango_tweaks.tweaks;
 
 import com.misanthropy.linggango.linggango_tweaks.LinggangoTweaks;
 import com.misanthropy.linggango.linggango_tweaks.config.TweaksConfig;
-import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
@@ -25,7 +22,10 @@ import net.minecraftforge.registries.ForgeRegistries;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -33,38 +33,32 @@ import java.util.concurrent.ThreadLocalRandom;
 public class SpawnMiddleware {
 
     private static final long CHUNK_TTL_MS = 600_000L;
-    private static final Long2ObjectMap<ChunkSpawnData> CHUNK_DATA = new Long2ObjectOpenHashMap<>();
-    private static final Set<String> BOSS_BLACKLIST = ConcurrentHashMap.newKeySet();
-
-    private static final Map<MobCategory, List<WeightedType>> REPLACEMENT_POOLS = new HashMap<>();
-    private static boolean poolsInitialized = false;
-    private static int tickCounter = 0;
+    private static final Map<Long, ChunkSpawnData> CHUNK_DATA = new ConcurrentHashMap<>();
+    private static final Map<MobCategory, List<WeightedType>> REPLACEMENT_POOLS = new ConcurrentHashMap<>();
+    private static volatile boolean poolsInitialized = false;
 
     @SubscribeEvent
     public static void onServerTick(TickEvent.ServerTickEvent event) {
         if (event.phase != TickEvent.Phase.END) return;
-        if (++tickCounter % 1200 == 0) cleanupOldChunks();
+        if (event.getServer().getTickCount() % 1200 == 0) cleanupOldChunks();
     }
 
     @SubscribeEvent
     public static void onCheckSpawn(MobSpawnEvent.@NonNull FinalizeSpawn event) {
-        if (!TweaksConfig.ENABLE_DYNAMIC_BALANCING.get()) return;
-        if (event.getSpawnType() != MobSpawnType.NATURAL) return;
+        if (!TweaksConfig.ENABLE_DYNAMIC_BALANCING.get() || event.getSpawnType() != MobSpawnType.NATURAL) return;
 
         Mob entity = event.getEntity();
-        if (entity.getTags().contains("linggango_processed")) return;
-        if (entity.level().isClientSide()) return;
+        if (entity.getTags().contains("linggango_processed") || entity.level().isClientSide()) return;
 
         ServerLevelAccessor sla = event.getLevel();
         ServerLevel level = sla.getLevel();
         if (level.dimension() != Level.OVERWORLD) return;
 
         initPools();
-        initBossBlacklist();
 
         ResourceLocation id = ForgeRegistries.ENTITY_TYPES.getKey(entity.getType());
         if (id == null) return;
-        if (BOSS_BLACKLIST.contains(id.toString())) {
+        if (SpawnChanges.isBlocked(id)) {
             event.setSpawnCancelled(true);
             return;
         }
@@ -75,21 +69,17 @@ public class SpawnMiddleware {
         Holder<Biome> biome = level.getBiome(entity.blockPosition());
 
         entity.addTag("linggango_processed");
-        SpawnStatistics.record(entity.getType());
+        SpawnStatistics.record(entity.getType(), entity.getType().getCategory());
 
         int sameType = chunk.getCount(entity.getType());
         int hardCap = TweaksConfig.HARD_CAP_PER_TYPE.get();
         int softCap = TweaksConfig.MAX_SAME_TYPE_PER_CHUNK.get();
 
         if (sameType >= hardCap) {
-            EntityType<?> fallback = selectReplacement(
-                    entity.getType().getCategory(), chunk, biome,
-                    entity.blockPosition(), sla, false);
-
-            if (fallback != null && fallback != entity.getType()
-                    && trySpawnReplacement(entity, fallback, sla, event)) {
+            EntityType<?> fallback = selectReplacement(entity.getType().getCategory(), chunk, biome, entity.blockPosition(), sla, false);
+            if (fallback != null && fallback != entity.getType() && trySpawnReplacement(entity, fallback, sla, event)) {
                 chunk.record(fallback, isVanilla(fallback));
-                SpawnStatistics.record(fallback);
+                SpawnStatistics.record(fallback, fallback.getCategory());
                 return;
             }
             event.setSpawnCancelled(true);
@@ -97,14 +87,10 @@ public class SpawnMiddleware {
         }
 
         if (sameType >= softCap && !isVanilla) {
-            EntityType<?> rot = selectReplacement(
-                    entity.getType().getCategory(), chunk, biome,
-                    entity.blockPosition(), sla, false);
-
-            if (rot != null && rot != entity.getType()
-                    && trySpawnReplacement(entity, rot, sla, event)) {
+            EntityType<?> rot = selectReplacement(entity.getType().getCategory(), chunk, biome, entity.blockPosition(), sla, false);
+            if (rot != null && rot != entity.getType() && trySpawnReplacement(entity, rot, sla, event)) {
                 chunk.record(rot, isVanilla(rot));
-                SpawnStatistics.record(rot);
+                SpawnStatistics.record(rot, rot.getCategory());
                 return;
             }
         }
@@ -113,17 +99,12 @@ public class SpawnMiddleware {
             float moddedRatio = chunk.getModdedRatio();
             float targetRatio = (float) (double) TweaksConfig.TARGET_MODDED_RATIO.get();
             if (moddedRatio < targetRatio) {
-                float deficit = 1.0f - (moddedRatio / targetRatio);
-                float chance = 0.45f * deficit;
+                float chance = 0.45f * (1.0f - (moddedRatio / targetRatio));
                 if (ThreadLocalRandom.current().nextFloat() < chance) {
-                    EntityType<?> inject = selectReplacement(
-                            entity.getType().getCategory(), chunk, biome,
-                            entity.blockPosition(), sla, true);
-
-                    if (inject != null && inject != entity.getType() && !isVanilla(inject)
-                            && trySpawnReplacement(entity, inject, sla, event)) {
+                    EntityType<?> inject = selectReplacement(entity.getType().getCategory(), chunk, biome, entity.blockPosition(), sla, true);
+                    if (inject != null && inject != entity.getType() && !isVanilla(inject) && trySpawnReplacement(entity, inject, sla, event)) {
                         chunk.record(inject, false);
-                        SpawnStatistics.record(inject);
+                        SpawnStatistics.record(inject, inject.getCategory());
                         return;
                     }
                 }
@@ -135,21 +116,15 @@ public class SpawnMiddleware {
 
     @SubscribeEvent
     public static void onServerStop(ServerStoppingEvent event) {
+        SpawnChanges.clear();
         CHUNK_DATA.clear();
         REPLACEMENT_POOLS.clear();
         poolsInitialized = false;
-        BOSS_BLACKLIST.clear();
+        BiomeAffinityCache.clear();
     }
 
-    private static @Nullable EntityType<?> selectReplacement(
-            MobCategory category,
-            ChunkSpawnData chunk,
-            Holder<Biome> biome,
-            BlockPos pos,
-            ServerLevelAccessor level,
-            boolean preferModded
-    ) {
-        if (category == null) return null;
+    private static @Nullable EntityType<?> selectReplacement(MobCategory category, ChunkSpawnData chunk, Holder<Biome> biome, BlockPos pos, ServerLevelAccessor level, boolean preferModded) {
+        if (category == null || category == MobCategory.MISC) return null;
 
         List<WeightedType> pool = REPLACEMENT_POOLS.get(category);
         if (pool == null || pool.isEmpty()) return null;
@@ -158,11 +133,6 @@ public class SpawnMiddleware {
         float total = 0.0f;
         RandomSource random = level.getRandom();
 
-        float unseenBonus = 3.0f;
-        float seenLight = 0.6f;
-        float seenHeavy = 0.15f;
-        float globalBoost = 2.5f;
-        float globalPenalty = 0.35f;
         float nativeMult = (float) (double) TweaksConfig.BIOME_NATIVE_MULTIPLIER.get();
         float foreignMult = (float) (double) TweaksConfig.BIOME_FOREIGN_MULTIPLIER.get();
 
@@ -171,30 +141,26 @@ public class SpawnMiddleware {
             float w = wt.baseWeight;
 
             int count = chunk.getCount(wt.type);
-            if (count == 0)        w *= unseenBonus;
-            else if (count <= 2)   w *= seenLight;
-            else if (count <= 4)   w *= seenHeavy;
-            else                   w *= 0.05f;
+            if (count == 0) w *= 1.5f;
+            else if (count <= 2) w *= 1.0f;
+            else if (count <= 4) w *= 0.7f;
+            else w *= 0.4f;
 
-            double relFreq = SpawnStatistics.getRelativeFrequency(wt.type);
-            if (relFreq < 0.5)       w *= globalBoost;
-            else if (relFreq > 2.0)  w *= globalPenalty;
-            else                     w *= (float) (1.0 / relFreq);
+            int uniqueInChunk = chunk.uniqueTypes();
+            if (uniqueInChunk < 3) w *= 1.4f;
+            else if (uniqueInChunk < 6) w *= 1.15f;
 
-            if (BiomeAffinityCache.isNative(wt.type, biome)) {
-                w *= nativeMult;
-            } else {
-                w *= foreignMult;
-            }
+            double relFreq = SpawnStatistics.getRelativeFrequency(wt.type, category);
+            if (relFreq < 0.3) w *= 2.0f;
+            else if (relFreq < 0.7) w *= 1.4f;
+            else if (relFreq < 1.3) w *= 1.0f;
+            else if (relFreq < 2.0) w *= 0.6f;
+            else w *= 0.3f;
 
-            if (preferModded && wt.isVanilla) {
-                w *= 0.08f;
-            } else if (!preferModded && !wt.isVanilla) {
-                w *= 0.5f;
-            }
+            w *= BiomeAffinityCache.isNative(wt.type, biome) ? nativeMult : foreignMult;
 
-            ResourceLocation rid = ForgeRegistries.ENTITY_TYPES.getKey(wt.type);
-            if (rid != null && BOSS_BLACKLIST.contains(rid.toString())) w = 0f;
+            if (preferModded && wt.isVanilla) w *= 0.5f;
+            else if (!preferModded && !wt.isVanilla) w *= 0.8f;
 
             weights[i] = w;
             total += w;
@@ -212,17 +178,8 @@ public class SpawnMiddleware {
         return validateCandidate(pool.get(chosen).type, pool, weights, chosen, level, pos, random);
     }
 
-    private static @Nullable EntityType<?> validateCandidate(
-            EntityType<?> first,
-            List<WeightedType> pool,
-            float[] weights,
-            int firstIdx,
-            ServerLevelAccessor level,
-            BlockPos pos,
-            RandomSource random
-    ) {
-        if (SpawnPlacements.checkSpawnRules(first, level, MobSpawnType.NATURAL, pos, random))
-            return first;
+    private static @Nullable EntityType<?> validateCandidate(EntityType<?> first, List<WeightedType> pool, float[] weights, int firstIdx, ServerLevelAccessor level, BlockPos pos, RandomSource random) {
+        if (SpawnPlacements.checkSpawnRules(first, level, MobSpawnType.NATURAL, pos, random)) return first;
 
         Integer[] order = new Integer[pool.size()];
         for (int i = 0; i < order.length; i++) order[i] = i;
@@ -230,35 +187,23 @@ public class SpawnMiddleware {
 
         int tried = 0;
         for (int idx : order) {
-            if (idx == firstIdx) continue;
-            if (weights[idx] <= 0) continue;
-            if (++tried > 6) break;
+            if (idx == firstIdx || weights[idx] <= 0) continue;
+            if (++tried > 10) break;
 
             EntityType<?> cand = pool.get(idx).type;
-            if (SpawnPlacements.checkSpawnRules(cand, level, MobSpawnType.NATURAL, pos, random))
-                return cand;
+            if (SpawnPlacements.checkSpawnRules(cand, level, MobSpawnType.NATURAL, pos, random)) return cand;
         }
         return null;
     }
 
-    private static boolean trySpawnReplacement(
-            Mob original,
-            EntityType<?> type,
-            ServerLevelAccessor level,
-            MobSpawnEvent.FinalizeSpawn event
-    ) {
+    private static boolean trySpawnReplacement(Mob original, EntityType<?> type, ServerLevelAccessor level, MobSpawnEvent.FinalizeSpawn event) {
         Entity ent = type.create(level.getLevel());
         if (!(ent instanceof Mob replacement)) return false;
 
-        replacement.moveTo(original.getX(), original.getY(), original.getZ(),
-                original.getYRot(), original.getXRot());
+        replacement.moveTo(original.getX(), original.getY(), original.getZ(), original.getYRot(), original.getXRot());
         replacement.addTag("linggango_processed");
 
-        ForgeEventFactory.onFinalizeSpawn(
-                replacement, level,
-                level.getCurrentDifficultyAt(replacement.blockPosition()),
-                MobSpawnType.NATURAL, null, null
-        );
+        ForgeEventFactory.onFinalizeSpawn(replacement, level, level.getCurrentDifficultyAt(replacement.blockPosition()), MobSpawnType.NATURAL, null, null);
 
         if (level.getLevel().addFreshEntity(replacement)) {
             original.discard();
@@ -270,65 +215,44 @@ public class SpawnMiddleware {
         return false;
     }
 
-    private static synchronized ChunkSpawnData getChunkData(ChunkPos pos) {
+    private static ChunkSpawnData getChunkData(ChunkPos pos) {
         long key = ChunkPos.asLong(pos.x, pos.z);
-        ChunkSpawnData data = CHUNK_DATA.get(key);
-        long now = System.currentTimeMillis();
-        if (data == null || (now - data.lastUpdate) > CHUNK_TTL_MS) {
-            data = new ChunkSpawnData();
-            CHUNK_DATA.put(key, data);
-        }
-        return data;
+        return CHUNK_DATA.compute(key, (k, data) -> {
+            long now = System.currentTimeMillis();
+            if (data == null || (now - data.lastUpdate) > CHUNK_TTL_MS) {
+                return new ChunkSpawnData();
+            }
+            return data;
+        });
     }
 
-    private static synchronized void cleanupOldChunks() {
+    private static void cleanupOldChunks() {
         long now = System.currentTimeMillis();
-        CHUNK_DATA.long2ObjectEntrySet()
-                .removeIf(e -> (now - e.getValue().lastUpdate) > CHUNK_TTL_MS);
+        CHUNK_DATA.entrySet().removeIf(e -> (now - e.getValue().lastUpdate) > CHUNK_TTL_MS);
     }
 
-    private static synchronized void initPools() {
+    private static void initPools() {
         if (poolsInitialized) return;
-        poolsInitialized = true;
-        SpawnChanges.init();
+        synchronized (SpawnMiddleware.class) {
+            if (poolsInitialized) return;
 
-        for (String typeId : SpawnChanges.TWEAKED_ENTITIES) {
-            EntityType<?> type = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(typeId));
-            if (type == null) continue;
+            for (EntityType<?> type : ForgeRegistries.ENTITY_TYPES.getValues()) {
+                ResourceLocation id = ForgeRegistries.ENTITY_TYPES.getKey(type);
 
-            MobCategory cat = type.getCategory();
-            boolean vanilla = isVanilla(type);
-            float weight = vanilla ? 22.0f : 16.0f;
+                if (id == null) continue;
+                if (SpawnChanges.isBlocked(id)) continue;
+                if (!BiomeAffinityCache.hasAnyNaturalSpawns(type)) continue;
 
-            switch (cat) {
-                case CREATURE -> weight *= 1.2f;
-                case AMBIENT  -> weight *= 1.6f;
-                case WATER_CREATURE -> weight *= 1.3f;
-                case MONSTER  -> weight *= 1.0f;
-                default       -> weight *= 1.1f;
+                MobCategory cat = type.getCategory();
+                if (cat == MobCategory.MISC) continue;
+
+                boolean vanilla = id.getNamespace().equals("minecraft");
+                REPLACEMENT_POOLS.computeIfAbsent(cat, k -> new ArrayList<>()).add(new WeightedType(type, 20.0f, vanilla));
             }
 
-            REPLACEMENT_POOLS.computeIfAbsent(cat, k -> new ArrayList<>())
-                    .add(new WeightedType(type, weight, vanilla));
+            REPLACEMENT_POOLS.values().removeIf(List::isEmpty);
+            poolsInitialized = true;
         }
-
-        for (EntityType<?> type : ForgeRegistries.ENTITY_TYPES.getValues()) {
-            ResourceLocation id = ForgeRegistries.ENTITY_TYPES.getKey(type);
-            if (id == null || !id.getNamespace().equals("minecraft")) continue;
-
-            MobCategory cat = type.getCategory();
-            List<WeightedType> list = REPLACEMENT_POOLS.computeIfAbsent(cat, k -> new ArrayList<>());
-            if (list.stream().noneMatch(w -> w.type == type)) {
-                list.add(new WeightedType(type, 20.0f, true));
-            }
-        }
-
-        REPLACEMENT_POOLS.values().removeIf(List::isEmpty);
-    }
-
-    private static void initBossBlacklist() {
-        if (!BOSS_BLACKLIST.isEmpty()) return;
-        BOSS_BLACKLIST.addAll(TweaksConfig.BOSS_MOB_BLACKLIST.get());
     }
 
     private static boolean isVanilla(EntityType<?> type) {
@@ -338,13 +262,13 @@ public class SpawnMiddleware {
 
     private static class ChunkSpawnData {
         long lastUpdate = System.currentTimeMillis();
-        final Object2IntOpenHashMap<EntityType<?>> counts = new Object2IntOpenHashMap<>();
+        final Map<EntityType<?>, Integer> counts = new ConcurrentHashMap<>();
         int vanillaCount = 0;
         int moddedCount = 0;
         int totalCount = 0;
 
-        void record(EntityType<?> type, boolean vanilla) {
-            counts.addTo(type, 1);
+        synchronized void record(EntityType<?> type, boolean vanilla) {
+            counts.put(type, counts.getOrDefault(type, 0) + 1);
             totalCount++;
             if (vanilla) vanillaCount++;
             else moddedCount++;
@@ -353,6 +277,10 @@ public class SpawnMiddleware {
 
         int getCount(EntityType<?> type) {
             return counts.getOrDefault(type, 0);
+        }
+
+        int uniqueTypes() {
+            return counts.size();
         }
 
         float getModdedRatio() {

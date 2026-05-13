@@ -39,16 +39,12 @@ public class SpawnChangesMixin {
                 || type.getCategory() == MobCategory.WATER_AMBIENT
                 || type.getCategory() == MobCategory.UNDERGROUND_WATER_CREATURE;
 
-        if (isWaterMob) {
-            if (!level.getFluidState(pos).is(FluidTags.WATER)
-                    && !level.getFluidState(pos.below()).is(FluidTags.WATER)) {
-                cir.setReturnValue(false);
-            }
-        } else {
-            if (level.getFluidState(pos).is(FluidTags.WATER)
-                    || level.getFluidState(pos.below()).is(FluidTags.WATER)) {
-                cir.setReturnValue(false);
-            }
+        boolean inWater = level.getFluidState(pos).is(FluidTags.WATER) || level.getFluidState(pos.below()).is(FluidTags.WATER);
+
+        if (isWaterMob && !inWater) {
+            cir.setReturnValue(false);
+        } else if (!isWaterMob && inWater) {
+            cir.setReturnValue(false);
         }
     }
 }

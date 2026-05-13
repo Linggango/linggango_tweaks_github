@@ -25,8 +25,7 @@ public class PerfectHitCombatHandler {
     @SubscribeEvent
     public static void onLivingHurt(LivingHurtEvent event) {
         if (event.getEntity().level().isClientSide) return;
-
-        if (event.getSource().getEntity() instanceof Player player) {
+        if (event.getSource().getDirectEntity() instanceof Player player) {
 
             boolean isFalling = !player.onGround() && player.fallDistance > 0.0F && !player.onClimbable() && !player.isInWater();
 

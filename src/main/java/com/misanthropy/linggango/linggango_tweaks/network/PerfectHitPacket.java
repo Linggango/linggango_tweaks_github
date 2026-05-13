@@ -14,9 +14,7 @@ public class PerfectHitPacket {
     public void encode(FriendlyByteBuf buf) {}
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            PerfectHitClient.triggerPerfectHit();
-        });
+        ctx.get().enqueueWork(PerfectHitClient::triggerPerfectHit);
         ctx.get().setPacketHandled(true);
     }
 }

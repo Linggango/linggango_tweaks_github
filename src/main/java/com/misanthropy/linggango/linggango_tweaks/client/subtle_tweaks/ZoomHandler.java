@@ -15,7 +15,8 @@ public class ZoomHandler {
 
     private static float lastZoomProgress = 0.0f;
     private static float currentZoomProgress = 0.0f;
-    private static final float ZOOM_STEP = 0.12f;
+
+    private static final float ZOOM_STEP = 0.18f;
     private static final float ZOOM_DIVISOR = 4.0f;
 
     @SubscribeEvent
@@ -37,6 +38,7 @@ public class ZoomHandler {
         float partialTicks = (float) event.getPartialTick();
         float smoothProgress = Mth.lerp(partialTicks, lastZoomProgress, currentZoomProgress);
         if (smoothProgress > 0) {
+
             float easedProgress = (float) (1.0 - Math.cos(smoothProgress * Math.PI * 0.5));
 
             double baseFov = event.getFOV();

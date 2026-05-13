@@ -1,0 +1,62 @@
+{
+  "type": "minecraft:random_patch",
+  "config": {
+    "tries": 128,
+    "xz_spread": 7,
+    "y_spread": 3,
+    "feature": {
+      "feature": {
+        "type": "minecraft:simple_block",
+        "config": {
+          "to_place": {
+            "type": "minecraft:weighted_state_provider",
+            "entries": [
+              { "weight": 6, "data": { "Name": "minecraft:grass" } },
+              { "weight": 3, "data": { "Name": "minecraft:tall_grass" } },
+              { "weight": 2, "data": { "Name": "species:alphacene_tall_grass" } },
+              { "weight": 2, "data": { "Name": "species:alphacene_grass" } },
+              { "weight": 1, "data": { "Name": "dungeonnowloading:cobblestone_pebble" } },
+              { "weight": 1, "data": { "Name": "dungeonnowloading:mossy_cobblestone_pebble" } },
+              { "weight": 5, "data": { "Name": "ad_astra:aeronos_mushroom" } },
+              { "weight": 1, "data": { "Name": "ars_elemental:spore_blossom_up" } },
+              { "weight": 1, "data": { "Name": "dreamwoods:fey_bell" } },
+              { "weight": 1, "data": { "Name": "dreamwoods:bluebells" } },
+              { "weight": 1, "data": { "Name": "dreamwoods:peacock_flower_pink" } },
+              { "weight": 1, "data": { "Name": "minecraft:pink_tulip" } }
+
+            ]
+          }
+        }
+      },
+      "placement": [
+        {
+          "type": "minecraft:block_predicate_filter",
+          "predicate": {
+            "type": "minecraft:all_of",
+            "predicates": [
+              {
+                "type": "minecraft:matching_blocks",
+                "offset": [0, -1, 0],
+                "blocks": [
+                  "minecraft:grass_block",
+                  "minecraft:dirt",
+                  "minecraft:podzol",
+                  "dreamwoods:ruby_maple_podzol",
+                  "undergarden:deepturf_block",
+                  "macabre:molded_stone"
+                ]
+              },
+              {
+                "type": "minecraft:matching_blocks",
+                "offset": [0, 0, 0],
+                "blocks": [
+                  "minecraft:air"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

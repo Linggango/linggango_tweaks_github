@@ -22,7 +22,7 @@ public class AtmosphereKeybinds {
             "key.linggango_tweaks.open_atmosphere_editor",
             KeyConflictContext.IN_GAME,
             InputConstants.Type.KEYSYM,
-            GLFW.GLFW_KEY_F8, // Defaults to F8
+            GLFW.GLFW_KEY_F8,
             "key.categories.linggango_tweaks"
     );
 

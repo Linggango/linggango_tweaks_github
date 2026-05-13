@@ -1,0 +1,16 @@
+{
+  "type": "linggango_tweaks:custom_tree",
+  "config": {
+    "structure_path": "chai_tree_medium",
+    "trunk_provider": {
+      "type": "minecraft:simple_state_provider",
+      "state": {
+        "Name": "dreamwoods:palm_log",
+        "Properties": {
+          "axis": "y"
+        }
+      }
+    },
+    "can_replace_leaves_in_world": true
+  }
+}

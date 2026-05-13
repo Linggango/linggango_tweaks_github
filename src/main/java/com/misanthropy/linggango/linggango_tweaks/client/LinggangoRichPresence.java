@@ -20,6 +20,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+@SuppressWarnings("unused")
 @OnlyIn(Dist.CLIENT)
 @Mod.EventBusSubscriber(modid = "linggango_tweaks", value = Dist.CLIENT)
 public class LinggangoRichPresence {
@@ -105,7 +106,7 @@ public class LinggangoRichPresence {
         String connectionType;
 
         if (mc.getSingleplayerServer() != null) {
-            connectionType = "Singleplayer";
+            connectionType = "lonely..";
         } else {
             ServerData data = mc.getCurrentServer();
             connectionType = (data != null) ? "Online: " + data.ip : "Multiplayer";

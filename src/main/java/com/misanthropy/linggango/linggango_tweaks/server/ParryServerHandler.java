@@ -52,9 +52,12 @@ public class ParryServerHandler {
     public static class ParryCombo {
         public int stage;
         public long lastParryMs;
-        public ParryCombo(int stage, long lastParryMs) {
+        public UUID lastTargetId;
+
+        public ParryCombo(int stage, long lastParryMs, UUID lastTargetId) {
             this.stage = stage;
             this.lastParryMs = lastParryMs;
+            this.lastTargetId = lastTargetId;
         }
     }
 
@@ -159,16 +162,21 @@ public class ParryServerHandler {
             tier = 1;
         }
 
-        ParryCombo combo = comboTracker.computeIfAbsent(playerId, k -> new ParryCombo(0, 0));
-        if (now - combo.lastParryMs <= COMBO_TIMEOUT_MS) {
+        Entity directEntity = source.getDirectEntity();
+        Entity attacker = source.getEntity();
+        UUID currentTargetId = attacker != null ? attacker.getUUID() : null;
+
+        ParryCombo combo = comboTracker.computeIfAbsent(playerId, k -> new ParryCombo(0, 0, null));
+
+        boolean isSameTarget = combo.lastTargetId == null || combo.lastTargetId.equals(currentTargetId);
+
+        if (now - combo.lastParryMs <= COMBO_TIMEOUT_MS && isSameTarget) {
             combo.stage = Math.min(8, combo.stage + 1);
         } else {
             combo.stage = 1;
         }
         combo.lastParryMs = now;
-
-        Entity directEntity = source.getDirectEntity();
-        Entity attacker = source.getEntity();
+        combo.lastTargetId = currentTargetId;
 
         float heal = TweaksConfig.PARRY_HEAL_AMOUNT.get().floatValue();
         if (heal > 0.0f) {
@@ -208,11 +216,14 @@ public class ParryServerHandler {
             }
 
             float calculatedDamage;
+            float[] flatDamages = {2f, 4f, 6f, 6f, 6f, 6f, 7f, 8f};
+
+            int clampedStage = Math.max(1, Math.min(8, combo.stage));
+
+            calculatedDamage = flatDamages[clampedStage - 1];
+
             if (combo.stage >= 8) {
-                calculatedDamage = livingAttacker.getMaxHealth() * 0.03f;
-            } else {
-                float[] flatDamages = {2f, 4f, 6f, 6f, 6f, 6f, 7f};
-                calculatedDamage = flatDamages[combo.stage - 1];
+                calculatedDamage += livingAttacker.getMaxHealth() * 0.03f;
             }
 
             if (tier == 3) calculatedDamage *= 1.3f;
