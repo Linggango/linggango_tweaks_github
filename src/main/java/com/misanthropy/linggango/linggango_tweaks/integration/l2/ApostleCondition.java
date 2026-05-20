@@ -24,6 +24,10 @@ public class ApostleCondition extends SpecialConfigCondition<ApostleEntityContex
     @Nullable
     public Boolean isSecondPhase;
 
+    @SerialClass.SerialField
+    @Nullable
+    public Boolean isInNether;
+
     public ApostleCondition() {
         super(ApostleEntityContext.class);
     }
@@ -41,6 +45,8 @@ public class ApostleCondition extends SpecialConfigCondition<ApostleEntityContex
             if (!matched) return false;
         }
         if (isApollyon != null && helper.allTitlesApostle_1_20_1$isApollyon() != isApollyon) return false;
-        return isSecondPhase == null || apostle.isSecondPhase() == isSecondPhase;
+        if (isSecondPhase != null && apostle.isSecondPhase() != isSecondPhase) return false;
+        if (isInNether != null && apostle.isInNether() != isInNether) return false;
+        return true;
     }
 }

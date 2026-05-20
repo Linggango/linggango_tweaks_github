@@ -1,6 +1,7 @@
 package com.misanthropy.linggango.linggango_tweaks.command;
 
-import com.misanthropy.linggango.linggango_tweaks.util.LinggangoConfig;
+import com.Polarice3.Goety.common.entities.boss.Apostle;
+import com.misanthropy.linggango.linggango_tweaks.integration.l2.ApostleL2Data;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
@@ -43,6 +44,19 @@ public class LinggangoCommands {
     @SubscribeEvent
     public static void onRegisterCommands(@NonNull RegisterCommandsEvent event) {
         CommandDispatcher<CommandSourceStack> d = event.getDispatcher();
+
+        d.register(Commands.literal("apostle_state").requires(s -> s.hasPermission(2)).executes(c -> {
+            var entities = c.getSource().getLevel().getEntitiesOfClass(Apostle.class, c.getSource().getPlayerOrException().getBoundingBox().inflate(100), s -> true);
+            if (entities.isEmpty()) {
+                c.getSource().sendSuccess(() -> Component.literal("No apostles detected nearby."), false);
+                return 0;
+            }
+
+            for (Apostle a : entities) {
+                c.getSource().sendSuccess(() -> Component.literal("Apostle " + a.getUUID() + ": title " + ApostleL2Data.getApostleTitleNumber(a) + ", secondPhase " + a.isSecondPhase()), false);
+            }
+            return 0;
+        }));
 
         d.register(Commands.literal("gm1").requires(s -> s.hasPermission(2)).executes(c -> setGameMode(c.getSource(), GameType.SURVIVAL)));
         d.register(Commands.literal("gm3").requires(s -> s.hasPermission(2)).executes(c -> setGameMode(c.getSource(), GameType.CREATIVE)));
