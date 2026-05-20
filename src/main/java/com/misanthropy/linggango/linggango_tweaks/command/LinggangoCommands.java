@@ -2,6 +2,7 @@ package com.misanthropy.linggango.linggango_tweaks.command;
 
 import com.Polarice3.Goety.common.entities.boss.Apostle;
 import com.misanthropy.linggango.linggango_tweaks.integration.l2.ApostleL2Data;
+import com.misanthropy.linggango.linggango_tweaks.util.LinggangoConfig;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;

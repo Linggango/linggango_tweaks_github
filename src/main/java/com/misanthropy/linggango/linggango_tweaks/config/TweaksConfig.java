@@ -71,10 +71,8 @@ public class TweaksConfig {
     public static final ForgeConfigSpec.DoubleValue PERFECT_HIT_DAMAGE_MULT;
     public static final ForgeConfigSpec.DoubleValue PERFECT_HIT_KNOCKBACK_MULT;
 
-    public static ForgeConfigSpec.BooleanValue APOSTLE_DAMAGE_CAP_FIX;
-    public static ForgeConfigSpec.BooleanValue APOSTLE_TITLE_NUMBER_LOG;
+    public static final ForgeConfigSpec.ConfigValue<List<? extends String>> ORBITAL_PARTICLE_ITEMS;
 
-    private static final Map<String, Double> parsedCustomSpreads = new HashMap<>();
 
     static {
         ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
@@ -186,6 +184,17 @@ public class TweaksConfig {
         APOSTLE_TITLE_NUMBER_LOG = BUILDER
                 .comment("A debug statement for printing changes in Apostle title numbers.")
                 .define("apostle_title_number_log", false);
+        BUILDER.pop();
+
+        BUILDER.push("orbital_particles");
+        ORBITAL_PARTICLE_ITEMS = BUILDER.comment("List of item IDs that should have custom orbital particles when lying on the ground.")
+                .defineListAllowEmpty(List.of("orbital_particle_items"),
+                        () -> List.of(
+                                "lethality:nightmare_sword",
+                                "brutality:royal_guardian_sword"
+                        ),
+                        o -> o instanceof String
+                );
         BUILDER.pop();
 
         COMMON_SPEC = BUILDER.build();
