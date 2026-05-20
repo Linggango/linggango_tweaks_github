@@ -33,9 +33,19 @@ import org.slf4j.Logger;
 import java.lang.reflect.Method;
 
 @SuppressWarnings("unused")
-public class NBTVaultForMacabre {
+public class NBTVaultForMacabre implements INBTSerializable<CompoundTag> {
     private static final Logger LOGGER = LogUtils.getLogger();
     public static final ResourceKey<Level> PIT_DIMENSION = ResourceKey.create(Registries.DIMENSION, new ResourceLocation("macabre", "the_pit"));
+
+    @Override
+    public CompoundTag serializeNBT() {
+        return null;
+    }
+
+    @Override
+    public void deserializeNBT(CompoundTag nbt) {
+
+    }
 
     public interface IPitVault {
         CompoundTag getSnapshot();
