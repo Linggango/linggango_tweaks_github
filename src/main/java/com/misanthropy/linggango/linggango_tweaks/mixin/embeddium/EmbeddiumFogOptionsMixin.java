@@ -1,7 +1,7 @@
 package com.misanthropy.linggango.linggango_tweaks.mixin.embeddium;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import com.misanthropy.linggango.linggango_tweaks.tweaks.DynamicFogHandler;
+import com.misanthropy.linggango.linggango_tweaks.tweaks.dynamic_fog.DynamicFogHandler;
 import me.jellysquid.mods.sodium.client.gui.SodiumGameOptionPages;
 import me.jellysquid.mods.sodium.client.gui.options.OptionGroup;
 import me.jellysquid.mods.sodium.client.gui.options.OptionImpact;
@@ -129,6 +129,34 @@ public class EmbeddiumFogOptionsMixin {
                 .setImpact(OptionImpact.LOW)
                 .build();
 
+        var biomeToleranceOption = OptionImpl.createBuilder(Integer.TYPE, sodiumOpts)
+                .setName(Component.literal("Biome Transition Delay (Ticks)"))
+                .setTooltip(Component.literal("How long you must stay in a new biome before its fog settings activate. Prevents flickering at borders."))
+                .setControl(option -> new SliderControl(option, 0, 200, 5, ControlValueFormatter.number()))
+                .setBinding(
+                        (opts, val) -> {
+                            DynamicFogHandler.biomeToleranceTicks = val;
+                            DynamicFogHandler.save();
+                        },
+                        opts -> DynamicFogHandler.biomeToleranceTicks
+                )
+                .setImpact(OptionImpact.LOW)
+                .build();
+
+        var fogSpeedOption = OptionImpl.createBuilder(Integer.TYPE, sodiumOpts)
+                .setName(Component.literal("Fog Blend Speed (%)"))
+                .setTooltip(Component.literal("How quickly fog adapts to new environments once it starts changing. Lower values create a slow, cinematic fade."))
+                .setControl(option -> new SliderControl(option, 1, 100, 1, ControlValueFormatter.percentage()))
+                .setBinding(
+                        (opts, val) -> {
+                            DynamicFogHandler.fogTransitionSpeed = val / 1000.0;
+                            DynamicFogHandler.save();
+                        },
+                        opts -> (int) (DynamicFogHandler.fogTransitionSpeed * 1000.0)
+                )
+                .setImpact(OptionImpact.LOW)
+                .build();
+
         groups.add(OptionGroup.createBuilder()
                 .add(enableFogOption)
                 .add(fogStartOption)
@@ -137,6 +165,8 @@ public class EmbeddiumFogOptionsMixin {
                 .add(chunkBorderSoftnessOption)
                 .add(enableVoidFogOption)
                 .add(rainFogDensityOption)
+                .add(biomeToleranceOption)
+                .add(fogSpeedOption)
                 .build());
     }
 }

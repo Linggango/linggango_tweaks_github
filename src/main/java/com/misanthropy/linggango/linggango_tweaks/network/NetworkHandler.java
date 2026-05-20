@@ -1,6 +1,7 @@
 package com.misanthropy.linggango.linggango_tweaks.network;
 
 import com.misanthropy.linggango.linggango_tweaks.LinggangoTweaks;
+import com.misanthropy.linggango.linggango_tweaks.network.combat.PerfectHitPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
@@ -19,5 +20,7 @@ public class NetworkHandler {
         int id = 0;
         CHANNEL.registerMessage(id++, PerfectHitPacket.class, PerfectHitPacket::encode, PerfectHitPacket::new, PerfectHitPacket::handle);
         CHANNEL.registerMessage(id++, PlayCustomCreditsPacket.class, PlayCustomCreditsPacket::encode, PlayCustomCreditsPacket::new, PlayCustomCreditsPacket::handle);
+        CHANNEL.registerMessage(id++, SyncExtrasMenuPacket.class, SyncExtrasMenuPacket::encode, SyncExtrasMenuPacket::new, SyncExtrasMenuPacket::handle);
+        CHANNEL.registerMessage(id++, PitTeleportPacket.class, PitTeleportPacket::encode, PitTeleportPacket::new, PitTeleportPacket::handle);
     }
 }

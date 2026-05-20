@@ -18,12 +18,19 @@ public class PlayCustomCreditsPacket {
 
     public void encode(FriendlyByteBuf buf) {
     }
-
     public void handle(Supplier<NetworkEvent.Context> contextSupplier) {
         NetworkEvent.Context context = contextSupplier.get();
         context.enqueueWork(() -> {
             DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
-                Minecraft.getInstance().setScreen(new ModernCreditsScreen());
+                Minecraft mc = Minecraft.getInstance();
+                if (mc.player != null) {
+                    net.minecraft.nbt.CompoundTag persistentData = mc.player.getPersistentData();
+                    net.minecraft.nbt.CompoundTag modData = persistentData.getCompound(net.minecraft.world.entity.player.Player.PERSISTED_NBT_TAG);
+                    modData.putBoolean("LinggangoHasSeenCredits", true);
+                    persistentData.put(net.minecraft.world.entity.player.Player.PERSISTED_NBT_TAG, modData);
+                }
+
+                mc.setScreen(new ModernCreditsScreen());
             });
         });
         context.setPacketHandled(true);

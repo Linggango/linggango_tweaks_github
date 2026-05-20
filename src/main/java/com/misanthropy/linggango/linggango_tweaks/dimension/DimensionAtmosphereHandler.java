@@ -1,7 +1,7 @@
 package com.misanthropy.linggango.linggango_tweaks.dimension;
 
-import com.misanthropy.linggango.linggango_tweaks.registry.ApollyonDimension;
-import com.misanthropy.linggango.linggango_tweaks.registry.SoundRegistry;
+import com.misanthropy.linggango.linggango_tweaks.registry.dimension.ApollyonDimension;
+import com.misanthropy.linggango.linggango_tweaks.registry.sounds.SoundRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.DimensionSpecialEffects;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
@@ -23,10 +23,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;
 
+@SuppressWarnings("unused")
 public class DimensionAtmosphereHandler {
     private static final Random RANDOM = new Random();
     private static final String AMBIENT_TIMER_KEY = "ApollyonAmbientTimer";
     private static final String WIND_TIMER_KEY = "ApollyonWindTimer";
+    private static final String LAST_DIM_KEY = "LastDimension";
 
     @OnlyIn(Dist.CLIENT)
     private static boolean isHorrorLoopPlaying = false;
@@ -64,6 +66,7 @@ public class DimensionAtmosphereHandler {
             Player player = event.player;
             boolean isRevelation = player.level().dimension().equals(ApollyonDimension.APOLLYON_LEVEL);
             boolean isAscension = player.level().dimension().equals(ApollyonDimension.ASCENSION_LEVEL);
+            boolean isMacabre = player.level().dimension().location().toString().equals("macabre:the_pit");
 
             if (isRevelation) {
                 if (!player.level().isClientSide) {
@@ -77,10 +80,50 @@ public class DimensionAtmosphereHandler {
                 } else {
                     handleAscensionClientAtmosphere(player);
                 }
+            } else if (isMacabre) {
+                if (!player.level().isClientSide) {
+                    handleMacabreServerAtmosphere((ServerPlayer) player);
+                } else {
+                    handleMacabreClientAtmosphere(player);
+                }
             } else if (player.level().isClientSide) {
+                String lastDim = player.getPersistentData().getString(LAST_DIM_KEY);
+                if ("macabre:the_pit".equals(lastDim)) {
+                    Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forAmbientAddition(SoundRegistry.MACABRE_DIMENSION_LEAVE.get()));
+                }
                 resetClientStates();
             }
+
+            player.getPersistentData().putString(LAST_DIM_KEY, player.level().dimension().location().toString());
         }
+    }
+
+    private static void handleMacabreServerAtmosphere(ServerPlayer player) {
+        CompoundTag data = player.getPersistentData();
+        String lastDim = data.getString(LAST_DIM_KEY);
+
+        if (!"macabre:the_pit".equals(lastDim)) {
+            player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundRegistry.MACABRE_DIMENSION_ENTER.get(), SoundSource.AMBIENT, 1.0f, 1.0f);
+        }
+
+        int ambientTimer = data.contains("MacabreAmbientTimer") ? data.getInt("MacabreAmbientTimer") : 600;
+        if (--ambientTimer <= 0) {
+            if (RANDOM.nextFloat() < 0.3f) {
+                if (RANDOM.nextBoolean()) {
+                    player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundRegistry.MACABRE_AMBIENCE_1.get(), SoundSource.AMBIENT, 1.0f, 1.0f);
+                } else {
+                    player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundRegistry.MACABRE_AMBIENCE_2.get(), SoundSource.AMBIENT, 1.0f, 1.0f);
+                }
+            }
+            ambientTimer = 600 + RANDOM.nextInt(400);
+        }
+        data.putInt("MacabreAmbientTimer", ambientTimer);
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    private static void handleMacabreClientAtmosphere(Player player) {
+        Minecraft mc = Minecraft.getInstance();
+        mc.getMusicManager().stopPlaying();
     }
 
     private static void handleRevelationServerAtmosphere(ServerPlayer player) {

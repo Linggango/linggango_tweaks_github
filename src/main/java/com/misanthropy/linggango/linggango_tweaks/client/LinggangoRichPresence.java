@@ -11,8 +11,8 @@ import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.ScreenEvent;
-import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -65,6 +65,13 @@ public class LinggangoRichPresence {
             initialized = true;
 
             EXECUTOR.scheduleAtFixedRate(rpc::runCallbacks, 0, 2, TimeUnit.SECONDS);
+
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                try {
+                    shutdown();
+                } catch (Exception ignored) {}
+            }, "Linggango-RPC-Cleanup"));
+
         } catch (Exception e) {
             System.err.println("Linggango RPC: Failed to initialize.");
         }
@@ -87,6 +94,29 @@ public class LinggangoRichPresence {
         rpc.updatePresence(presence);
     }
 
+    private static void updatePresenceState() {
+        Minecraft mc = Minecraft.getInstance();
+
+        mc.execute(() -> {
+            if (mc.player == null || mc.level == null) return;
+
+            String dimPath = mc.level.dimension().location().getPath();
+            String dimension = dimPath.substring(0, 1).toUpperCase() + dimPath.substring(1).replace("_", " ");
+
+            String activity = "Exploring " + dimension;
+            String connectionType;
+
+            if (mc.getSingleplayerServer() != null) {
+                connectionType = "lonely..";
+            } else {
+                ServerData data = mc.getCurrentServer();
+                connectionType = (data != null) ? "Online: " + data.ip : "Multiplayer";
+            }
+
+            updatePresence(connectionType, activity);
+        });
+    }
+
     @SubscribeEvent
     public static void onScreenOpen(ScreenEvent.Opening event) {
         if (event.getScreen() instanceof TitleScreen) {
@@ -95,24 +125,18 @@ public class LinggangoRichPresence {
     }
 
     @SubscribeEvent
-    public static void onWorldJoin(EntityJoinLevelEvent event) {
-        if (!event.getLevel().isClientSide() || event.getEntity() != Minecraft.getInstance().player) return;
+    public static void onPlayerLogin(ClientPlayerNetworkEvent.LoggingIn event) {
+        EXECUTOR.schedule(LinggangoRichPresence::updatePresenceState, 1, TimeUnit.SECONDS);
+    }
 
-        Minecraft mc = Minecraft.getInstance();
-        String dimPath = event.getLevel().dimension().location().getPath();
-        String dimension = dimPath.substring(0, 1).toUpperCase() + dimPath.substring(1).replace("_", " ");
+    @SubscribeEvent
+    public static void onPlayerClone(ClientPlayerNetworkEvent.Clone event) {
+        EXECUTOR.schedule(LinggangoRichPresence::updatePresenceState, 1, TimeUnit.SECONDS);
+    }
 
-        String activity = "Exploring " + dimension;
-        String connectionType;
-
-        if (mc.getSingleplayerServer() != null) {
-            connectionType = "lonely..";
-        } else {
-            ServerData data = mc.getCurrentServer();
-            connectionType = (data != null) ? "Online: " + data.ip : "Multiplayer";
-        }
-
-        updatePresence(connectionType, activity);
+    @SubscribeEvent
+    public static void onPlayerLogout(ClientPlayerNetworkEvent.LoggingOut event) {
+        updatePresence("Main Menu", "Idling");
     }
 
     public static void shutdown() {

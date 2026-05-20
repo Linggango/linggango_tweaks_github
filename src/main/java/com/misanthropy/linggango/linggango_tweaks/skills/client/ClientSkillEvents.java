@@ -1,7 +1,7 @@
 package com.misanthropy.linggango.linggango_tweaks.skills.client;
 
 import com.misanthropy.linggango.linggango_tweaks.LinggangoTweaks;
-import com.misanthropy.linggango.linggango_tweaks.skills.TweaksSkillNetwork;
+import com.misanthropy.linggango.linggango_tweaks.skills.network.TweaksSkillNetwork;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;

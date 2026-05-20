@@ -3,7 +3,7 @@ package com.misanthropy.linggango.linggango_tweaks.client;
 import com.misanthropy.linggango.difficulty_enhancement.LinggangoEvents;
 import com.misanthropy.linggango.linggango_tweaks.client.particle.ParrySparkleParticle;
 import com.misanthropy.linggango.linggango_tweaks.config.TweaksConfig;
-import com.misanthropy.linggango.linggango_tweaks.parry.ParryNetwork;
+import com.misanthropy.linggango.linggango_tweaks.parry.network.ParryNetwork;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.bettercombat.client.animation.PlayerAttackAnimatable;
 import net.bettercombat.logic.AnimatedHand;

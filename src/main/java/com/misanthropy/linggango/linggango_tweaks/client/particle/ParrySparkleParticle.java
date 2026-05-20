@@ -1,6 +1,6 @@
 package com.misanthropy.linggango.linggango_tweaks.client.particle;
 
-import com.misanthropy.linggango.linggango_tweaks.registry.ModParticles;
+import com.misanthropy.linggango.linggango_tweaks.registry.particles.ModParticles;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;

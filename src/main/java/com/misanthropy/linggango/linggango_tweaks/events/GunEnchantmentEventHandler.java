@@ -2,8 +2,8 @@ package com.misanthropy.linggango.linggango_tweaks.events;
 
 import com.misanthropy.linggango.linggango_tweaks.LinggangoTweaks;
 import com.misanthropy.linggango.linggango_tweaks.enchant.LinggangoEnchantments;
-import com.misanthropy.linggango.linggango_tweaks.registry.LinggangoAttributes;
-import com.misanthropy.linggango.linggango_tweaks.skills.SkillManager;
+import com.misanthropy.linggango.linggango_tweaks.registry.attribute.LinggangoAttributes;
+import com.misanthropy.linggango.linggango_tweaks.skills.manager.SkillManager;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;

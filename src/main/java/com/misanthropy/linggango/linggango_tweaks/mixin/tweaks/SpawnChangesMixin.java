@@ -1,6 +1,6 @@
 package com.misanthropy.linggango.linggango_tweaks.mixin.tweaks;
 
-import com.misanthropy.linggango.linggango_tweaks.tweaks.SpawnChanges;
+import com.misanthropy.linggango.linggango_tweaks.tweaks.minecraft.SpawnChanges;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.FluidTags;

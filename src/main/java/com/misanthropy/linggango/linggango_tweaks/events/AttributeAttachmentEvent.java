@@ -1,7 +1,7 @@
 package com.misanthropy.linggango.linggango_tweaks.events;
 
 import com.misanthropy.linggango.linggango_tweaks.LinggangoTweaks;
-import com.misanthropy.linggango.linggango_tweaks.registry.LinggangoAttributes;
+import com.misanthropy.linggango.linggango_tweaks.registry.attribute.LinggangoAttributes;
 import net.minecraft.world.entity.EntityType;
 import net.minecraftforge.event.entity.EntityAttributeModificationEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;

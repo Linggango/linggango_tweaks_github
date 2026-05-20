@@ -1,7 +1,9 @@
 package com.misanthropy.linggango.linggango_tweaks.command;
 
+import com.misanthropy.linggango.linggango_tweaks.util.LinggangoConfig;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.FloatArgumentType;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.DimensionArgument;
@@ -268,9 +270,34 @@ public class LinggangoCommands {
                     CompoundTag modData = persistentData.getCompound(Player.PERSISTED_NBT_TAG);
                     modData.putBoolean("LinggangoHasSeenCredits", false);
                     persistentData.put(Player.PERSISTED_NBT_TAG, modData);
+
+                    com.misanthropy.linggango.linggango_tweaks.network.NetworkHandler.CHANNEL.send(
+                            net.minecraftforge.network.PacketDistributor.PLAYER.with(() -> p),
+                            new com.misanthropy.linggango.linggango_tweaks.network.SyncExtrasMenuPacket(false)
+                    );
+
                     c.getSource().sendSuccess(() -> Component.literal("§aCredits screen has been reset. You will be able to see it again."), false);
                     return 1;
-                })));
+                }))
+                .then(Commands.literal("extras_menu")
+                        .then(Commands.argument("state", IntegerArgumentType.integer(0, 1))
+                                .executes(c -> {
+                                    ServerPlayer p = c.getSource().getPlayerOrException();
+                                    int state = IntegerArgumentType.getInteger(c, "state");
+                                    CompoundTag persistentData = p.getPersistentData();
+                                    CompoundTag modData = persistentData.getCompound(Player.PERSISTED_NBT_TAG);
+                                    boolean stateBool = state == 1;
+                                    modData.putBoolean("LinggangoHasSeenCredits", stateBool);
+                                    persistentData.put(Player.PERSISTED_NBT_TAG, modData);
+                                    LinggangoConfig.setEnabled(stateBool);
+                                    com.misanthropy.linggango.linggango_tweaks.network.NetworkHandler.CHANNEL.send(
+                                            net.minecraftforge.network.PacketDistributor.PLAYER.with(() -> p),
+                                            new com.misanthropy.linggango.linggango_tweaks.network.SyncExtrasMenuPacket(stateBool)
+                                    );
+
+                                    c.getSource().sendSuccess(() -> Component.literal("§eExtras menu visibility is " + (stateBool ? "ON" : "OFF")), false);
+                                    return 1;
+                                }))));
     }
 
     private static int setGameMode(@NonNull CommandSourceStack source, @NonNull GameType type) {

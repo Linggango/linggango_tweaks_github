@@ -53,6 +53,8 @@ public class TweaksConfig {
     public static final ForgeConfigSpec.DoubleValue MONSTEREXPANSION_MULTIPLIER;
     public static final ForgeConfigSpec.DoubleValue SAINTSDRAGONS_MULTIPLIER;
     public static final ForgeConfigSpec.DoubleValue GOETYHOSTILITY_MULTIPLIER;
+    public static final ForgeConfigSpec.DoubleValue KNIGHTQUEST_MULTIPLIER;
+    public static final ForgeConfigSpec.BooleanValue KNIGHTQUEST_IGNORE_BIOMES;
     public static final ForgeConfigSpec.IntValue TERRA_ENTITY_OVERWORLD_WEIGHT;
     public static final ForgeConfigSpec.DoubleValue TARGET_MODDED_RATIO;
     public static final ForgeConfigSpec.DoubleValue BIOME_NATIVE_MULTIPLIER;
@@ -65,6 +67,7 @@ public class TweaksConfig {
     public static final ForgeConfigSpec.DoubleValue PERFECT_HIT_CHANCE;
     public static final ForgeConfigSpec.DoubleValue PERFECT_HIT_DAMAGE_MULT;
     public static final ForgeConfigSpec.DoubleValue PERFECT_HIT_KNOCKBACK_MULT;
+
 
     public static final ForgeConfigSpec.ConfigValue<List<? extends String>> ORBITAL_PARTICLE_ITEMS;
 
@@ -123,6 +126,10 @@ public class TweaksConfig {
                 .defineInRange("saintsdragons_multiplier", 0.5, 0.0, 100.0);
         GOETYHOSTILITY_MULTIPLIER = BUILDER.comment("Multiplier for all goetyhostility mobs")
                 .defineInRange("goetyhostility_multiplier", 1.2, 0.0, 100.0);
+        KNIGHTQUEST_MULTIPLIER = BUILDER.comment("Multiplier for all knightquest mobs")
+                .defineInRange("knightquest_multiplier", 3.0, 0.0, 100.0);
+        KNIGHTQUEST_IGNORE_BIOMES = BUILDER.comment("Should knightquest mobs ignore biome restrictions and spawn anywhere?")
+                .define("knightquest_ignore_biomes", true);
         TERRA_ENTITY_OVERWORLD_WEIGHT = BUILDER.defineInRange("terra_entity_overworld_weight", 105, 1, 1000);
         TARGET_MODDED_RATIO = BUILDER.defineInRange("target_modded_ratio", 0.40, 0.0, 1.0);
         BIOME_NATIVE_MULTIPLIER = BUILDER.comment("Weight bonus for mobs in their native biome")

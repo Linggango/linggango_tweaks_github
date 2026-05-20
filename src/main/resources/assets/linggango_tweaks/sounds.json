@@ -80,5 +80,77 @@
     "sounds": [
       "linggango_tweaks:water_step_1"
     ]
+  },
+  "credits_music": {
+    "sounds": [
+      "linggango_tweaks:credits_music"
+    ]
+  },
+  "credits_open": {
+    "sounds": [
+      "linggango_tweaks:credits_open"
+    ]
+  },
+  "the_deer_who_ran": {
+    "sounds": [
+      "linggango_tweaks:the_deer_who_ran"
+    ]
+  },
+  "macabre_dimension_enter": {
+    "sounds": [
+      "linggango_tweaks:macabre_dimension_enter"
+    ]
+  },
+  "macabre_dimension_leave": {
+    "sounds": [
+      "linggango_tweaks:macabre_dimension_leave"
+    ]
+  },
+  "macabre_ambience_1": {
+    "sounds": [
+      "linggango_tweaks:macabre_ambience_1"
+    ]
+  },
+  "macabre_ambience_2": {
+    "sounds": [
+      "linggango_tweaks:macabre_ambience_2"
+    ]
+  },
+  "song_1": {
+    "category": "music",
+    "sounds": [
+      {
+        "name": "linggango_tweaks:music/song_1",
+        "stream": true
+      }
+    ]
+  },
+  "song_2": {
+    "category": "music",
+    "sounds": [
+      {
+        "name": "linggango_tweaks:music/song_2",
+        "stream": true
+      }
+    ]
+  },
+  "song_3": {
+    "category": "music",
+    "sounds": [
+      {
+        "name": "linggango_tweaks:music/song_3",
+        "stream": true
+      }
+    ]
+  },
+    "macabre_confirmation": {
+    "sounds": [
+      "linggango_tweaks:macabre_confirmation"
+    ]
+  },
+    "macabre_denial": {
+    "sounds": [
+      "linggango_tweaks:macabre_denial"
+    ]
   }
 }
