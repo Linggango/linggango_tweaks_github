@@ -45,6 +45,9 @@ public class TweaksConfig {
     public static final ForgeConfigSpec.DoubleValue PROJECTILE_DEFLECT_SPEED;
     public static final ForgeConfigSpec.DoubleValue PARRY_HEAL_AMOUNT;
 
+    public static ForgeConfigSpec.BooleanValue APOSTLE_DAMAGE_CAP_FIX;
+    public static ForgeConfigSpec.BooleanValue APOSTLE_TITLE_NUMBER_LOG;
+
     public static final ForgeConfigSpec.BooleanValue ENABLE_DYNAMIC_BALANCING;
     public static final ForgeConfigSpec.DoubleValue GLOBAL_MOB_MULTIPLIER;
     public static final ForgeConfigSpec.DoubleValue TERRA_ENTITY_OVERWORLD_MULTIPLIER;
@@ -172,6 +175,15 @@ public class TweaksConfig {
                 .defineInRange("perfect_hit_damage_mult", 1.5, 1.0, 10.0);
         PERFECT_HIT_KNOCKBACK_MULT = BUILDER.comment("Knockback multiplier for the perfect hit")
                 .defineInRange("perfect_hit_knockback_mult", 4.0, 1.0, 20.0);
+        BUILDER.pop();
+
+        BUILDER.push("goety");
+        APOSTLE_DAMAGE_CAP_FIX = BUILDER
+                .comment("Re-enforce Apostle's damage cap after all LivingDamageEvent handlers run. Prevents items/traits from dealing more damage than the configured cap.")
+                .define("apostle_damage_cap_fix", true);
+        APOSTLE_TITLE_NUMBER_LOG = BUILDER
+                .comment("A debug statement for printing changes in Apostle title numbers.")
+                .define("apostle_title_number_log", false);
         BUILDER.pop();
 
         BUILDER.push("visuals");

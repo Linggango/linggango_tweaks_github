@@ -11,6 +11,7 @@
     "armageddon.MixinArionTyrantOfTheEmeraldWrathSoldatEntity",
     "armageddon.MixinBringerOfDoomEntityDiesProcedure",
     "armageddon.MixinBringerOfDoomP2EntityDiesProcedure",
+    "goety.ApostleMixin",
     "armageddon.MixinEldoraththeAncientBuilderEntity",
     "armageddon.MixinElvenitePaladinEntity",
     "armageddon.MixinLittleMageGoblinEntity",
