@@ -4,11 +4,15 @@ import com.Polarice3.Goety.common.entities.boss.Apostle;
 import com.misanthropy.linggango.linggango_tweaks.integration.l2.ApostleL2Data;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.FloatArgumentType;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import com.Polarice3.Goety.common.entities.boss.Apostle;
+import com.misanthropy.linggango.linggango_tweaks.integration.l2.ApostleL2Data;
 import net.minecraft.commands.arguments.DimensionArgument;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -234,7 +238,9 @@ public class LinggangoCommands {
                         .executes(c -> {
                             ServerPlayer p = c.getSource().getPlayerOrException();
                             ServerLevel lvl = DimensionArgument.getDimension(c, "dim");
-                            p.teleportTo(lvl, p.getX(), p.getY(), p.getZ(), p.getYRot(), p.getXRot());
+                            BlockPos spawn = lvl.getSharedSpawnPos();
+
+                            p.teleportTo(lvl, spawn.getX() + 0.5, spawn.getY() + 0.1, spawn.getZ() + 0.5, p.getYRot(), p.getXRot());
                             return 1;
                         })));
 
@@ -272,6 +278,42 @@ public class LinggangoCommands {
             player.sendSystemMessage(Component.literal("§e[Linggango] §aThere are §b" + count + " §astructures registered."));
             return 1;
         }));
+
+        d.register(Commands.literal("linggango_tweaks").requires(s -> s.hasPermission(2))
+                .then(Commands.literal("reset_credits_screen").executes(c -> {
+                    ServerPlayer p = c.getSource().getPlayerOrException();
+                    CompoundTag persistentData = p.getPersistentData();
+                    CompoundTag modData = persistentData.getCompound(Player.PERSISTED_NBT_TAG);
+                    modData.putBoolean("LinggangoHasSeenCredits", false);
+                    persistentData.put(Player.PERSISTED_NBT_TAG, modData);
+
+                    com.misanthropy.linggango.linggango_tweaks.network.NetworkHandler.CHANNEL.send(
+                            net.minecraftforge.network.PacketDistributor.PLAYER.with(() -> p),
+                            new com.misanthropy.linggango.linggango_tweaks.network.SyncExtrasMenuPacket(false)
+                    );
+
+                    c.getSource().sendSuccess(() -> Component.literal("§aCredits screen has been reset. You will be able to see it again."), false);
+                    return 1;
+                }))
+                .then(Commands.literal("extras_menu")
+                        .then(Commands.argument("state", IntegerArgumentType.integer(0, 1))
+                                .executes(c -> {
+                                    ServerPlayer p = c.getSource().getPlayerOrException();
+                                    int state = IntegerArgumentType.getInteger(c, "state");
+                                    CompoundTag persistentData = p.getPersistentData();
+                                    CompoundTag modData = persistentData.getCompound(Player.PERSISTED_NBT_TAG);
+                                    boolean stateBool = state == 1;
+                                    modData.putBoolean("LinggangoHasSeenCredits", stateBool);
+                                    persistentData.put(Player.PERSISTED_NBT_TAG, modData);
+                                    LinggangoConfig.setEnabled(stateBool);
+                                    com.misanthropy.linggango.linggango_tweaks.network.NetworkHandler.CHANNEL.send(
+                                            net.minecraftforge.network.PacketDistributor.PLAYER.with(() -> p),
+                                            new com.misanthropy.linggango.linggango_tweaks.network.SyncExtrasMenuPacket(stateBool)
+                                    );
+
+                                    c.getSource().sendSuccess(() -> Component.literal("§eExtras menu visibility is " + (stateBool ? "ON" : "OFF")), false);
+                                    return 1;
+                                }))));
     }
 
     private static int setGameMode(@NonNull CommandSourceStack source, @NonNull GameType type) {

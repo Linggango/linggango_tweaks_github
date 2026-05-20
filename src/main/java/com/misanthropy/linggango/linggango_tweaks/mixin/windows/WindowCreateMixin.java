@@ -1,6 +1,6 @@
 package com.misanthropy.linggango.linggango_tweaks.mixin.windows;
 
-import com.misanthropy.linggango.linggango_tweaks.tweaks.DarkWindowBar;
+import com.misanthropy.linggango.linggango_tweaks.tweaks.etc.DarkWindowBar;
 import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.main.GameConfig;

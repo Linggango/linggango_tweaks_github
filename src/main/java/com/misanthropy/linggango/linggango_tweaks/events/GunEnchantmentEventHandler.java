@@ -2,12 +2,15 @@ package com.misanthropy.linggango.linggango_tweaks.events;
 
 import com.misanthropy.linggango.linggango_tweaks.LinggangoTweaks;
 import com.misanthropy.linggango.linggango_tweaks.enchant.LinggangoEnchantments;
-import com.misanthropy.linggango.linggango_tweaks.registry.LinggangoAttributes;
-import com.misanthropy.linggango.linggango_tweaks.skills.SkillManager;
+import com.misanthropy.linggango.linggango_tweaks.registry.attribute.LinggangoAttributes;
+import com.misanthropy.linggango.linggango_tweaks.skills.manager.SkillManager;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
@@ -16,25 +19,54 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
+import java.util.List;
+
 @Mod.EventBusSubscriber(modid = LinggangoTweaks.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class GunEnchantmentEventHandler {
+
+    private static final TagKey<Item> FORGE_GUNS = ItemTags.create(new ResourceLocation("forge", "guns"));
+
+    private static final ResourceLocation BLEEDING_RL = new ResourceLocation("attributeslib", "bleeding");
+    private static final ResourceLocation VULNERABLE_RL = new ResourceLocation("terramity", "vulnerable");
+    private static final ResourceLocation ARMOR_DECREASE_RL = new ResourceLocation("aquamirae", "armor_decrease");
+    private static final ResourceLocation SLOWNESS_RL = new ResourceLocation("minecraft", "slowness");
+
+    public static boolean isGun(ItemStack weapon) {
+        if (weapon.is(FORGE_GUNS)) return true;
+
+        ResourceLocation id = ForgeRegistries.ITEMS.getKey(weapon.getItem());
+        if (id != null && id.getNamespace().equals("terramity")) {
+            String path = id.getPath();
+            return path.contains("gun") || path.contains("rifle") || path.contains("pistol") ||
+                    path.contains("shotgun") || path.contains("cannon") || path.contains("blunderbuss") ||
+                    path.contains("shooter") || path.equals("stairway_to_heaven") ||
+                    path.equals("requiem") || path.equals("blasphemic_rapture") || path.equals("big_iron") ||
+                    path.equals("devastation") || path.equals("vulcan") || path.equals("titanomachy") ||
+                    path.equals("davy_jones") || path.equals("olympus");
+        }
+        return false;
+    }
 
     @SubscribeEvent
     public static void onGunFire(net.minecraftforge.event.entity.player.PlayerInteractEvent.@NonNull RightClickItem event) {
         Player player = event.getEntity();
         if (!player.level().isClientSide && player.getPersistentData().getBoolean("lt_gunner_active")) {
-            ResourceLocation weaponId = ForgeRegistries.ITEMS.getKey(event.getItemStack().getItem());
-            if (weaponId != null && weaponId.getNamespace().equals("terramity")) {
+            ItemStack weapon = event.getItemStack();
+
+            if (isGun(weapon)) {
                 long currentTimeout = player.getPersistentData().getLong("lt_gunner_timeout");
                 long expectedHitTime = player.level().getGameTime() + 20;
                 if (expectedHitTime < currentTimeout) {
@@ -53,153 +85,81 @@ public class GunEnchantmentEventHandler {
     public static void onLivingAttack(@NonNull LivingAttackEvent event) {
         if (event.getSource().getEntity() instanceof Player player) {
             ItemStack weapon = player.getMainHandItem();
-            ResourceLocation weaponId = ForgeRegistries.ITEMS.getKey(weapon.getItem());
-            if (weaponId != null && weaponId.getNamespace().equals("terramity")) {
+
+            if (isGun(weapon)) {
                 event.getEntity().invulnerableTime = 0;
             }
         }
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onLivingHurt(@NonNull LivingHurtEvent event) {
         if (event.getSource().getEntity() instanceof Player player) {
-            ItemStack weapon = player.getMainHandItem();
-            ResourceLocation weaponId = ForgeRegistries.ITEMS.getKey(weapon.getItem());
+            if (player.getPersistentData().getBoolean("linggango_processing_gun")) {
+                return;
+            }
 
-            if (weaponId == null || !weaponId.getNamespace().equals("terramity")) {
+            ItemStack weapon = player.getMainHandItem();
+
+            if (!isGun(weapon)) {
                 return;
             }
 
             LivingEntity target = event.getEntity();
-            target.invulnerableTime = 0;
-
             boolean isProjectile = event.getSource().getDirectEntity() instanceof net.minecraft.world.entity.projectile.Projectile;
 
             if (!isProjectile) {
+                long lastHitscanTick = target.getPersistentData().getLong("linggango_hitscan_tick");
+                if (target.level().getGameTime() == lastHitscanTick) {
+                    event.setCanceled(true);
+                    return;
+                }
+                target.getPersistentData().putLong("linggango_hitscan_tick", target.level().getGameTime());
+
                 long lastMeleeTick = player.getPersistentData().getLong("linggango_last_melee");
                 if (player.level().getGameTime() - lastMeleeTick <= 2) {
                     return;
                 }
             }
 
+            target.invulnerableTime = 0;
+            player.getPersistentData().putBoolean("linggango_processing_gun", true);
+
             float originalDamage = event.getAmount();
-            originalDamage *= 2.5f;
+            originalDamage *= 2.8f;
 
             if (player.getAttributes().hasAttribute(LinggangoAttributes.GUN_DAMAGE.get())) {
                 double damagePoints = player.getAttributeValue(LinggangoAttributes.GUN_DAMAGE.get());
                 if (damagePoints > 0) {
-                    originalDamage = originalDamage * (float) (1.0 + (damagePoints * 0.10));
+                    originalDamage *= (float) (1.0 + (damagePoints * 0.10));
                 }
             }
 
-            if (player.getPersistentData().getBoolean("lt_gunner_active")) {
-                float aoeDamage = originalDamage * 0.60f;
-                java.util.List<LivingEntity> nearbyEntities = player.level().getEntitiesOfClass(LivingEntity.class, target.getBoundingBox().inflate(3.5D));
-                for (LivingEntity nearbyTarget : nearbyEntities) {
-                    if (nearbyTarget != player && nearbyTarget != target) {
-                        nearbyTarget.invulnerableTime = 0;
-                        nearbyTarget.hurt(player.level().damageSources().explosion(player, player), aoeDamage);
-                    }
-                }
-                if (player.level() instanceof ServerLevel serverLevel) {
-                    serverLevel.sendParticles(ParticleTypes.EXPLOSION, target.getX(), target.getY(0.5D), target.getZ(), 2, 0.0D, 0.0D, 0.0D, 0.0D);
-                }
-
-                player.getPersistentData().putBoolean("lt_gunner_active", false);
-                if (player instanceof ServerPlayer serverPlayer) {
-                    SkillManager.setCooldown(serverPlayer, "gunner", 600);
-                    SkillManager.syncToClient(serverPlayer, "gunner");
-                }
+            float targetArmor = target.getArmorValue();
+            int projProtLevel = 0;
+            for (ItemStack armorPiece : target.getArmorSlots()) {
+                projProtLevel += EnchantmentHelper.getTagEnchantmentLevel(Enchantments.PROJECTILE_PROTECTION, armorPiece);
             }
 
-            float bypassPercentage = 0.30f;
-            int vestShredderLevel = EnchantmentHelper.getItemEnchantmentLevel(LinggangoEnchantments.VEST_SHREDDER.get(), weapon);
+            float effectiveDefense = targetArmor + (projProtLevel * 2.5f);
+            float heavyImpactBypass = Math.min(0.85f, originalDamage * 0.007f);
+            effectiveDefense *= Math.max(0.0f, 1.0f - heavyImpactBypass);
 
+            int vestShredderLevel = EnchantmentHelper.getTagEnchantmentLevel(LinggangoEnchantments.VEST_SHREDDER.get(), weapon);
             if (vestShredderLevel > 0) {
-                bypassPercentage += (0.10f * vestShredderLevel);
+                float defenseReduction = vestShredderLevel * 0.20f;
+                effectiveDefense *= Math.max(0.0f, 1.0f - defenseReduction);
             }
 
-            if (bypassPercentage > 1.0f) {
-                bypassPercentage = 1.0f;
+            float damageMultiplier = 50.0f / (50.0f + effectiveDefense);
+            float finalDamage = originalDamage * damageMultiplier;
+
+            int railChargeLevel = EnchantmentHelper.getTagEnchantmentLevel(LinggangoEnchantments.RAIL_CHARGE.get(), weapon);
+            if (railChargeLevel > 0 && player.getRandom().nextFloat() < 0.10f) {
+                finalDamage *= 2.5f;
             }
 
-            float armorBypassDamage = originalDamage * bypassPercentage;
-            originalDamage -= armorBypassDamage;
-
-            event.setAmount(originalDamage);
-
-            target.invulnerableTime = 0;
-            target.hurt(player.level().damageSources().magic(), armorBypassDamage);
-
-            int railChargeLevel = EnchantmentHelper.getItemEnchantmentLevel(LinggangoEnchantments.RAIL_CHARGE.get(), weapon);
-            if (railChargeLevel > 0) {
-                if (Math.random() < 0.10) {
-                    originalDamage = originalDamage * 3.0f;
-                    event.setAmount(originalDamage);
-                }
-            }
-
-            int resourceMagazinesLevel = EnchantmentHelper.getItemEnchantmentLevel(LinggangoEnchantments.RESOURCE_MAGAZINES.get(), weapon);
-            if (resourceMagazinesLevel > 0) {
-                double refundChance = 0.10 * resourceMagazinesLevel;
-                if (Math.random() < refundChance) {
-                    Item ammoItem = getAmmoForGun(weapon.getItem());
-                    if (ammoItem != null) {
-                        player.getInventory().add(new ItemStack(ammoItem, 1));
-                    }
-                }
-            }
-
-            int bulletEchoLevel = EnchantmentHelper.getItemEnchantmentLevel(LinggangoEnchantments.BULLET_ECHO.get(), weapon);
-            if (bulletEchoLevel > 0) {
-                double echoChance = 0.20 + (0.10 * (bulletEchoLevel - 1));
-                if (Math.random() < echoChance) {
-                    target.invulnerableTime = 0;
-                    target.hurt(event.getSource(), originalDamage * 0.50f);
-                }
-            }
-
-            int arcaneRoundsLevel = EnchantmentHelper.getItemEnchantmentLevel(LinggangoEnchantments.ARCANE_ROUNDS.get(), weapon);
-            if (arcaneRoundsLevel > 0) {
-                target.invulnerableTime = 0;
-                target.hurt(player.level().damageSources().magic(), originalDamage * 0.20f);
-            }
-
-            int elementalBarrageLevel = EnchantmentHelper.getItemEnchantmentLevel(LinggangoEnchantments.ELEMENTAL_BARRAGE.get(), weapon);
-            if (elementalBarrageLevel > 0) {
-                double chance = 0.05 * elementalBarrageLevel;
-                if (Math.random() < chance) {
-                    MobEffect bleeding = ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation("attributeslib", "bleeding"));
-                    if (bleeding != null) {
-                        target.addEffect(new MobEffectInstance(bleeding, 100, 1));
-                    }
-                    MobEffect vulnerable = ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation("terramity", "vulnerable"));
-                    if (vulnerable != null) {
-                        target.addEffect(new MobEffectInstance(vulnerable, 100, 1));
-                    }
-                    MobEffect armorDecrease = ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation("aquamirae", "armor_decrease"));
-                    if (armorDecrease != null) {
-                        target.addEffect(new MobEffectInstance(armorDecrease, 100, 1));
-                    }
-                }
-            }
-
-            int shrapnelLevel = EnchantmentHelper.getItemEnchantmentLevel(LinggangoEnchantments.SHRAPNEL_PIERCER.get(), weapon);
-            if (shrapnelLevel > 0) {
-                int currentStacks = target.getPersistentData().getInt("ShrapnelStacks");
-                int maxStacks = shrapnelLevel == 1 ? 7 : 12;
-                if (currentStacks < maxStacks) {
-                    currentStacks++;
-                    target.getPersistentData().putInt("ShrapnelStacks", currentStacks);
-                }
-                float defenseReduction = currentStacks * 0.02f;
-                float bypassDamage = (originalDamage + armorBypassDamage) * defenseReduction;
-
-                target.invulnerableTime = 0;
-                target.hurt(player.level().damageSources().magic(), bypassDamage);
-            }
-
-            int overclockLevel = EnchantmentHelper.getItemEnchantmentLevel(LinggangoEnchantments.OVERCLOCKED_ROUNDS.get(), weapon);
+            int overclockLevel = EnchantmentHelper.getTagEnchantmentLevel(LinggangoEnchantments.OVERCLOCKED_ROUNDS.get(), weapon);
             if (overclockLevel > 0) {
                 long lastHitTime = player.getPersistentData().getLong("OverclockLastHit");
                 long currentTime = player.level().getGameTime();
@@ -213,26 +173,113 @@ public class GunEnchantmentEventHandler {
                 player.getPersistentData().putLong("OverclockLastHit", currentTime);
                 player.getPersistentData().putInt("OverclockCombo", hitCombo);
 
-                float damageBoost = originalDamage * (0.03f * hitCombo);
-                event.setAmount(originalDamage + damageBoost);
+                finalDamage += originalDamage * (0.02f * hitCombo);
             }
 
-            int explosiveLevel = EnchantmentHelper.getItemEnchantmentLevel(LinggangoEnchantments.EXPLOSIVE_ROUNDS.get(), weapon);
-            if (explosiveLevel > 0) {
-                float aoeDamage = originalDamage * 0.30f;
-                java.util.List<LivingEntity> nearbyEntities = player.level().getEntitiesOfClass(LivingEntity.class, target.getBoundingBox().inflate(3.0D));
-                for (LivingEntity nearbyTarget : nearbyEntities) {
-                    if (nearbyTarget != player && nearbyTarget != target) {
-                        nearbyTarget.invulnerableTime = 0;
-                        nearbyTarget.hurt(player.level().damageSources().explosion(player, player), aoeDamage);
+            float bonusDamage = 0f;
+
+            int bulletEchoLevel = EnchantmentHelper.getTagEnchantmentLevel(LinggangoEnchantments.BULLET_ECHO.get(), weapon);
+            if (bulletEchoLevel > 0) {
+                float echoChance = 0.20f + (0.10f * (bulletEchoLevel - 1));
+                if (player.getRandom().nextFloat() < echoChance) {
+                    bonusDamage += finalDamage * 0.50f;
+                }
+            }
+
+            int arcaneRoundsLevel = EnchantmentHelper.getTagEnchantmentLevel(LinggangoEnchantments.ARCANE_ROUNDS.get(), weapon);
+            if (arcaneRoundsLevel > 0) {
+                bonusDamage += finalDamage * 0.20f;
+            }
+
+            int shrapnelLevel = EnchantmentHelper.getTagEnchantmentLevel(LinggangoEnchantments.SHRAPNEL_PIERCER.get(), weapon);
+            if (shrapnelLevel > 0) {
+                int currentStacks = target.getPersistentData().getInt("ShrapnelStacks");
+                int maxStacks = shrapnelLevel == 1 ? 7 : 12;
+                if (currentStacks < maxStacks) {
+                    currentStacks++;
+                    target.getPersistentData().putInt("ShrapnelStacks", currentStacks);
+                }
+                bonusDamage += finalDamage * (currentStacks * 0.02f);
+            }
+
+            finalDamage += bonusDamage;
+            event.setAmount(finalDamage);
+
+            if (finalDamage > 0) {
+                target.getPersistentData().putFloat("linggango_true_damage", finalDamage);
+                target.getPersistentData().putLong("linggango_true_damage_tick", target.level().getGameTime());
+            }
+
+            boolean isGunner = player.getPersistentData().getBoolean("lt_gunner_active");
+            int explosiveLevel = EnchantmentHelper.getTagEnchantmentLevel(LinggangoEnchantments.EXPLOSIVE_ROUNDS.get(), weapon);
+
+            if (isGunner || explosiveLevel > 0) {
+                float aoeDamage = 0f;
+
+                if (isGunner) {
+                    aoeDamage += finalDamage * 0.50f;
+                    player.getPersistentData().putBoolean("lt_gunner_active", false);
+                    if (player instanceof ServerPlayer serverPlayer) {
+                        SkillManager.setCooldown(serverPlayer, "gunner", 600);
+                        SkillManager.syncToClient(serverPlayer, "gunner");
                     }
                 }
+
+                if (explosiveLevel > 0) {
+                    aoeDamage += finalDamage * 0.25f;
+                }
+
+                List<LivingEntity> nearbyEntities = player.level().getEntitiesOfClass(LivingEntity.class, target.getBoundingBox().inflate(3.5D));
+                DamageSource explosionSource = player.level().damageSources().explosion(player, player);
+
+                for (LivingEntity nearbyTarget : nearbyEntities) {
+                    if (nearbyTarget != player && nearbyTarget != target && nearbyTarget.isAlive()) {
+                        nearbyTarget.invulnerableTime = 0;
+                        nearbyTarget.hurt(explosionSource, aoeDamage);
+                    }
+                }
+
                 if (player.level() instanceof ServerLevel serverLevel) {
-                    serverLevel.sendParticles(ParticleTypes.EXPLOSION, target.getX(), target.getY(0.5D), target.getZ(), 1, 0.0D, 0.0D, 0.0D, 0.0D);
+                    serverLevel.sendParticles(ParticleTypes.EXPLOSION, target.getX(), target.getY(0.5D), target.getZ(), isGunner ? 2 : 1, 0.0D, 0.0D, 0.0D, 0.0D);
                 }
             }
 
-            target.invulnerableTime = 0;
+            int resourceMagazinesLevel = EnchantmentHelper.getTagEnchantmentLevel(LinggangoEnchantments.RESOURCE_MAGAZINES.get(), weapon);
+            if (resourceMagazinesLevel > 0 && player.getRandom().nextFloat() < (0.10f * resourceMagazinesLevel)) {
+                Item ammoItem = getAmmoForGun(weapon.getItem());
+                if (ammoItem != null) {
+                    player.getInventory().add(new ItemStack(ammoItem, 1));
+                }
+            }
+
+            int elementalBarrageLevel = EnchantmentHelper.getTagEnchantmentLevel(LinggangoEnchantments.ELEMENTAL_BARRAGE.get(), weapon);
+            if (elementalBarrageLevel > 0 && player.getRandom().nextFloat() < (0.05f * elementalBarrageLevel)) {
+                MobEffect bleeding = ForgeRegistries.MOB_EFFECTS.getValue(BLEEDING_RL);
+                if (bleeding != null) target.addEffect(new MobEffectInstance(bleeding, 100, 1));
+
+                MobEffect vulnerable = ForgeRegistries.MOB_EFFECTS.getValue(VULNERABLE_RL);
+                if (vulnerable != null) target.addEffect(new MobEffectInstance(vulnerable, 100, 1));
+
+                MobEffect armorDecrease = ForgeRegistries.MOB_EFFECTS.getValue(ARMOR_DECREASE_RL);
+                if (armorDecrease != null) target.addEffect(new MobEffectInstance(armorDecrease, 100, 1));
+            }
+
+            player.getPersistentData().putBoolean("linggango_processing_gun", false);
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void onLivingDamage(@NonNull LivingDamageEvent event) {
+        LivingEntity target = event.getEntity();
+        if (target.getPersistentData().contains("linggango_true_damage")) {
+            long expectedTick = target.getPersistentData().getLong("linggango_true_damage_tick");
+            float trueDamage = target.getPersistentData().getFloat("linggango_true_damage");
+
+            target.getPersistentData().remove("linggango_true_damage");
+
+            if (target.level().getGameTime() == expectedTick) {
+                event.setAmount(trueDamage);
+            }
         }
     }
 
@@ -240,8 +287,9 @@ public class GunEnchantmentEventHandler {
     public static void onPlayerTick(TickEvent.@NonNull PlayerTickEvent event) {
         if (event.phase == TickEvent.Phase.END && !event.player.level().isClientSide()) {
             ItemStack weapon = event.player.getMainHandItem();
-            if (EnchantmentHelper.getItemEnchantmentLevel(LinggangoEnchantments.RAIL_CHARGE.get(), weapon) > 0) {
-                MobEffect slowness = ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation("minecraft", "slowness"));
+
+            if (isGun(weapon) && EnchantmentHelper.getTagEnchantmentLevel(LinggangoEnchantments.RAIL_CHARGE.get(), weapon) > 0) {
+                MobEffect slowness = ForgeRegistries.MOB_EFFECTS.getValue(SLOWNESS_RL);
                 if (slowness != null) {
                     event.player.addEffect(new MobEffectInstance(slowness, 20, 0, false, false, true));
                 }

@@ -16,7 +16,6 @@ public class ToolSwayHandler {
 
     private static float lastYaw = 0;
     private static float lastPitch = 0;
-
     private static float swayYaw = 0;
     private static float swayPitch = 0;
 
@@ -30,28 +29,26 @@ public class ToolSwayHandler {
 
         float yaw = player.getViewYRot(event.renderTickTime);
         float pitch = player.getViewXRot(event.renderTickTime);
-
         float deltaYaw = yaw - lastYaw;
         float deltaPitch = pitch - lastPitch;
 
         deltaYaw = Mth.wrapDegrees(deltaYaw);
         deltaPitch = Mth.wrapDegrees(deltaPitch);
 
-        if (Math.abs(deltaYaw) > 45 || Math.abs(deltaPitch) > 45) {
+        if (Math.abs(deltaYaw) > 45 || Math.abs(deltaPitch) > 45 || player.isCreative() || player.isSpectator()) {
             deltaYaw = 0;
             deltaPitch = 0;
         }
 
         swayYaw += deltaYaw * 0.35f;
         swayPitch += deltaPitch * 0.35f;
-
         swayYaw = Mth.clamp(swayYaw, -16f, 16f);
         swayPitch = Mth.clamp(swayPitch, -16f, 16f);
 
         float decay = 1.0f - (0.18f * mc.getDeltaFrameTime());
+
         swayYaw *= Mth.clamp(decay, 0.45f, 0.99f);
         swayPitch *= Mth.clamp(decay, 0.45f, 0.99f);
-
         lastYaw = yaw;
         lastPitch = pitch;
     }

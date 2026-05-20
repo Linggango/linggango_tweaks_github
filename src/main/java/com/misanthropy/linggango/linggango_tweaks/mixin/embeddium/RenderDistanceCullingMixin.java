@@ -1,7 +1,7 @@
 package com.misanthropy.linggango.linggango_tweaks.mixin.embeddium;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import com.misanthropy.linggango.linggango_tweaks.tweaks.RenderCullingHandler;
+import com.misanthropy.linggango.linggango_tweaks.tweaks.minecraft.RenderCullingHandler;
 import me.jellysquid.mods.sodium.client.gui.SodiumGameOptionPages;
 import me.jellysquid.mods.sodium.client.gui.options.OptionGroup;
 import me.jellysquid.mods.sodium.client.gui.options.OptionImpact;

@@ -24,7 +24,6 @@
       "argument2": "minecraft:overworld/noise_router/barrier"
     },
     "continents": "minecraft:overworld/noise_router/continents",
-    "depth": "minecraft:overworld/noise_router/depth",
     "erosion": "minecraft:overworld/noise_router/erosion",
     "final_density": {
       "type": "minecraft:min",
@@ -116,7 +115,7 @@
                                           "argument": {
                                             "type": "minecraft:noise",
                                             "noise": "minecraft:jagged",
-                                            "xz_scale": 1500.0,
+                                            "xz_scale": 128.0,
                                             "y_scale": 0.0
                                           }
                                         }
@@ -187,7 +186,7 @@
                                             "argument": {
                                               "type": "minecraft:noise",
                                               "noise": "minecraft:jagged",
-                                              "xz_scale": 1500.0,
+                                              "xz_scale": 128.0,
                                               "y_scale": 0.0
                                             }
                                           }

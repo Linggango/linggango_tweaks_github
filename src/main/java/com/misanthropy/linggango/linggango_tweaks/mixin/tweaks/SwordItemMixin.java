@@ -1,6 +1,6 @@
 package com.misanthropy.linggango.linggango_tweaks.mixin.tweaks; // Mozilla Public  License
 
-import com.misanthropy.linggango.linggango_tweaks.skills.SkillManager;
+import com.misanthropy.linggango.linggango_tweaks.skills.manager.SkillManager;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;

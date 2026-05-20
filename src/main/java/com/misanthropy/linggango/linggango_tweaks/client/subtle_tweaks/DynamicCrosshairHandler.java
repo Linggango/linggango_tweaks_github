@@ -22,18 +22,26 @@ public class DynamicCrosshairHandler {
         if (event.getOverlay().id().equals(VanillaGuiOverlay.CROSSHAIR.id())) {
             Minecraft mc = Minecraft.getInstance();
             if (mc.options.hideGui || mc.hitResult == null) return;
+
             event.setCanceled(true);
+
             boolean isTargeting = mc.hitResult.getType() != HitResult.Type.MISS;
-            float targetAlpha = isTargeting ? 1.0f : 0.2f;
+
+            float targetAlpha = isTargeting ? 1.0f : 0.1f;
+
             currentAlpha += (targetAlpha - currentAlpha) * 0.15f;
             currentAlpha = Math.max(0.0f, Math.min(1.0f, currentAlpha));
+
             GuiGraphics graphics = event.getGuiGraphics();
             int width = event.getWindow().getGuiScaledWidth();
             int height = event.getWindow().getGuiScaledHeight();
+
             int x = (width - 15) / 2;
             int y = (height - 15) / 2;
+
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();
+
             graphics.setColor(1.0f, 1.0f, 1.0f, currentAlpha);
             graphics.blit(GUI_ICONS_LOCATION, x, y, 0, 0, 15, 15);
             graphics.setColor(1.0f, 1.0f, 1.0f, 1.0f);

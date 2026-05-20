@@ -1,0 +1,63 @@
+{
+  "type": "minecraft:random_patch",
+  "config": {
+    "tries": 32,
+    "xz_spread": 7,
+    "y_spread": 3,
+    "feature": {
+      "feature": {
+        "type": "minecraft:simple_block",
+        "config": {
+          "to_place": {
+            "type": "minecraft:weighted_state_provider",
+            "entries": [
+              { "weight": 1, "data": { "Name": "dreamwoods:moss_crimson" } },
+              { "weight": 1, "data": { "Name": "minecraft:crimson_roots" } },
+              { "weight": 1, "data": { "Name": "minecraft:red_mushroom" } },
+              { "weight": 1, "data": { "Name": "minecraft:brown_mushroom" } },
+              { "weight": 1, "data": { "Name": "opposing_force:cave_patty" } },
+              { "weight": 1, "data": { "Name": "opposing_force:copper_enoki" } },
+              { "weight": 1, "data": { "Name": "dreamwoods:desert_grass" } },
+              { "weight": 1, "data": { "Name": "macabre:dried_grass" } },
+              { "weight": 1, "data": { "Name": "macabre:dried_grasslets" } },
+              { "weight": 1, "data": { "Name": "macabre:tall_dried_grass" } },
+              { "weight": 1, "data": { "Name": "macabre:tall_bloodrose" } },
+              { "weight": 1, "data": { "Name": "macabre:small_dried_grass" } },
+              { "weight": 1, "data": { "Name": "macabre:smallflower" } },
+              { "weight": 1, "data": { "Name": "darkerdepths:scorched_remains" } },
+              { "weight": 1, "data": { "Name": "netherexp:soul_swirls" } }
+            ]
+          }
+        }
+      },
+      "placement": [
+        {
+          "type": "minecraft:block_predicate_filter",
+          "predicate": {
+            "type": "minecraft:all_of",
+            "predicates": [
+              {
+                "type": "minecraft:matching_blocks",
+                "offset": [0, -1, 0],
+                "blocks": [
+                  "minecraft:grass_block",
+                  "minecraft:dirt",
+                  "minecraft:podzol",
+                  "dreamwoods:ruby_maple_podzol",
+                  "undergarden:ashen_deepturf_block"
+                ]
+              },
+              {
+                "type": "minecraft:matching_blocks",
+                "offset": [0, 0, 0],
+                "blocks": [
+                  "minecraft:air"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

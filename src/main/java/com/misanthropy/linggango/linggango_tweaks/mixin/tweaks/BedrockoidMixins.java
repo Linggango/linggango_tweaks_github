@@ -35,28 +35,58 @@ public class BedrockoidMixins {
     @Mixin(AbstractContainerScreen.class)
     public static abstract class ScreenMixin extends AbstractContainerEventHandler implements Renderable, GuiEventListener {
         @Shadow @Nullable protected Slot hoveredSlot;
+        @Shadow protected int leftPos;
+        @Shadow protected int topPos;
+
+        @Unique private float linggango$hlX = -1;
+        @Unique private float linggango$hlY = -1;
+        @Unique private float linggango$hlAlpha = 0f;
 
         @Inject(method = "renderSlotHighlight(Lnet/minecraft/client/gui/GuiGraphics;III)V", at = @At("HEAD"), cancellable = true)
         private static void cancelVanillaHighlight(GuiGraphics guiGraphics, int x, int y, int z, CallbackInfo ci) {
             ci.cancel();
         }
 
-        @Inject(method = "renderSlot", at = @At("TAIL"))
-        private void drawCustomHighlight(GuiGraphics guiGraphics, Slot slot, CallbackInfo ci) {
-            if (slot == this.hoveredSlot && slot.isActive()) {
-                int startX = slot.x - 1;
-                int startY = slot.y - 1;
-                int endX = slot.x + 17;
-                int endY = slot.y + 17;
+        @Inject(method = "renderTooltip", at = @At("HEAD"))
+        private void renderSmoothHighlight(GuiGraphics guiGraphics, int mouseX, int mouseY, CallbackInfo ci) {
+            float delta = Minecraft.getInstance().getDeltaFrameTime();
 
-                int outlineColor = 0x80FFFFFF;
-                int fillColor = 0x1AFFFFFF;
+            if (this.hoveredSlot != null && this.hoveredSlot.isActive()) {
+                float targetX = this.hoveredSlot.x;
+                float targetY = this.hoveredSlot.y;
 
-                guiGraphics.fill(startX, startY, endX, startY + 1, outlineColor);
-                guiGraphics.fill(startX, endY - 1, endX, endY, outlineColor);
-                guiGraphics.fill(startX, startY, startX + 1, endY, outlineColor);
-                guiGraphics.fill(endX - 1, startY, endX, endY, outlineColor);
-                guiGraphics.fill(startX + 1, startY + 1, endX - 1, endY - 1, fillColor);
+                if (linggango$hlAlpha <= 0.05f) {
+                    linggango$hlX = targetX;
+                    linggango$hlY = targetY;
+                }
+
+                linggango$hlX = Mth.lerp(delta * 0.9f, linggango$hlX, targetX);
+                linggango$hlY = Mth.lerp(delta * 0.9f, linggango$hlY, targetY);
+                linggango$hlAlpha = Mth.lerp(delta * 0.9f, linggango$hlAlpha, 1.0f);
+            } else {
+                linggango$hlAlpha = Mth.lerp(delta * 0.9f, linggango$hlAlpha, 0.0f);
+            }
+
+            if (linggango$hlAlpha > 0.01f) {
+                guiGraphics.pose().pushPose();
+                guiGraphics.pose().translate(this.leftPos, this.topPos, 0);
+
+                int sX = Math.round(linggango$hlX - 1);
+                int sY = Math.round(linggango$hlY - 1);
+                int eX = Math.round(linggango$hlX + 17);
+                int eY = Math.round(linggango$hlY + 17);
+
+                int outlineAlpha = (int) (linggango$hlAlpha * 40);
+                int fillAlpha = (int) (linggango$hlAlpha * 8);
+                int outlineColor = (outlineAlpha << 24) | 0xFFFFFF;
+                int fillColor = (fillAlpha << 24) | 0xFFFFFF;
+
+                guiGraphics.fill(sX, sY, eX, sY + 1, outlineColor);
+                guiGraphics.fill(sX, eY - 1, eX, eY, outlineColor);
+                guiGraphics.fill(sX, sY + 1, sX + 1, eY - 1, outlineColor);
+                guiGraphics.fill(eX - 1, sY + 1, eX, eY - 1, outlineColor);
+                guiGraphics.fill(sX + 1, sY + 1, eX - 1, eY - 1, fillColor);
+                guiGraphics.pose().popPose();
             }
         }
 
@@ -84,33 +114,18 @@ public class BedrockoidMixins {
             if (player == null) return;
 
             float healthRatio = player.getHealth() / player.getMaxHealth();
+            float speedMult = 1.0f, ampMult = 1.0f, shakeIntensity = 0.0f;
 
-            float speedMult;
-            float ampMult;
-            float shakeIntensity;
-
-            if (healthRatio >= 0.8f) {
-                speedMult = 1.0f;
-                ampMult = 1.0f;
-                shakeIntensity = 0.0f;
-            } else if (healthRatio >= 0.5f) {
+            if (healthRatio < 0.2f) {
+                speedMult = 1.6f; ampMult = 1.5f; shakeIntensity = 0.015f;
+            } else if (healthRatio < 0.5f) {
+                speedMult = 1.3f; ampMult = 1.2f; shakeIntensity = 0.005f;
+            } else if (healthRatio < 0.8f) {
                 speedMult = 1.1f;
-                ampMult = 1.0f;
-                shakeIntensity = 0.0f;
-            } else if (healthRatio >= 0.2f) {
-                speedMult = 1.3f;
-                ampMult = 1.2f;
-                shakeIntensity = 0.005f;
-            } else {
-                speedMult = 1.6f;
-                ampMult = 1.5f;
-                shakeIntensity = 0.015f;
             }
 
             if (isHandEmpty) {
-                ampMult *= 0.5f;
-                shakeIntensity *= 0.4f;
-                speedMult *= 0.6f;
+                ampMult *= 0.5f; shakeIntensity *= 0.4f; speedMult *= 0.6f;
             } else {
                 speedMult *= 1.2f;
             }
@@ -130,16 +145,15 @@ public class BedrockoidMixins {
         @Inject(method = "applyItemArmTransform", at = @At("TAIL"))
         private void addItemBreathing(PoseStack poseStack, HumanoidArm arm, float equipProgress, CallbackInfo ci) {
             Minecraft mc = Minecraft.getInstance();
-            if (mc.player == null) return;
-
-            ItemStack heldItem = arm == HumanoidArm.RIGHT ? mc.player.getMainHandItem() : mc.player.getOffhandItem();
-            linggango_tweaks$applyBreathing(poseStack, arm, heldItem.isEmpty(), mc.getDeltaFrameTime());
+            if (mc.player != null) {
+                ItemStack heldItem = arm == HumanoidArm.RIGHT ? mc.player.getMainHandItem() : mc.player.getOffhandItem();
+                linggango_tweaks$applyBreathing(poseStack, arm, heldItem.isEmpty(), mc.getDeltaFrameTime());
+            }
         }
 
         @Inject(method = "renderPlayerArm", at = @At("HEAD"))
         private void addEmptyHandBreathing(PoseStack poseStack, MultiBufferSource buffer, int combinedLight, float equipProgress, float swingProgress, HumanoidArm arm, CallbackInfo ci) {
-            Minecraft mc = Minecraft.getInstance();
-            linggango_tweaks$applyBreathing(poseStack, arm, true, mc.getDeltaFrameTime());
+            linggango_tweaks$applyBreathing(poseStack, arm, true, Minecraft.getInstance().getDeltaFrameTime());
         }
     }
 
@@ -150,13 +164,11 @@ public class BedrockoidMixins {
             Minecraft mc = Minecraft.getInstance();
             if (mc.player == null || mc.level == null) return;
 
-            float timeOfDay = mc.level.getTimeOfDay(partialTick);
-            float angle = timeOfDay * Mth.TWO_PI;
+            float angle = mc.level.getTimeOfDay(partialTick) * Mth.TWO_PI;
             Vec3 sunDir = new Vec3(-Mth.sin(angle), Mth.cos(angle), 0.0).normalize();
             Vector3f jomlLook = mc.gameRenderer.getMainCamera().getLookVector();
-            Vec3 lookDir = new Vec3(jomlLook.x(), jomlLook.y(), jomlLook.z());
 
-            double dot = lookDir.dot(sunDir);
+            double dot = new Vec3(jomlLook.x(), jomlLook.y(), jomlLook.z()).dot(sunDir);
             float rainFactor = mc.level.getRainLevel(partialTick);
 
             if (dot > 0.8 && rainFactor < 1.0f) {
@@ -176,13 +188,11 @@ public class BedrockoidMixins {
             if (mc.player == null || mc.level == null) return originalSunRadius;
 
             float partialTick = mc.getDeltaFrameTime();
-            float timeOfDay = mc.level.getTimeOfDay(partialTick);
-            float angle = timeOfDay * Mth.TWO_PI;
+            float angle = mc.level.getTimeOfDay(partialTick) * Mth.TWO_PI;
             Vec3 sunDir = new Vec3(-Mth.sin(angle), Mth.cos(angle), 0.0).normalize();
             Vector3f jomlLook = mc.gameRenderer.getMainCamera().getLookVector();
-            Vec3 lookDir = new Vec3(jomlLook.x(), jomlLook.y(), jomlLook.z());
 
-            double dot = lookDir.dot(sunDir);
+            double dot = new Vec3(jomlLook.x(), jomlLook.y(), jomlLook.z()).dot(sunDir);
             float rainFactor = mc.level.getRainLevel(partialTick);
 
             if (dot > 0.8 && rainFactor < 1.0f) {

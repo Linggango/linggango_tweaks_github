@@ -17,12 +17,17 @@ import net.minecraftforge.common.loot.IGlobalLootModifier;
 import net.minecraftforge.common.loot.LootModifier;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jspecify.annotations.NonNull;
-
 import java.util.List;
 import java.util.Objects;
 
 public class BalancedLootRandomizerModifier extends LootModifier {
-    public static final Codec<BalancedLootRandomizerModifier> CODEC = RecordCodecBuilder.create(inst -> codecStart(inst).apply(inst, BalancedLootRandomizerModifier::new));
+    public static final Codec<BalancedLootRandomizerModifier> CODEC = RecordCodecBuilder.create(inst ->
+            codecStart(inst).and(
+                    Codec.FLOAT.fieldOf("randomization_chance").forGetter(m -> m.randomizationChance)
+            ).apply(inst, BalancedLootRandomizerModifier::new)
+    );
+
+    private final float randomizationChance;
 
     // UNIVERSAL - always appears
     public static final List<String> UNIVERSAL_COMMON_LOOT_IDS = List.of("modid:itemid");
@@ -146,9 +151,9 @@ public class BalancedLootRandomizerModifier extends LootModifier {
 
     private static Stage[] STAGES;
     private static boolean poolsLoaded = false;
-
-    public BalancedLootRandomizerModifier(LootItemCondition @NonNull [] conditionsIn) {
+    public BalancedLootRandomizerModifier(LootItemCondition @NonNull [] conditionsIn, float randomizationChance) {
         super(conditionsIn);
+        this.randomizationChance = randomizationChance;
     }
 
     private static void loadList(List<String> ids, ObjectArrayList<Item> pool) {
@@ -192,7 +197,6 @@ public class BalancedLootRandomizerModifier extends LootModifier {
     @Override
     protected @NonNull ObjectArrayList<ItemStack> doApply(@NonNull ObjectArrayList<ItemStack> generatedLoot, @NonNull LootContext context) {
         ResourceLocation lootTableId = context.getQueriedLootTableId();
-
         if (!lootTableId.getPath().contains("chests/")) {
             return generatedLoot;
         }
@@ -205,7 +209,6 @@ public class BalancedLootRandomizerModifier extends LootModifier {
             Entity entity = context.getParamOrNull(LootContextParams.THIS_ENTITY);
 
             if (entity instanceof ServerPlayer player) {
-                // Loop backwards to find the highest unlocked stage
                 for (int i = STAGES.length - 1; i >= 1; i--) {
                     Advancement adv = Objects.requireNonNull(player.getServer()).getAdvancements().getAdvancement(STAGES[i].advId);
                     if (adv != null && player.getAdvancements().getOrStartProgress(adv).isDone()) {
@@ -219,16 +222,16 @@ public class BalancedLootRandomizerModifier extends LootModifier {
         boolean[] tierSpawned = new boolean[2];
         for (int i = highestStage; i >= 0; i--) {
             float divisor = (i == highestStage) ? 1.0f : (highestStage - i + 2.0f);
-            float chanceMultiplier = 1.0f / divisor;
+            float chanceMultiplier = (1.0f / divisor) * this.randomizationChance;
 
             rollForStage(generatedLoot, context, STAGES[i].common, STAGES[i].uncommon, STAGES[i].rare, STAGES[i].epic, STAGES[i].legendary, chanceMultiplier, tierSpawned);
         }
 
-        float universalChance = 0.30f;
+        float universalChance = this.randomizationChance * 2.0f;
         if (tierSpawned[1]) {
-            universalChance = 0.10f;
+            universalChance = this.randomizationChance * 0.66f;
         } else if (tierSpawned[0]) {
-            universalChance = 0.20f;
+            universalChance = this.randomizationChance * 1.33f;
         }
 
         rollForStage(generatedLoot, context, UNIVERSAL_COMMON_LOOT, UNIVERSAL_UNCOMMON_LOOT, UNIVERSAL_RARE_LOOT, UNIVERSAL_EPIC_LOOT, UNIVERSAL_LEGENDARY_LOOT, universalChance, tierSpawned);

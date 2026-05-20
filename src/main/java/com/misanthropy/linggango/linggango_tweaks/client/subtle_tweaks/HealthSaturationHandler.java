@@ -14,17 +14,19 @@ import net.minecraftforge.fml.common.Mod;
 public class HealthSaturationHandler {
 
     private static float visualDesaturation = 0.0f;
+
     @SubscribeEvent
     public static void onClientTick(TickEvent.ClientTickEvent event) {
         if (event.phase != TickEvent.Phase.END) return;
         Minecraft mc = Minecraft.getInstance();
         Player player = mc.player;
         if (player == null) return;
-
-        float healthPct = player.getHealth() / player.getMaxHealth();
         float target = 0.0f;
-        if (healthPct < 0.5f) {
-            target = (0.5f - healthPct) * 0.8f;
+        if (!player.isCreative() && !player.isSpectator()) {
+            float healthPct = player.getHealth() / player.getMaxHealth();
+            if (healthPct < 0.5f) {
+                target = (0.5f - healthPct) * 0.8f;
+            }
         }
 
         visualDesaturation += (target - visualDesaturation) * 0.05f;

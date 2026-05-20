@@ -1,0 +1,34 @@
+{
+  "has_precipitation": false,
+  "temperature": 0.5,
+  "downfall": 0.0,
+  "effects": {
+    "sky_color": 0,
+    "fog_color": 0,
+    "water_color": 4210752,
+    "water_fog_color": 2105376,
+    "grass_color": 8421504,
+    "foliage_color": 9474192
+  },
+  "spawners": {},
+  "spawn_costs": {},
+  "carvers": {},
+  "features": [
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [
+    "linggango_tweaks:dead_haunted_tree",
+    "linggango_tweaks:universal_vegetation",
+    "linggango_tweaks:drought_vegetation",
+    "linggango_tweaks:haunted_tree_dead",
+    "linggango_tweaks:haunted_tree_dead_massive"
+    ]
+  ]
+}

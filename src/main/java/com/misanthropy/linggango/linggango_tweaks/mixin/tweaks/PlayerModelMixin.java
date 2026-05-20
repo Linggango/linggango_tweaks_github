@@ -1,6 +1,6 @@
 package com.misanthropy.linggango.linggango_tweaks.mixin.tweaks; // Mozilla Public License
 
-import com.misanthropy.linggango.linggango_tweaks.skills.VanguardSwordBlocking;
+import com.misanthropy.linggango.linggango_tweaks.skills.passive.VanguardSwordBlocking;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.world.InteractionHand;

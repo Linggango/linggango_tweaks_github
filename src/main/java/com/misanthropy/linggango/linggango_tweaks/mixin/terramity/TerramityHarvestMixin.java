@@ -53,9 +53,6 @@ public abstract class TerramityHarvestMixin {
             } else {
                 TieredItem tiered = (TieredItem) item;
                 Tier tier = tiered.getTier();
-
-                // Fixed: Removed the empty if (tier == Tiers.WOOD || tier == Tiers.GOLD) block
-                // as toolLevel is already 0 by default.
                 if (tier == Tiers.STONE) toolLevel = 1;
                 else if (tier == Tiers.IRON) toolLevel = 2;
                 else if (tier == Tiers.DIAMOND) toolLevel = 3;

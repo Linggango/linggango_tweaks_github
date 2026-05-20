@@ -1,37 +1,18 @@
 package com.misanthropy.linggango.linggango_tweaks.mixin.tweaks;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BeaconBlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.levelgen.Heightmap;
-import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.Constant;
+import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
 @Mixin(BeaconBlockEntity.class)
 public class UndergroundBeaconMixin {
 
-    @Redirect(
+    @ModifyConstant(
             method = "tick",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/world/level/Level;getHeight(Lnet/minecraft/world/level/levelgen/Heightmap$Types;II)I"
-            )
+            constant = @Constant(intValue = 15)
     )
-    private static int forceMaxHeight(@NonNull Level level, Heightmap.Types types, int x, int z) {
-        return level.getMaxBuildHeight();
-    }
-
-    @Redirect(
-            method = "tick",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/world/level/block/state/BlockState;getLightBlock(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/core/BlockPos;)I"
-            )
-    )
-    private static int ignoreLightBlocking(BlockState state, net.minecraft.world.level.BlockGetter level, BlockPos pos) {
-        return 0;
+    private static int ignoreBeaconOpacity(int originalOpacity) {
+        return 100;
     }
 }

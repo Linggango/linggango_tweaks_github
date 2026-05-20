@@ -1,0 +1,34 @@
+{
+  "has_precipitation": false,
+  "temperature": 0.5,
+  "downfall": 0.0,
+  "effects": {
+    "sky_color": 8782874,
+    "fog_color": 8815235,
+    "water_color": 2686982,
+    "water_fog_color": 3801088,
+        "foliage_color": 7087402
+  },
+  "spawners": {},
+  "spawn_costs": {},
+  "carvers": {},
+  "features": [
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [
+    "linggango_tweaks:tree_common_1",
+    "linggango_tweaks:tree_common_2",
+    "linggango_tweaks:tree_common_3",
+    "linggango_tweaks:haunted_tree_medium_2",
+    "linggango_tweaks:universal_vegetation",
+    "linggango_tweaks:emptiness_vegetation"
+    ]
+  ]
+}
