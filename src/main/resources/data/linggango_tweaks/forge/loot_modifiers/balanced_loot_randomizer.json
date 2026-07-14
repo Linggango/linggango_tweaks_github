@@ -1,0 +1,5 @@
+{
+  "type": "linggango_tweaks:balanced_loot_randomizer",
+  "conditions": [],
+  "randomization_chance": 0.15
+}

@@ -1,0 +1,26 @@
+package com.misanthropy.linggango.linggango_tweaks.util.addons; // Credits: https://www.curseforge.com/minecraft/mc-mods/celestweaks
+
+import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.AdvancementProgress;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
+
+public class AdvancementHelper {
+
+    public static void grantAdvancement(ServerPlayer player, String modid, String advancementId) {
+        MinecraftServer server = player.getServer();
+        if (server != null) {
+            Advancement advancement = server.getAdvancements().getAdvancement(new ResourceLocation(modid, advancementId));
+            if (advancement != null) {
+                var advancements = player.getAdvancements();
+                AdvancementProgress progress = advancements.getOrStartProgress(advancement);
+                if (!progress.isDone()) {
+                    for (String criterion : progress.getRemainingCriteria()) {
+                        advancements.award(advancement, criterion);
+                    }
+                }
+            }
+        }
+    }
+}
