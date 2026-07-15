@@ -27,7 +27,6 @@
     "celestisynth.TurretFlashFix",
     "citadel.WebHelperMixin",
     "covenant.CovenantEventsMixin",
-    "enchantment.EnchantmentHelperMixin",
     "enigmatic_legacy.CursedRingMixin",
     "enigmatic_legacy.EnigmaticBrewingCrashFixMixin",
     "enigmatic_legacy.EnigmaticFix",

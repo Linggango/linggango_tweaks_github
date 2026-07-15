@@ -1,6 +1,7 @@
 package com.misanthropy.linggango.linggango_tweaks.tweaks.brutality;
 
 import net.goo.brutality.registry.BrutalityModMobEffects;
+import net.goo.brutality.registry.BrutalityModItems;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
@@ -20,7 +21,7 @@ public class GrudgeTotemTweak {
 
             if (player.getHealth() == 0.5F && player.hasEffect(BrutalityModMobEffects.ENRAGED.get())) {
                 CuriosApi.getCuriosHelper().findFirstCurio(player, stack ->
-                        stack.getItem().getClass().getSimpleName().equals("GrudgeTotem")
+                        stack.is(BrutalityModItems.GRUDGE_TOTEM.get())
                 ).ifPresent(slot -> {
 
                     event.setCanceled(false);
@@ -38,7 +39,7 @@ public class GrudgeTotemTweak {
 
         if (player.tickCount % 20 == 0 && player.hasEffect(BrutalityModMobEffects.ENRAGED.get())) {
             CuriosApi.getCuriosHelper().findFirstCurio(player, stack ->
-                    stack.getItem().getClass().getSimpleName().equals("GrudgeTotem")
+                    stack.is(BrutalityModItems.GRUDGE_TOTEM.get())
             ).ifPresent(slot -> player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 40, 0, true, true)));
         }
     }

@@ -4,6 +4,7 @@ import net.goo.brutality.event.LivingEntityEventHandler;
 import net.goo.brutality.network.ClientboundSyncCapabilitiesPacket;
 import net.goo.brutality.network.PacketHandler;
 import net.goo.brutality.registry.BrutalityCapabilities;
+import net.goo.brutality.registry.BrutalityModItems;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -32,7 +33,7 @@ public class PainCatalystTweak {
 
     private static void captureRage(Player player) {
         boolean hasCurio = CuriosApi.getCuriosInventory(player).map(handler ->
-                handler.findFirstCurio(stack -> stack.getItem().getClass().getSimpleName().equals("PainCatalyst")).isPresent()
+                handler.findFirstCurio(stack -> stack.is(BrutalityModItems.PAIN_CATALYST.get())).isPresent()
         ).orElse(false);
 
         if (hasCurio) {
@@ -45,7 +46,7 @@ public class PainCatalystTweak {
         if (oldRage == null) return;
 
         CuriosApi.getCuriosInventory(player).ifPresent(handler -> handler.findFirstCurio(stack ->
-                stack.getItem().getClass().getSimpleName().equals("PainCatalyst")
+                stack.is(BrutalityModItems.PAIN_CATALYST.get()) // Fixed: Checks directly for the Pain Catalyst item
         ).ifPresent(slotResult -> player.getCapability(BrutalityCapabilities.PLAYER_RAGE_CAP).ifPresent(cap -> {
 
             float newRage = oldRage + RAGE_GAIN_PER_HIT;
